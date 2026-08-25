@@ -5,6 +5,7 @@ Dopa는 자극적인 디지털 행동을 알아차리고 스스로 조절하도�
 현재 저장소에는 구현 전 의사결정을 위한 문서가 있습니다.
 
 - [통합 제품·사업 구상안](docs/DOPA_INTEGRATED_PRODUCT_PLAN_KO.md)
+- [MVP Scope Freeze v1](docs/product/MVP_SCOPE_FREEZE_V1_KO.md)
 - [프로젝트 개발 규칙](docs/PROJECT_RULES_KO.md)
 - [Pull Request 템플릿](.github/pull_request_template.md)
 

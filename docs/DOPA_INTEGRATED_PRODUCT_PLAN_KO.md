@@ -24,7 +24,7 @@ Dopa는 사용자를 평가하지 않고 `관찰 → 선택한 경계 → 짧은
 ## 목표 사용자
 
 - 핵심: 숏폼, SNS, 게임, 커뮤니티 사용을 줄이고 싶은 18~39세
-- 이용 가능: 만 14세 이상. 14~17세 정책·동의·스토어 분류는 출시 전 전문 검토
+- 이용 가능: 만 14세 이상. 14~17세 정책·동의·스토어 분류는 출시 전 전문 검토하며, 미충족 시 공개 출시를 보류
 - 주요 상황: 출퇴근 숏폼, 공부·업무 중 반복 확인, 취침 전 영상·커뮤니티, 게임 세션 연장
 - 공통 특성: 사용을 완전히 끊기보다 `내가 정한 시간과 상황에서는 덜 쓰고 싶은` 사람
 
@@ -141,9 +141,9 @@ Dopa의 방어력은 단일 차단 기술이 아니라 한국 생활 맥락에 �
 |---|---|---|---|---|---|---|
 | 사용 패턴 확인 | 최근 사용 흐름과 데이터 가용 상태 표시 | 권한 설명→허용→오늘/7일 리포트 | Must | 높음 | iOS는 native report view이며 raw 데이터 반출 금지. Android는 UsageStats 로컬 집계 | 권한 허용률, 리포트 로드 성공률 |
 | 방해 앱 1~3개 | 바꾸고 싶은 앱만 선택 | 목표 상황→앱 선택→확인 | Must | 높음 | iOS opaque token 로컬 저장. Android 최근 사용 앱 기반, `QUERY_ALL_PACKAGES` 미사용 | 선택 완료율, 평균 선택 수 |
-| 집중 세션 | 5·10·25·50분 또는 사용자 지정, 시작 시 대상 보호 | 시간→대상→강도→시작→완료 | Must | 중간 | 앱 종료·재부팅·시간 변경 복구 필요 | 시작 대비 완료율, 보호 시간 |
-| 세션 중 의도 확인 | 보호 앱 실행 시 닫기·필요한 사용·5분 허용 선택 | shield/멈춤 화면→선택→복귀 | Must | 높음 | iOS shield UI 제약. Android Accessibility 승인 시만 | 닫기 선택률, 10분 미재실행률, 우회율 |
-| 긴급 우회 | 전화·문자·지도·설정·인증 항상 허용, 세션은 2동작 내 중단 | `필요한 사용`→확인→해제 | Must | 중간 | 시스템 앱 allowlist와 제조사별 패키지 검증 | 오차단 신고, 우회 성공률 |
+| 집중 세션 | 5·10·25·50분 preset, 첫 추천 10분, 시작 시 대상 보호 | 시간→대상→강도→시작→완료 | Must | 중간 | 직접 입력 없음. 앱 종료·재부팅·시간 변경 복구 필요 | 시작 대비 완료율, 보호 시간 |
+| 세션 중 의도 확인 | 보호 앱 실행 시 닫기·필요한 사용·5분 허용 선택 | shield/멈춤 화면→선택→복귀 | Must | 높음 | 이유 입력 없음. iOS shield UI 제약. Android Accessibility 승인 시만 | 닫기 선택률, 10분 미재실행률, 우회율 |
+| 긴급 우회 | 전화·문자·지도·설정·금융·인증 항상 허용, 세션은 이유 없이 2동작 내 해제 | `필요한 사용`→`5분 허용/세션 종료/취소` | Must | 중간 | 시스템 앱 allowlist와 제조사별 패키지 검증 | 오차단 신고, 우회 성공률 |
 | 7일 실험 | 7일을 습관 완성이 아닌 관찰 실험으로 안내 | 목표→대안→7일 시도→회고 | Must | 중간 | 스트릭 초기화 금지 | 3일 이상 시도율, 계획 조정률 |
 | 오프라인 활동 | 2분 산책·물·스트레칭·종이 메모 등 사용자가 선택 | 개입/완료→활동 하나→선택적 완료 | Must | 낮음 | 위치·센서 수집 없음 | 선택률, 완료 자기보고율 |
 | 데일리 체크인 | “오늘 사용은 내 의도와 맞았나요?” 1탭 선택 | 하루 최대 1회, 건너뛰기 가능 | Must | 낮음 | 로컬 저장. 잠금화면에 답변 노출 금지 | 응답률, 부담 신고율 |
@@ -173,11 +173,13 @@ Dopa의 방어력은 단일 차단 기술이 아니라 한국 생활 맥락에 �
 - UsageStats 상세 이벤트 보관이 제한되므로 하루 한 번 로컬 일별 집계를 만들며, 권한 해제·잠금 상태로 생긴 공백은 `데이터 없음`으로 저장한다.
 - 일반 소비자 앱용 공식 차단 API는 없다. AccessibilityService는 `isAccessibilityTool=false`, 집중 세션이 활성화된 동안 선택한 패키지로 전환됐는지만 확인하는 결정론적 범위로 제한한다.
 - 화면 텍스트·알림·입력 내용을 읽지 않고, 자동 의사결정이나 삭제 방지를 하지 않는다. Play Console 선언·사전 고지·명시적 동의·심사 비디오를 준비한다.
-- Accessibility가 거절되거나 꺼지면 `timerOnly`로 즉시 열화한다. 해당 기능은 Remote Config로 서버 배포 없이 끌 수 있어야 한다.
+- Android 기본 출시는 UsageStats 리포트와 `timerOnly`다. Accessibility 보호는 정책 검토와 심사 승인 후에만 Remote Config로 활성화하며, 거절·철회·오류 시 즉시 기본 모드로 돌아간다.
 
 ---
 
 # 5. MVP 정의
+
+구현 범위의 최종 기준은 [MVP Scope Freeze v1](product/MVP_SCOPE_FREEZE_V1_KO.md)이다. 이 절과 충돌하면 scope freeze 문서를 우선한다.
 
 ## 12주 MVP 필수 기능
 
@@ -195,6 +197,8 @@ Dopa의 방어력은 단일 차단 기술이 아니라 한국 생활 맥락에 �
 12. 무료·유료 권한, 7일 체험, 구매 복원
 13. 구독 관리 링크, 계정·로컬 데이터 삭제
 14. 최소 분석·오류 추적·원격 기능 플래그
+15. 무료 활성 계획 1개·Plus 최대 5개, 계획당 대상 앱 3개 제한
+16. Plus 복수 계획과 반복 일정
 
 ## 과감하게 제외할 기능
 
@@ -202,6 +206,7 @@ Dopa의 방어력은 단일 차단 기술이 아니라 한국 생활 맥락에 �
 - AI 코치, 상담 챗, 자유 입력 감정 일기
 - 친구·가족·리더보드·경쟁·금전 벌칙
 - 14·30일 프로그램, 위젯, 데스크톱
+- 사용자 지정 세션 시간, 감정 범주·자유 입력
 - 광고, 평생 이용권 실판매, B2B 관리 콘솔
 - 앱명·사용 기록·감정의 클라우드 동기화
 - ‘도파민 점수’, 중독 위험도, 수면·집중력 진단
@@ -210,8 +215,8 @@ Dopa의 방어력은 단일 차단 기술이 아니라 한국 생활 맥락에 �
 
 | 등급 | 기능 | 근거 |
 |---|---|---|
-| Must | 계정·연령, 권한, 사용 리포트, 목표 앱, 집중 보호, 우회, 7일 실험, 체크인, 기본 리포트, 결제·삭제 | 가치 루프와 출시·정책 요건에 직접 필요 |
-| Should | 반복 일정, 복수 계획, 4주 추세, 사용자 지정 취침 반복, 권한 자가진단 | 구독 가치와 반복 사용에 중요하나 기본 취침 템플릿으로 출시 가능 |
+| Must | 계정·연령, 권한, 사용 리포트, 무료·Plus 계획 한도, 반복 일정, 목표 앱, 집중 보호, 우회, 7일 실험, 체크인, 기본 리포트, 결제·삭제 | 가치 루프·출시 정책·초기 구독 가치에 직접 필요 |
+| Should | 4주 추세, 추가 활동 템플릿, 권한 자가진단 | 기본 주간 리포트와 활동으로 출시 가능 |
 | Could | 위젯, 14·30일 프로그램, 활동 팩 확장 | 검증 후 리텐션과 유료 가치 확장 |
 | Won't now | AI, 소셜, 상시 차단, 광고, 평생권, 민감 동기화 | 안전·정책·일정·브랜드 위험이 MVP 가치보다 큼 |
 
@@ -242,6 +247,14 @@ Dopa의 방어력은 단일 차단 기술이 아니라 한국 생활 맥락에 �
 - VoiceOver·TalkBack·200% 글자·다크 모드·AA 대비 통과
 - 앱 안 계정 삭제와 스토어 구독 관리 링크 동작
 - 개인정보 처리방침, Data Safety, App Privacy, Health Apps 선언, 비의료 문구 검수 완료
+- 만 14세 생일 전날에는 인증 SDK 초기화 없이 차단되고 생일 당일부터 가입 가능
+- 로그인 취소·실패·오프라인 상태에서 계정 없는 로컬 웰빙 기록 0건
+- 무료 한도는 활성 계획 1개·계획당 대상 3개, Plus는 계획 5개·계획당 대상 3개
+- 세션 시간은 5·10·25·50분 외 값을 저장할 수 없음
+- 우회는 이유 입력 없이 `필요한 사용 → 5분 허용/세션 종료` 2동작 이내
+- 체크인은 `yes/no/skipped` 외 값을 저장·전송하지 않음
+- 기본 취침 템플릿은 수면 데이터·센서를 사용하지 않고 개선 효과를 주장하지 않음
+- 페이월은 두 번째 계획·반복 일정 등 유료 기능을 직접 선택했을 때만 나타나며 첫 세션·온보딩·오류 중에는 노출되지 않음
 
 ### 제품 검증 기준
 
@@ -255,7 +268,7 @@ Dopa의 방어력은 단일 차단 기술이 아니라 한국 생활 맥락에 �
 
 | 단계 | 기간 | 목표 | 기능 |
 |---|---|---|---|
-| 1. 신뢰성 | 출시 후 0~8주 | 차단·권한·결제 실패 감소 | OEM별 복구, 권한 자가진단, 반복 일정, 4주 추세, 카피 개선 |
+| 1. 신뢰성 | 출시 후 0~8주 | 차단·권한·결제 실패 감소 | OEM별 복구, 권한 자가진단, 4주 추세, 카피 개선 |
 | 2. 프로그램 | 2~6개월 | 7일 후 가치 확장 | 14·30일 실험, 위젯, 활동 팩, opt-in 암호화 설정 동기화, 졸업 모드 |
 | 3. 확장 | 6~12개월 | 채널·개인화 검증 | 온디바이스 개인화, 대학·기업 파일럿, 안전 검증을 마친 제한형 AI 코치 |
 
@@ -316,6 +329,8 @@ Dopa
 
 `약속 → 연령 계산 → 로그인 → 목표 상황 → 권한 explainer → OS 권한 → 앱 선택 → 첫 집중`
 
+- 연령 화면은 인증·분석·Crashlytics·Remote Config보다 먼저 표시한다. 생년월일은 age band 계산 직후 폐기한다.
+- 로그인 취소·실패·오프라인 상태에서는 계획·사용 기록·체크인 로컬 저장소를 만들지 않는다.
 - 알림 권한은 첫 반복 일정을 저장한 직후에만 요청한다.
 - 권한을 거부해도 수동 타이머와 체크인은 사용할 수 있다.
 - 로그인 전 분석·Crashlytics·Remote Config 네트워크 초기화는 하지 않는다.
@@ -580,20 +595,24 @@ Dopa
 
 | 모델 | 핵심 필드 | 저장 위치 |
 |---|---|---|
-| `AccountProfile` | uid, provider, ageBand, locale, timezone | 서버 |
+| `AccountProfile` | uid, provider, ageBand, ageAttestedAt, locale, timezone | 서버 |
 | `ConsentRecord` | type, version, acceptedAt, withdrawnAt | 서버 |
 | `PlatformCapabilities` | reportMode, protectionMode, permission states | 로컬 |
+| `PlanLimits` | activePlans, targetsPerPlan | entitlement 설정·로컬 캐시 |
 | `DistractionTarget` | localRef, displayLabel, category | **로컬 전용** |
 | `WellbeingPlan` | intent, targetRefs, schedule, mode, active | 로컬 |
 | `FocusSession` | plannedDuration, protectedDuration, status, timestamps | 로컬 |
-| `InterventionEvent` | trigger, response, coarseReason | 로컬 |
-| `DailyCheckIn` | date, intentionAlignment | 로컬 |
+| `InterventionEvent` | trigger, action, elapsedBucket, protectionMode | 로컬 |
+| `DailyCheckIn` | localDate, intentionAlignment | 로컬 |
 | `ChallengeProgress` | planId, attemptedDates, review | 로컬 |
 | `WeeklySummary` | attemptedDays, protectedMinutes, missingData | 로컬 생성 |
 | `SubscriptionEntitlement` | product, status, expiresAt | 서버·캐시 |
+| `SubscriptionOffering` | monthlyPrice, annualPrice, trialDays, plan limits | 서버 설정·로컬 캐시 |
 | `FeatureAssignment` | key, variant, assignedAt | 서버 |
 
 `DistractionTarget.localRef`는 iOS token 또는 Android package reference를 감싼 로컬 타입이며 JSON server serializer를 제공하지 않는다.
+
+고정 enum은 `AgeBand(under14|age14To17|adult18Plus)`, `SessionDurationPreset(5|10|25|50)`, `BypassAction(allowFiveMinutes|endSession|cancel)`, `IntentionAlignment(yes|no|skipped)`다. 무료 `PlanLimits`는 `1/3`, Plus는 `5/3`으로 고정한다. `InterventionEvent`에는 이유·자유 입력 필드를 만들지 않는다.
 
 ## 핵심 API
 
@@ -619,7 +638,7 @@ Dopa
 ## 플랫폼 네이티브 연동 지점
 
 - `UsageInsightsAdapter`: iOS `nativeView`, Android `structured`, 권한 없으면 `none`
-- `FocusProtectionAdapter`: iOS `shield`, Android `accessibility` 또는 `timerOnly`
+- `FocusProtectionAdapter`: iOS `shield`, Android 기본 `timerOnly`; 승인되고 원격 플래그가 켜진 경우에만 `accessibility`
 - `PermissionAdapter`: 설명 화면과 OS 설정 이동·상태 재확인
 - iOS App Group 공유 저장소, Monitor/Report/Shield 확장 생명주기
 - Android foreground notification, reboot/timezone receiver, OEM 진단, accessibility state
@@ -710,8 +729,9 @@ Dopa
 
 - 생년월일은 SDK 네트워크 초기화 전에 기기에서만 계산하고 즉시 폐기한다.
 - 14세 미만은 계정을 만들 수 없고 보호자 동의를 받는 기능도 MVP에 만들지 않는다.
+- 서버에는 `ageBand`와 `ageAttestedAt`만 저장하며 14~17세 사용자는 12개월마다 로컬 연령 확인을 다시 수행한다.
 - 14~17세에게 광고·소셜·공개 프로필·친구 초대·AI 자유 대화를 제공하지 않는다.
-- Play Console에서 13~15세를 포함할 경우 Families 정책과 인증 SDK 적합성을 전문 검토한다. 충족이 어렵다면 18세 이상으로 출시한다.
+- Play Console에서 13~15세를 포함하는 Families 정책, 인증 SDK, 미성년 구독 요건을 전문 검토한다. 하나라도 충족하지 못하면 해결될 때까지 공개 출시를 보류한다.
 - 미성년자의 구독 계약·환불 가능성과 중립적 연령 화면의 충분성은 `전문 검토 필요`다.
 
 ## 한국 법·스토어 출시 전 확인
@@ -846,7 +866,7 @@ iOS raw 사용 기록을 서버로 가져오지 않기 때문에 플랫폼 중�
 | `plan_created` | plan_type, target_count_bucket, duration_bucket | 앱명, exact schedule |
 | `focus_started` | duration_bucket, protection_mode | target identifiers |
 | `focus_completed` | duration_bucket, completion_type | exact timestamps if unnecessary |
-| `focus_bypassed` | coarse_reason, elapsed_bucket | free text, opened app |
+| `focus_bypassed` | action, elapsed_bucket, protection_mode | reason, free text, opened app |
 | `challenge_attempted` | day_index, plan_type | check-in emotion |
 | `weekly_report_viewed` | data_completeness_bucket | raw usage values |
 | `paywall_viewed` | placement, variant | behavioral profile |
@@ -895,9 +915,9 @@ iOS raw 사용 기록을 서버로 가져오지 않기 때문에 플랫폼 중�
 | 무료 | Dopa Plus |
 |---|---|
 | 활성 계획 1개 | 활성 계획 최대 5개 |
-| 대상 앱 최대 3개 | 계획별 대상과 반복 일정 |
+| 계획당 대상 앱 최대 3개 | 계획당 대상 앱 최대 3개와 반복 일정 |
 | 기본 집중 세션·타이머 폴백 | 사용자 지정 반복·취침 루틴 |
-| 7일 시작 실험 | 전체 활동 팩과 계획 템플릿 |
+| 7일 실험 1개 | 전체 활동 팩과 계획 템플릿 |
 | 기본 주간 리포트 | 4주 추세와 개인화된 회고 |
 | 긴급 우회·권한 진단 | 동일하게 제공—안전 기능은 유료화하지 않음 |
 
@@ -909,8 +929,8 @@ iOS raw 사용 기록을 서버로 가져오지 않기 때문에 플랫폼 중�
 - 연간: ₩39,000, 월 환산액과 실제 연 청구액을 함께 표시
 - 무료 체험: 7일. 한국 Google Play의 체험 종료 후 결제 동의 흐름을 별도 측정
 - 평생: 참고가 ₩129,000. 최소 6개월 유지비·리텐션 검증 전 판매하지 않음
-- 첫 페이월: 첫 세션 성공 후 두 번째 계획·반복 일정 등 유료 기능을 선택했을 때
-- 보조 페이월: 첫 주간 리포트 마지막. 닫기 버튼과 무료 유지 선택을 같은 화면에 제공
+- 첫 페이월: 첫 무료 세션과 첫 계획을 완료한 사용자가 두 번째 계획·반복 일정 등 유료 기능을 직접 선택했을 때
+- 주간 리포트만 조회할 때는 페이월을 표시하지 않는다. 사용자가 4주 추세 등 잠긴 Plus 기능을 직접 선택했을 때만 표시한다.
 - 권한 요청·실패·위기 안내 직후에는 페이월을 표시하지 않음
 
 ## 손익 구조와 매출 시나리오
@@ -1008,6 +1028,7 @@ Apple Small Business Program 승인과 Google 구독 15% 조건을 가정하며,
 - [ ] 개인정보·민감정보·미성년·국외 이전 전문 검토
 - [ ] App Privacy·Data Safety·Health Apps 선언과 네트워크 검사 일치
 - [ ] 구독 상품·체험·복원·해지·삭제 E2E
+- [ ] 만 14세 이상 대상 법률·Families·인증 SDK·미성년 구독 검토 완료
 - [ ] VoiceOver·TalkBack·200% 글자·다크 모드
 - [ ] 14세 미만 차단과 분석 SDK 사전 초기화 금지 검증
 - [ ] 안전 연락처·운영시간 재확인
@@ -1040,12 +1061,12 @@ Apple Small Business Program 승인과 Google 구독 15% 조건을 가정하며,
 | 플랫폼 기능 비대칭 | 높음 | 높음 | iOS·Android 리뷰 불만 차이 | capability UI와 스토어 설명 분리 | 마케팅 수정, 공통 지표는 Dopa-owned 행동으로 제한 |
 | 중요한 앱 오차단 | 중간 | 매우 높음 | 전화·지도·인증 관련 신고 | 시스템 allowlist, 2동작 우회, 실제 기기 테스트 | 즉시 kill switch, affected session 해제, 사고 분석 |
 | 개인정보 유출 | 낮음 | 매우 높음 | 금지 속성 테스트·로그 경고 | 로컬 우선, schema allowlist, 암호화, 네트워크 검사 | 전송 차단, 키 회전, 삭제·통지·법적 절차 수행 |
-| 14~17세 정책 미충족 | 중간 | 매우 높음 | Play Families·법률 검토 문제 | SDK 전 연령 게이트, 광고·소셜 제거, 전문 검토 | 18세 이상 출시 폴백, 미성년 데이터 삭제 |
+| 14~17세 정책 미충족 | 중간 | 매우 높음 | Play Families·법률·인증·구독 검토 문제 | SDK 전 연령 게이트, 광고·소셜 제거, 전문 검토 | 공개 출시 보류, 문제 해결·재검토, 시험 데이터 삭제 |
 | 의학적 오인 | 중간 | 높음 | 리뷰·광고에서 치료 기대 | 금지어 목록, 모든 카피 의학 검수 | 카피·ASO 즉시 수정, 근거·한계 안내 |
 | 무료 경쟁으로 결제 부진 | 높음 | 높음 | paywall 전환 <2%, ScreenZen 비교 | 핵심 무료 가치, 프로그램·반복 루틴에 과금 | 가격·가치 인터뷰, 기능 잠금보다 프로그램 개선 |
 | 구독 신뢰 훼손 | 중간 | 높음 | 환불·해지·부정 리뷰 상승 | 첫 가치 후 페이월, 실제 청구액·해지 경로 표시 | 실험 중단, 환불 안내, 기존 사용자 grandfathering |
 | 개입 효과 부족 | 중간 | 높음 | 의도 일치·3일 시도 개선 없음 | 한 상황·1~3개 앱·짧은 실험 | 교육 콘텐츠 추가보다 마찰 시점·복잡도 재설계 |
-| 12주·예산 초과 | 높음 | 높음 | 4주 차 네이티브 spike 미완료 | Won't 목록 고정, 플랫폼 담당 명확화 | 반복 일정·4주 추세 cut, 안전·삭제·폴백은 유지 |
+| 12주·예산 초과 | 높음 | 높음 | 4주 차 네이티브 spike 미완료 | Won't 목록 고정, 플랫폼 담당 명확화 | 4주 추세·추가 활동 템플릿 cut, 계획 한도·반복 일정·안전·삭제·폴백은 유지 |
 
 ---
 
@@ -1124,7 +1145,7 @@ Apple Small Business Program 승인과 Google 구독 15% 조건을 가정하며,
 6. 연령·미성년자·민감정보·국외 이전 범위를 개인정보 전문가에게 전달한다.
 7. Firebase 프로젝트를 서울 리전으로 만들고 공급자 데이터 맵 초안을 작성한다.
 8. 핵심 5화면 클릭 프로토타입으로 첫 3분 사용성 테스트를 한다.
-9. 무료·Plus 기능과 ₩29,000/₩39,000 가격 인터뷰 카드를 만든다.
+9. 무료·Plus 기능과 월 ₩5,900·연 ₩39,000·7일 체험 페이월 카드를 만든다.
 10. Won't 목록, 출시 게이트, Remote Config kill switch를 팀 전체가 서면 승인한다.
 
 ## 2,000만 원 예산 배분
@@ -1141,13 +1162,13 @@ Apple Small Business Program 승인과 Google 구독 15% 조건을 가정하며,
 | 예비비 | ₩4,000,000 | 심사 지연·기기 이슈·외부 지원 |
 | **합계** | **₩20,000,000** | 내부 팀 인건비 제외 |
 
-## 창업자가 내려야 할 핵심 의사결정 5개
+## 창업자가 확정한 핵심 의사결정 5개
 
-1. 14~17세 정책 비용을 감수할지, 전문 검토 결과에 따라 18세 이상으로 좁힐지
-2. Apple entitlement가 지연될 때 iOS timerOnly로 동시 출시할지 출시를 미룰지
-3. Android Accessibility 거절 시 강한 차단 없이도 포지셔닝을 유지할지
-4. 필수 로그인의 이탈 비용을 감수할 만큼 계정이 초기 사업에 필요한지
-5. 구독 가치를 ‘더 강한 차단’이 아니라 반복 루틴·리포트·프로그램에 둘지
+1. 만 14세 이상을 유지하며 관련 정책 요건 미충족 시 공개 출시를 보류한다.
+2. 첫 사용 전에 Apple·Google 로그인을 필수로 하고 로그인 이탈을 퍼널로 측정한다.
+3. Android는 UsageStats+타이머로 출시하며 Accessibility는 승인 후 원격 활성화한다.
+4. 무료는 계획 1개·앱 3개·7일 실험, Plus는 계획 5개·반복 일정으로 구분한다.
+5. 민감 데이터는 기기 전용으로 두고 구독 가치를 강한 차단보다 복수 계획·루틴·리포트에 둔다.
 
 ## 최종 결론
 
@@ -1155,4 +1176,4 @@ Dopa의 가장 현실적인 첫 제품은 기능이 많은 디지털 웰빙 슈�
 
 Flutter는 12주·2명 개발 조건에서 공통 UX를 가장 빠르게 만들 수 있지만 핵심 권한은 Swift와 Kotlin으로 직접 구현해야 한다. iOS raw 사용 데이터와 Android 차단 API의 차이를 숨기지 않고 capability 기반으로 설계해야 일정과 신뢰를 모두 지킬 수 있다. 데이터는 로컬에 두고 계정 서버를 최소화하며, 안전 우회와 기능 kill switch를 결제 기능보다 먼저 완성해야 한다.
 
-수익화는 월 ₩5,900·연 ₩39,000의 무료+구독이 적합하다. 무료 사용자가 실제 7일 가치를 경험한 뒤 반복 계획과 장기 리포트에 과금하고, 광고·금전 벌칙·공포성 페이월은 사용하지 않는다. 장기 경쟁력은 가장 강한 차단이 아니라 한국 생활 맥락, 설명 가능한 플랫폼 동작, 검증 가능한 로컬 우선, 그리고 사용자가 Dopa 자체에서도 졸업할 수 있다는 신뢰에서 만들어야 한다.
+수익화는 월 ₩5,900·연 ₩39,000의 무료+구독이 적합하다. 첫 무료 세션과 첫 계획의 가치를 경험한 사용자가 두 번째 계획·반복 일정·4주 추세를 직접 선택했을 때만 과금하고, 광고·금전 벌칙·공포성 페이월은 사용하지 않는다. 장기 경쟁력은 가장 강한 차단이 아니라 한국 생활 맥락, 설명 가능한 플랫폼 동작, 검증 가능한 로컬 우선, 그리고 사용자가 Dopa 자체에서도 졸업할 수 있다는 신뢰에서 만들어야 한다.

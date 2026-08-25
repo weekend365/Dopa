@@ -3,6 +3,22 @@
 > 상태: 구현 시작 시 적용할 v0.1 초안  
 > 우선순위: `반드시`는 병합·출시 게이트, `권장`은 예외 사유를 PR에 기록하면 변경 가능하다.
 
+## MVP Scope Freeze 게이트
+
+[MVP Scope Freeze v1](product/MVP_SCOPE_FREEZE_V1_KO.md)은 제품 구현의 최우선 기준이다.
+
+### 반드시
+
+- 만 14세 미만은 인증·분석·Crashlytics·Remote Config 네트워크 초기화 전에 차단한다.
+- Apple·Google 로그인 성공 전 계획·사용 기록·체크인 로컬 저장소를 만들지 않는다.
+- 무료 한도는 활성 계획 1개·계획당 대상 앱 3개, Plus는 계획 5개·계획당 대상 앱 3개다.
+- 세션 시간은 `5, 10, 25, 50`분만 허용하고 직접 입력을 구현하지 않는다.
+- 우회는 이유 입력 없이 `allowFiveMinutes`, `endSession`, `cancel`만 사용한다.
+- 앱 선택·사용 기록·체크인·원본 우회 이벤트는 기기 전용이며 서버 serializer를 만들지 않는다. 별도 선택적 `focus_bypassed` 분석은 allowlist 속성만 사용한다.
+- Android는 `timerOnly`를 기본으로 하고 Accessibility는 승인과 Remote Config 활성 상태를 모두 만족할 때만 사용한다.
+- 첫 페이월은 두 번째 계획 또는 반복 일정을 직접 선택한 경우에만 표시한다.
+- Scope Freeze 변경은 해당 문서의 버전과 승인 기록을 갱신한 뒤 구현한다.
+
 ## 1. 폴더 구조
 
 ```text
@@ -132,6 +148,7 @@ presentation → application → domain ← data
 - iOS Screen Time token, Android package name, 앱 표시명
 - URL·도메인, 알림·메시지·화면 텍스트
 - 자유 입력, 감정·수면·위기 표현
+- 우회 이유 또는 우회를 설명하는 자유 입력
 - 정확한 사용 기록과 선택 앱별 시간
 
 - 운영 로그는 `eventName`, allowlist context, stable error code만 구조화해 기록한다.
@@ -188,6 +205,9 @@ presentation → application → domain ← data
 - Drift schema version을 증가시키고 forward migration과 fixture test를 추가한다.
 - migration 실패 시 원본 DB를 즉시 삭제하지 않는다. 복구 또는 안전한 export 경로를 검토한다.
 - `DistractionTarget`과 raw usage model에는 server serializer를 구현하지 않는다.
+- `DailyCheckIn`과 `InterventionEvent`에는 server serializer를 구현하지 않는다.
+- `InterventionEvent`에 `reason`, `coarseReason`, `freeText` 필드를 추가하지 않는다.
+- `AgeBand`, `PlanLimits`, `SessionDurationPreset`, `BypassAction`, `IntentionAlignment` 값은 Scope Freeze 계약과 일치해야 한다.
 - 삭제는 DB row뿐 아니라 암호화 키, outbox, 캐시, notification schedule까지 포함한다.
 - 데이터 보관기간과 TTL은 코드·인프라·처리방침에서 일치해야 한다.
 
@@ -203,6 +223,11 @@ presentation → application → domain ← data
 - 생성 코드 제외 전체 line coverage 70% 이상
 - `packages/domain`과 application 계층 85% 이상
 - 금액·결제·계정 삭제·연령 계산·시간대·세션 state machine은 branch test 필수
+- 만 14세 생일 전날·당일 경계와 14~17세 연례 재확인을 테스트한다.
+- 로그인 취소·실패·오프라인에서 로컬 웰빙 기록이 생성되지 않는지 테스트한다.
+- 무료·Plus 계획 한도, 앱 3개 한도, 두 번째 계획·반복 일정 페이월을 테스트한다.
+- 5·10·25·50분 외 세션 값이 거부되는지 테스트한다.
+- 이유 없는 2동작 우회와 `yes/no/skipped` 체크인 enum을 테스트한다.
 - Drift migration은 이전 두 schema version에서 최신으로 올리는 테스트를 둔다.
 - native adapter는 성공·거부·철회·unavailable·timeout·partial data 계약 테스트를 갖는다.
 - 핵심 E2E: 온보딩, 권한 거부 폴백, 첫 집중, 우회, 7일 회고, 구매 복원, 계정 삭제
