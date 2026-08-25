@@ -7,13 +7,18 @@
 
 ## 1. 시작 상태
 
+> 진행 상세는 [`EXTERNAL_ACTION_CHECKLIST_KO.md`](EXTERNAL_ACTION_CHECKLIST_KO.md)를 본다. 아래는 2026-08-25 기준 요약이다.
+
 - Apple Developer Program Individual 멤버십은 활성 상태다.
 - App Store 법적 실명 판매자 표시를 수용한다.
 - Xcode 26 실행 가능한 Mac과 실제 iPhone이 있다.
-- App ID와 Family Controls 배포 entitlement는 아직 만들거나 신청하지 않았다.
-- 웹사이트는 있지만 도메인 이메일은 아직 없다.
+- `support@devnamu.com`과 `privacy@devnamu.com` 지원 메일은 설정 완료다. 제품 공개 페이지(`/dopa` 등)는 아직이다.
+- 운영 App Group·메인 App ID·확장 4개·capability는 생성 완료다.
+- Family Controls Framework entitlement는 신청했고 Apple 검토 중이다. App ID별 Distribution 확정은 승인 후 확인한다.
+- ASC 비즈니스: Free Apps Active. 계좌·한국 세금 처리/대기 중. 미국 Certificate·W-8BEN 제출 완료. Paid Apps는 사용자 정보 반영 대기.
+- App Store Connect 앱 레코드와 개발용(`*.dev`) 식별자는 아직이다.
 
-따라서 D‑U‑N‑S와 조직 가입은 건너뛰고 식별자·entitlement를 Apple 작업의 최우선 경로로 둔다.
+D‑U‑N‑S와 조직 가입은 건너뛴다. 다음은 ASC 앱 레코드 생성과 entitlement/계약 Active 확인이다.
 
 ## 2. 식별자와 capability
 

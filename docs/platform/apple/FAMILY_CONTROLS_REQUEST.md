@@ -24,8 +24,9 @@
 
 ## 신청 후 증빙
 
-- 각 App ID별 접수 화면을 민감 정보 없이 캡처한다.
-- 접수일, 상태, Apple 요청 번호를 `EXTERNAL_ACTION_CHECKLIST_KO.md`에 기록한다.
+- 2026-08-25: Apple Developer Contact의 **Family Controls Framework Entitlement** 폼으로 팀 단위 신청을 제출했다. 상태는 `EXTERNAL_ACTION_CHECKLIST_KO.md`의 C절을 본다.
+- 계정 승인 후 Identifiers에서 메인·확장 App ID에 **Family Controls (Distribution)**이 보이는지 확인한다.
+- 확장에 Development만 있으면 Bundle ID별로 추가 신청한다. 접수 화면은 민감 정보 없이 캡처하고 체크리스트에 기록한다.
 - 2주 이상 변화가 없으면 Apple Developer Support에 문의한다.
 - 승인 상태와 배포 프로비저닝 프로파일의 entitlement 포함 여부를 모두 확인한 뒤 완료 처리한다.
 
