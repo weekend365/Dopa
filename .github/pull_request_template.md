@@ -12,7 +12,7 @@
 
 ## MVP Scope Freeze
 
-- [ ] [MVP Scope Freeze v1](../docs/product/MVP_SCOPE_FREEZE_V1_KO.md)의 범위와 일치합니다.
+- [ ] [MVP Scope Freeze v1.1](../docs/product/MVP_SCOPE_FREEZE_V1_KO.md)의 범위와 일치합니다.
 - [ ] 만 14세 미만 사용자는 인증·분석 SDK 네트워크 초기화 전에 차단됩니다.
 - [ ] 무료 활성 계획 1개·계획당 대상 앱 3개 제한을 지킵니다.
 - [ ] 세션 시간은 5·10·25·50분만 허용합니다.
@@ -21,6 +21,8 @@
 - [ ] Android Accessibility OFF에서 UsageStats 리포트와 타이머가 동작합니다.
 - [ ] 첫 페이월은 두 번째 계획 또는 반복 일정을 직접 선택한 경우에만 표시됩니다.
 - [ ] Scope Freeze를 변경했다면 문서 버전과 승인 기록을 갱신했습니다.
+- [ ] iOS 식별자는 `config/apple-identifiers.json`과 일치하며 운영/개발 App Group을 혼용하지 않습니다.
+- [ ] Family Controls 변경은 메인 앱과 확장 4개의 entitlement·프로비저닝 영향을 확인했습니다.
 
 ## 테스트
 
@@ -31,6 +33,7 @@
 - [ ] 오프라인·부분 데이터
 - [ ] 권한 거부·철회
 - [ ] Remote Config OFF 폴백
+- [ ] iOS Release 프로파일과 실제 기기 Family Controls
 
 테스트 방법과 결과:
 

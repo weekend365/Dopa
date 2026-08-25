@@ -3,7 +3,8 @@
 > 문서 기준일: 2026-08-25 KST  
 > 출시 시장: 대한민국  
 > 플랫폼: iOS·Android 동시 출시  
-> 개발 전제: 개발자 2명, 디자이너 1명, 12주, 내부 인건비를 제외한 예산 2,000만 원  
+> 개발 전제: 개인사업자이자 Apple Developer Program Individual 회원인 1인 개발자, 12주, 내부 인건비를 제외한 예산 2,000만 원
+> Apple 네임스페이스: `com.devnamu.dopa`, App Group `group.com.devnamu.dopa`
 > 법적 고지: 이 문서는 제품 기획안이며 법률·의료 자문이 아니다. `전문 검토 필요` 표시는 출시 전에 관련 전문가의 확인이 필요하다.
 
 ---
@@ -142,7 +143,7 @@ Dopa의 방어력은 단일 차단 기술이 아니라 한국 생활 맥락에 �
 | 사용 패턴 확인 | 최근 사용 흐름과 데이터 가용 상태 표시 | 권한 설명→허용→오늘/7일 리포트 | Must | 높음 | iOS는 native report view이며 raw 데이터 반출 금지. Android는 UsageStats 로컬 집계 | 권한 허용률, 리포트 로드 성공률 |
 | 방해 앱 1~3개 | 바꾸고 싶은 앱만 선택 | 목표 상황→앱 선택→확인 | Must | 높음 | iOS opaque token 로컬 저장. Android 최근 사용 앱 기반, `QUERY_ALL_PACKAGES` 미사용 | 선택 완료율, 평균 선택 수 |
 | 집중 세션 | 5·10·25·50분 preset, 첫 추천 10분, 시작 시 대상 보호 | 시간→대상→강도→시작→완료 | Must | 중간 | 직접 입력 없음. 앱 종료·재부팅·시간 변경 복구 필요 | 시작 대비 완료율, 보호 시간 |
-| 세션 중 의도 확인 | 보호 앱 실행 시 닫기·필요한 사용·5분 허용 선택 | shield/멈춤 화면→선택→복귀 | Must | 높음 | 이유 입력 없음. iOS shield UI 제약. Android Accessibility 승인 시만 | 닫기 선택률, 10분 미재실행률, 우회율 |
+| 세션 중 의도 확인 | 보호 앱 실행 시 닫기·필요한 사용·5분 허용 선택 | shield/멈춤 화면→선택→복귀 | iOS Must·Android 출시 후 | 높음 | 이유 입력 없음. iOS shield UI 제약. Android Accessibility는 MVP 제외 | 닫기 선택률, 10분 미재실행률, 우회율 |
 | 긴급 우회 | 전화·문자·지도·설정·금융·인증 항상 허용, 세션은 이유 없이 2동작 내 해제 | `필요한 사용`→`5분 허용/세션 종료/취소` | Must | 중간 | 시스템 앱 allowlist와 제조사별 패키지 검증 | 오차단 신고, 우회 성공률 |
 | 7일 실험 | 7일을 습관 완성이 아닌 관찰 실험으로 안내 | 목표→대안→7일 시도→회고 | Must | 중간 | 스트릭 초기화 금지 | 3일 이상 시도율, 계획 조정률 |
 | 오프라인 활동 | 2분 산책·물·스트레칭·종이 메모 등 사용자가 선택 | 개입/완료→활동 하나→선택적 완료 | Must | 낮음 | 위치·센서 수집 없음 | 선택률, 완료 자기보고율 |
@@ -164,7 +165,7 @@ Dopa의 방어력은 단일 차단 기술이 아니라 한국 생활 맥락에 �
 - `ManagedSettingsStore`와 Shield Configuration/Action 확장으로 집중 세션 중 선택 앱을 가린다.
 - Shield에서 복잡한 질문을 직접 받지 않고 `Dopa 열기 → 필요한 사용인지 선택 → 제한적으로 해제` 흐름을 사용한다.
 - `DeviceActivityReportExtension`에서 SwiftUI 리포트를 렌더링한다. 대한민국에서 raw 앱별 데이터를 Flutter 계층·서버·분석 SDK로 옮기지 않는다.
-- App, DeviceActivityMonitor, DeviceActivityReport, ShieldConfiguration, ShieldAction에 필요한 Bundle ID와 App Group을 1주 차에 만들고 Family Controls 배포 entitlement를 신청한다. 승인 SLA는 공개되지 않았다.
+- App, DeviceActivityMonitor, DeviceActivityReport, ShieldConfiguration, ShieldAction은 `com.devnamu.dopa` 네임스페이스의 명시적 Bundle ID와 `group.com.devnamu.dopa` App Group을 사용한다. Account Holder인 창업자가 1주 차에 각 타깃의 Family Controls 배포 entitlement를 신청한다. 승인 SLA는 공개되지 않았다.
 
 ### Android
 
@@ -173,7 +174,7 @@ Dopa의 방어력은 단일 차단 기술이 아니라 한국 생활 맥락에 �
 - UsageStats 상세 이벤트 보관이 제한되므로 하루 한 번 로컬 일별 집계를 만들며, 권한 해제·잠금 상태로 생긴 공백은 `데이터 없음`으로 저장한다.
 - 일반 소비자 앱용 공식 차단 API는 없다. AccessibilityService는 `isAccessibilityTool=false`, 집중 세션이 활성화된 동안 선택한 패키지로 전환됐는지만 확인하는 결정론적 범위로 제한한다.
 - 화면 텍스트·알림·입력 내용을 읽지 않고, 자동 의사결정이나 삭제 방지를 하지 않는다. Play Console 선언·사전 고지·명시적 동의·심사 비디오를 준비한다.
-- Android 기본 출시는 UsageStats 리포트와 `timerOnly`다. Accessibility 보호는 정책 검토와 심사 승인 후에만 Remote Config로 활성화하며, 거절·철회·오류 시 즉시 기본 모드로 돌아간다.
+- Android MVP는 UsageStats 리포트와 `timerOnly`만 제공한다. Accessibility 보호는 출시 후 별도 정책 검토와 심사 승인을 거쳐 Remote Config로 활성화하며, 거절·철회·오류 시 즉시 기본 모드로 돌아간다.
 
 ---
 
@@ -806,7 +807,7 @@ Dopa
 - Drift schema 변경에는 forward migration과 migration test가 필요하다.
 - 전체 70%, domain/application 85% 커버리지 게이트를 통과한다. 생성 파일은 제외한다.
 - 핵심 5화면은 golden·semantics test, 핵심 흐름은 실제 기기 E2E를 가진다.
-- 최소 1명 승인과 CI 성공 전 병합하지 않는다.
+- 1인 개발에서는 required CI, PR 체크리스트, 다음 작업 세션의 고위험 diff 재검토가 끝나기 전 병합하지 않는다.
 - AI 도구에 운영 데이터·시크릿·사용자 로그를 입력하지 않는다.
 
 ## 권장 규칙
@@ -978,8 +979,8 @@ Apple Small Business Program 승인과 Google 구독 15% 조건을 가정하며,
 | 기술 프로토타입 | 내부, 1~4주 | entitlement·UsageStats·Accessibility 가능성 | 폴백 포함 핵심 API 검증 |
 | 비공개 알파 | 30명, 2주 | 온보딩·차단 안전·카피 | P0 0, 안전 신고 <1% |
 | 폐쇄 베타 | 누적 100명, 2주 | D7·권한·결제·기기 편차 | 핵심 지표와 스토어 자료 확정 |
-| 단계 출시 | 스토어 10%, 3~7일 | crash·결제·정책 모니터링 | crash-free ≥99.5% |
-| 정식 출시 | 100% | 한국 시장 검증 | 주간 운영 리뷰 |
+| 출시 후보 | 폐쇄 TestFlight 100명, 3~7일 | crash·결제·정책 모니터링 | crash-free ≥99.5% |
+| 정식 출시 | 첫 버전 Manual Release | 한국 시장 검증 | 최종 운영 체크리스트 통과 |
 
 ## 첫 사용자 100명
 
@@ -1021,7 +1022,7 @@ Apple Small Business Program 승인과 Google 구독 15% 조건을 가정하며,
 
 ### 출시 전
 
-- [ ] Apple·Google 개발자 법인 계정, Bundle ID·package name 확정
+- [ ] Apple Individual 멤버십과 Google 개발자 계정, `com.devnamu.dopa` Bundle ID·package name 확정
 - [ ] Family Controls entitlement와 각 extension profile 승인
 - [ ] Play Accessibility 선언·영상·prominent disclosure 검토
 - [ ] targetSdk 36, iOS 26 SDK 이상 제출 빌드
@@ -1038,7 +1039,7 @@ Apple Small Business Program 승인과 Google 구독 15% 조건을 가정하며,
 - [ ] crash-free·ANR·native adapter error 매일 확인
 - [ ] 오차단·긴급 우회·권한 철회 알림 채널 운영
 - [ ] 리뷰에 의료 주장·완전 차단 보장 없이 응답
-- [ ] 10%→50%→100% 단계 확대
+- [ ] 첫 버전 수동 공개 후 장애·결제·안전 지표 집중 확인
 - [ ] 가격·정책·SDK 데이터 처리 월별 변경 검토
 
 ## 90일 실행 계획
@@ -1047,7 +1048,7 @@ Apple Small Business Program 승인과 Google 구독 15% 조건을 가정하며,
 |---|---|---|
 | 1~30일 | 알파 30명, 권한·차단 실패 수정, 스토어 자료 제작 | 핵심 E2E, 안전성 보고서, ASO 초안 |
 | 31~60일 | 베타 100명, D7·가격 인터뷰, 결제·삭제 검증 | 지표 기준선, 가격 가설, 정책 제출물 |
-| 61~90일 | 10% 단계 출시, 콘텐츠 8개, 마이크로 크리에이터 5명 | 정식 출시 여부, 8주 개선 백로그 |
+| 61~90일 | TestFlight 폐쇄 베타 후 첫 버전 수동 공개, 콘텐츠 8개, 마이크로 크리에이터 5명 | 정식 출시 여부, 8주 개선 백로그 |
 
 ---
 
@@ -1066,7 +1067,7 @@ Apple Small Business Program 승인과 Google 구독 15% 조건을 가정하며,
 | 무료 경쟁으로 결제 부진 | 높음 | 높음 | paywall 전환 <2%, ScreenZen 비교 | 핵심 무료 가치, 프로그램·반복 루틴에 과금 | 가격·가치 인터뷰, 기능 잠금보다 프로그램 개선 |
 | 구독 신뢰 훼손 | 중간 | 높음 | 환불·해지·부정 리뷰 상승 | 첫 가치 후 페이월, 실제 청구액·해지 경로 표시 | 실험 중단, 환불 안내, 기존 사용자 grandfathering |
 | 개입 효과 부족 | 중간 | 높음 | 의도 일치·3일 시도 개선 없음 | 한 상황·1~3개 앱·짧은 실험 | 교육 콘텐츠 추가보다 마찰 시점·복잡도 재설계 |
-| 12주·예산 초과 | 높음 | 높음 | 4주 차 네이티브 spike 미완료 | Won't 목록 고정, 플랫폼 담당 명확화 | 4주 추세·추가 활동 템플릿 cut, 계획 한도·반복 일정·안전·삭제·폴백은 유지 |
+| 12주·예산 초과 | 높음 | 높음 | 4주 차 네이티브 spike 미완료 | 1인 개발 순차 일정과 Won't 목록 고정 | Android Accessibility·4주 추세·추가 활동 템플릿을 출시 후로 이동하고 안전·삭제·timerOnly 폴백은 유지 |
 
 ---
 
@@ -1105,17 +1106,17 @@ Apple Small Business Program 승인과 Google 구독 15% 조건을 가정하며,
 | 4 | 권한·리포트 UX | iOS report extension, Android UsageStats | 분석 allowlist | 실제 기기 사용 리포트 |
 | 5 | 집중·완료 UX | 공통 세션 state machine, 복구 | local outbox | 재부팅·시간 변경 테스트 |
 | 6 | shield·우회 UX | iOS ManagedSettings·Shield·Monitor | iOS flag | iOS 세션 보호 E2E |
-| 7 | Android 보호 설명 | Accessibility 좁은 구현, timer fallback | Play 선언 초안, flag | Android E2E·OFF 폴백 |
+| 7 | Android 권한 설명 | UsageStats·timerOnly 완성, Accessibility는 출시 후 | Play 기본 선언 초안 | Android 기본 E2E |
 | 8 | 7일 실험·체크인 | challenge, activities, bedtime template | content endpoint | 가치 루프 E2E |
 | 9 | 리포트·페이월 | weekly summary, RevenueCat, 삭제 | webhook, deletion job | 결제·복원·삭제 E2E |
 | 10 | 접근성·빈/오류 상태 | 성능·보안·golden·semantics | 개인정보·스토어 선언 | release candidate |
 | 11 | 알파·베타 수정 | 실제 기기·OEM·회귀 | 모니터링·ASO·지원 | P0/P1 0, 100명 초대 |
-| 12 | 출시 카피 | 최종 서명·스토어 빌드 | 10% rollout·대시보드 | 단계 출시 판단 |
+| 12 | 출시 카피 | 최종 서명·스토어 빌드 | TestFlight 베타·수동 공개 대시보드 | 공개 출시 판단 |
 
 ## 초기 백로그 20개
 
 1. Apple Family Controls entitlement·확장 프로비저닝
-2. Android UsageStats·Accessibility 정책 기술 spike
+2. Android UsageStats 기술 spike와 Accessibility 출시 후 추적 issue
 3. Melos·Flutter·CI/CD·환경 분리
 4. 디자인 토큰·접근성 기본 컴포넌트
 5. SDK 초기화 전 로컬 연령 게이트
@@ -1137,11 +1138,11 @@ Apple Small Business Program 승인과 Google 구독 15% 조건을 가정하며,
 
 ## 지금 당장 해야 할 일 10개
 
-1. 법인 Apple·Google 개발자 계정과 `dopa` Bundle/package 후보를 확정한다.
-2. iOS 앱·확장 Bundle ID와 App Group을 만든 뒤 Family Controls entitlement를 신청한다.
-3. Android Accessibility 사용 설명, prominent disclosure, 심사 영상 시나리오를 정책 전문가에게 검토받는다.
+1. Apple Individual 멤버십 보안·복구 수단과 Google 개발자 계정을 확인한다.
+2. `com.devnamu.dopa` 앱·확장 Bundle ID와 `group.com.devnamu.dopa` App Group을 만든 뒤 Family Controls entitlement를 신청한다.
+3. Android UsageStats 권한 설명을 확정하고 Accessibility는 출시 후 정책 검토 issue로 등록한다.
 4. 성인 인터뷰 대상 15명을 모집하고 위 10개 질문으로 이번 주 인터뷰를 시작한다.
-5. iOS token·report, Android UsageStats·Accessibility를 각각 2일 spike로 검증한다.
+5. iOS token·report와 Android UsageStats를 각각 2일 spike로 검증한다.
 6. 연령·미성년자·민감정보·국외 이전 범위를 개인정보 전문가에게 전달한다.
 7. Firebase 프로젝트를 서울 리전으로 만들고 공급자 데이터 맵 초안을 작성한다.
 8. 핵심 5화면 클릭 프로토타입으로 첫 3분 사용성 테스트를 한다.

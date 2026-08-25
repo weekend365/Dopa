@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "namespace": "com.devnamu.dopa",
+  "owner": {
+    "membershipType": "individual",
+    "teamSize": 1,
+    "sellerUsesLegalName": true
+  },
+  "production": {
+    "displayName": "Dopa",
+    "mainApp": "com.devnamu.dopa",
+    "appGroup": "group.com.devnamu.dopa",
+    "extensions": {
+      "deviceActivityMonitor": "com.devnamu.dopa.activitymonitor",
+      "deviceActivityReport": "com.devnamu.dopa.activityreport",
+      "shieldConfiguration": "com.devnamu.dopa.shieldconfiguration",
+      "shieldAction": "com.devnamu.dopa.shieldaction"
+    }
+  },
+  "development": {
+    "displayName": "Dopa Dev",
+    "mainApp": "com.devnamu.dopa.dev",
+    "appGroup": "group.com.devnamu.dopa.dev",
+    "extensions": {
+      "deviceActivityMonitor": "com.devnamu.dopa.dev.activitymonitor",
+      "deviceActivityReport": "com.devnamu.dopa.dev.activityreport",
+      "shieldConfiguration": "com.devnamu.dopa.dev.shieldconfiguration",
+      "shieldAction": "com.devnamu.dopa.dev.shieldaction"
+    }
+  },
+  "subscriptions": {
+    "groupReferenceName": "Dopa Plus",
+    "monthlyProductId": "com.devnamu.dopa.plus.monthly",
+    "annualProductId": "com.devnamu.dopa.plus.annual",
+    "trialDays": 7,
+    "monthlyPriceKrw": 5900,
+    "annualPriceKrw": 39000
+  }
+}

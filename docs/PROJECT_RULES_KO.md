@@ -5,7 +5,9 @@
 
 ## MVP Scope Freeze 게이트
 
-[MVP Scope Freeze v1](product/MVP_SCOPE_FREEZE_V1_KO.md)은 제품 구현의 최우선 기준이다.
+[MVP Scope Freeze v1.1](product/MVP_SCOPE_FREEZE_V1_KO.md)은 제품 구현의 최우선 기준이다.
+
+Apple 계정·식별자 결정은 [ADR-0001](adr/0001-apple-account-and-identifiers.md)을 따르며, 전체 iOS 식별자는 [`config/apple-identifiers.json`](../config/apple-identifiers.json)을 단일 진실 원천으로 사용한다.
 
 ### 반드시
 
@@ -18,6 +20,8 @@
 - Android는 `timerOnly`를 기본으로 하고 Accessibility는 승인과 Remote Config 활성 상태를 모두 만족할 때만 사용한다.
 - 첫 페이월은 두 번째 계획 또는 반복 일정을 직접 선택한 경우에만 표시한다.
 - Scope Freeze 변경은 해당 문서의 버전과 승인 기록을 갱신한 뒤 구현한다.
+- 운영 앱은 `com.devnamu.dopa`, 운영 App Group은 `group.com.devnamu.dopa`를 사용하며 개발 환경과 App Group을 혼용하지 않는다.
+- 운영 앱과 Screen Time 확장 4개의 Family Controls 배포 entitlement가 모두 승인되기 전에는 iOS 출시 준비를 완료로 처리하지 않는다.
 
 ## 1. 폴더 구조
 
@@ -283,7 +287,9 @@ presentation → application → domain ← data
 - 브랜치: `feat/<short-name>`, `fix/<short-name>`, `chore/<short-name>`.
 - Conventional Commits: `feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`.
 - 한 커밋에 시크릿·생성물·무관한 포맷 변경을 섞지 않는다.
-- 최소 1명 승인과 모든 required CI 성공 후 squash merge한다.
+- 1인 개발 저장소는 모든 required CI 성공, PR 체크리스트 완료, 변경 diff 자기검토 후 squash merge한다.
+- 연령·개인정보·구독·계정 삭제·Family Controls처럼 고위험인 변경은 같은 날 즉시 병합하지 않고 다음 작업 세션에 한 번 더 검토한다.
+- 법률·스토어 정책의 전문 판단이 필요한 변경은 코드 승인과 별개로 외부 검토 증빙을 관련 문서에 연결한다.
 
 ### 권장
 

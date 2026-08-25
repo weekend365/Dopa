@@ -1,0 +1,37 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.p8
+*.p12
+*.cer
+*.mobileprovision
+*.provisionprofile
+*.keystore
+*.jks
+key.properties
+
+# Firebase app configuration is injected per environment
+GoogleService-Info.plist
+google-services.json
+firebase_options.dart
+
+# Flutter / Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+coverage/
+
+# Apple
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# Editors and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,9 +1,11 @@
-# Dopa MVP Scope Freeze v1
+# Dopa MVP Scope Freeze v1.1
 
 > 상태: 승인됨  
 > 결정일: 2026-08-25 KST  
 > 승인자: 제품 책임자/창업자  
 > 적용 범위: 대한민국 iOS·Android MVP 및 12주 출시 계획
+> 개발·배포 주체: 개인사업자·1인 개발자, Apple Developer Program Individual
+> Apple 식별자: `com.devnamu.dopa`, App Group `group.com.devnamu.dopa`
 
 이 문서는 Dopa MVP의 제품 범위를 고정한다. 구현·디자인·분석·스토어 문구가 이 문서와 충돌하면 이 문서를 우선한다.
 
@@ -28,6 +30,9 @@
 | 취침 루틴 | 30분 집중+2분 오프라인 활동 기본 템플릿 | 수면 측정 없이 생활 장면을 지원 |
 | 가격 | 월 ₩5,900·연 ₩39,000, 7일 체험 | 중간 가격대에서 유지보수 재원과 접근성 균형 |
 | 첫 페이월 | 두 번째 계획·반복 일정 등 유료 기능을 직접 선택할 때 | 첫 무료 세션과 온보딩을 방해하지 않음 |
+| Apple 배포 | Individual 멤버십·법적 실명 판매자 표시 | 법인 전환과 D‑U‑N‑S는 MVP 선행 조건이 아님 |
+| Apple 식별자 | `com.devnamu.dopa` 네임스페이스 | 앱·확장·구독 식별자 충돌 방지 |
+| 1인 개발 폴백 | Android Accessibility·4주 추세·고급 리포트는 출시 후 | 로그인·안전·삭제·iOS 보호·Android timerOnly를 우선 |
 
 ## 2. 무료와 Plus의 출시 범위
 
@@ -132,6 +137,7 @@ ProtectionMode = shield | accessibility | timerOnly
 - 앱 선택·사용 기록·체크인·우회의 클라우드 동기화
 - 상시 차단·삭제 방지·금전 벌칙
 - 위젯, AI 코치, 가족·친구, 공개 비교, 광고, 평생 이용권
+- Android Accessibility 기반 보호, 반복 일정, 4주 추세, 고급 리포트
 - 수면 측정, 건강·집중력·수면 개선 주장
 
 ## 6. 출시 차단 조건
@@ -159,3 +165,4 @@ ProtectionMode = shield | accessibility | timerOnly
 | 날짜 | 버전 | 결정 | 승인자 |
 |---|---|---|---|
 | 2026-08-25 | v1 | 본 문서의 전체 MVP 범위 동결 | 제품 책임자/창업자 |
+| 2026-08-25 | v1.1 | 개인사업자·1인 개발·Apple Individual·`com.devnamu.dopa` 식별자와 출시 후 범위 반영 | 제품 책임자/창업자 |
