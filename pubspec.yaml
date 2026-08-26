@@ -1,0 +1,40 @@
+name: dopa_workspace
+publish_to: none
+
+environment:
+  sdk: '>=3.13.0 <3.14.0'
+
+workspace:
+  - apps/mobile
+  - packages/domain
+  - packages/local_storage
+
+dev_dependencies:
+  melos: ^8.5.0
+
+melos:
+  scripts:
+    bootstrap:
+      run: flutter pub get
+      description: Resolve the pinned Flutter workspace dependencies.
+    codegen:
+      run: melos exec --scope=dopa_local_storage -- dart run build_runner build
+      description: Regenerate Drift sources for local storage.
+    analyze:
+      run: melos exec --fail-fast -- dart analyze .
+      description: Analyze every Dart and Flutter package.
+    test:domain:
+      run: melos exec --scope=dopa_domain -- dart test
+      description: Run pure Dart domain tests.
+    test:storage:
+      run: melos exec --scope=dopa_local_storage -- dart test
+      description: Run Drift repository tests.
+    test:mobile:
+      run: melos exec --scope=dopa -- flutter test
+      description: Run Flutter widget tests.
+    test:
+      run: melos run test:domain && melos run test:storage && melos run test:mobile
+      description: Run the complete workspace test suite.
+    format:
+      run: dart format --output=none --set-exit-if-changed apps/mobile packages/domain packages/local_storage
+      description: Verify Dart formatting without rewriting files.

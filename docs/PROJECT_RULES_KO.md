@@ -5,9 +5,11 @@
 
 ## MVP Scope Freeze 게이트
 
-[MVP Scope Freeze v1.1](product/MVP_SCOPE_FREEZE_V1_KO.md)은 제품 구현의 최우선 기준이다.
+[MVP Scope Freeze v1.2](product/MVP_SCOPE_FREEZE_V1_KO.md)은 제품 구현의 최우선 기준이다.
 
 Apple 계정·식별자 결정은 [ADR-0001](adr/0001-apple-account-and-identifiers.md)을 따르며, 전체 iOS 식별자는 [`config/apple-identifiers.json`](../config/apple-identifiers.json)을 단일 진실 원천으로 사용한다.
+
+‘평생 한 그루’의 성장 원장·렌더러·롤아웃 결정은 [ADR-0002](adr/0002-local-tree-companion.md)를 따른다.
 
 ### 반드시
 
@@ -17,6 +19,11 @@ Apple 계정·식별자 결정은 [ADR-0001](adr/0001-apple-account-and-identifi
 - 세션 시간은 `5, 10, 25, 50`분만 허용하고 직접 입력을 구현하지 않는다.
 - 우회는 이유 입력 없이 `allowFiveMinutes`, `endSession`, `cancel`만 사용한다.
 - 앱 선택·사용 기록·체크인·원본 우회 이벤트는 기기 전용이며 서버 serializer를 만들지 않는다. 별도 선택적 `focus_bypassed` 분석은 allowlist 속성만 사용한다.
+- 나무·성장 원장은 기기 전용이고 무료다. 코인·가속·스킨·물주기·시듦·죽음·스트릭·리더보드·별도 정원 탭을 구현하지 않는다.
+- 정상 완료한 세션은 보호 모드와 5분 우회 여부에 관계없이 `startedLocalDate` 기준 하루 한 번만 성장한다. 조기 종료·취소·유효하지 않은 복구 종료는 성장시키지 않는다.
+- 세션 완료와 성장 지급은 하나의 Drift 트랜잭션으로 처리하고 `(treeId, creditedLocalDate)`와 `sourceSessionId` unique constraint를 유지한다.
+- `tree_ui_enabled`가 OFF여도 성장 원장은 기록하며 `tree_rive_enabled`가 OFF이거나 Rive가 실패하면 현재 테마의 정적 PNG 스프라이트 프레임으로 전환한다.
+- 나무 행동 분석을 새로 만들지 않는다. `tree_render_failed`만 `renderer`, `platform`, `error_code` allowlist로 허용한다.
 - Android는 `timerOnly`를 기본으로 하고 Accessibility는 승인과 Remote Config 활성 상태를 모두 만족할 때만 사용한다.
 - 첫 페이월은 두 번째 계획 또는 반복 일정을 직접 선택한 경우에만 표시한다.
 - Scope Freeze 변경은 해당 문서의 버전과 승인 기록을 갱신한 뒤 구현한다.
@@ -37,6 +44,7 @@ Apple 계정·식별자 결정은 [ADR-0001](adr/0001-apple-account-and-identifi
 │     │     ├─ onboarding/
 │     │     ├─ usage/
 │     │     ├─ focus/
+│     │     ├─ tree_companion/
 │     │     ├─ challenge/
 │     │     ├─ insights/
 │     │     ├─ subscription/
@@ -87,6 +95,7 @@ presentation → application → domain ← data
 - Data는 Drift, Firebase, RevenueCat, native bridge 구현을 담당한다.
 - 플랫폼 기능은 `PlatformCapabilities` 결과에 따라 실행하고 OS 이름을 조건문으로 흩뿌리지 않는다.
 - 모든 네이티브 보호 기능에는 `timerOnly` 폴백과 Remote Config kill switch가 있어야 한다.
+- 나무 UI는 `TreeRenderer` 경계 뒤에 두고 Rive와 정적 PNG 스프라이트 구현을 교체할 수 있어야 한다. 렌더 오류가 세션 완료나 성장 원장 트랜잭션을 실패시키면 안 된다.
 - 시간 기반 기능은 주입 가능한 `Clock`을 사용한다. 테스트에서 실제 시간을 기다리지 않는다.
 
 ### 권장
@@ -154,8 +163,10 @@ presentation → application → domain ← data
 - 자유 입력, 감정·수면·위기 표현
 - 우회 이유 또는 우회를 설명하는 자유 입력
 - 정확한 사용 기록과 선택 앱별 시간
+- 나무 ID, 성장 원장의 세션 ID·날짜·단계
 
 - 운영 로그는 `eventName`, allowlist context, stable error code만 구조화해 기록한다.
+- `tree_render_failed`에는 `renderer`, `platform`, `error_code` 외 값을 넣지 않으며 에셋 경로와 원본 예외 메시지를 전송하지 않는다.
 - `print`, `debugPrint`, `NSLog`, raw Logcat 호출은 production path에서 금지한다.
 - 분석 이벤트와 속성은 `packages/analytics_contract` enum/typed schema로만 보낸다.
 - 서버도 동일 allowlist를 검증하며 알 수 없는 속성은 저장하지 않는다.
@@ -210,8 +221,12 @@ presentation → application → domain ← data
 - migration 실패 시 원본 DB를 즉시 삭제하지 않는다. 복구 또는 안전한 export 경로를 검토한다.
 - `DistractionTarget`과 raw usage model에는 server serializer를 구현하지 않는다.
 - `DailyCheckIn`과 `InterventionEvent`에는 server serializer를 구현하지 않는다.
+- `TreeCompanion`, `TreeGrowthCredit`, `TreeProgress`에는 server serializer, Firestore DTO와 분석 outbox 변환을 구현하지 않는다.
 - `InterventionEvent`에 `reason`, `coarseReason`, `freeText` 필드를 추가하지 않는다.
-- `AgeBand`, `PlanLimits`, `SessionDurationPreset`, `BypassAction`, `IntentionAlignment` 값은 Scope Freeze 계약과 일치해야 한다.
+- `AgeBand`, `PlanLimits`, `SessionDurationPreset`, `BypassAction`, `IntentionAlignment`, `TreeSpecies`, `TreeGrowthStage`, `FocusSessionStatus` 값은 Scope Freeze 계약과 일치해야 한다.
+- `FocusSession.id`는 안정적이어야 하고 `startedLocalDate`는 세션 시작 시 확정한다. 자정·시간대 변경·복구 시 다시 계산하지 않는다.
+- `CompleteFocusSession`에서 세션의 `completed` 확정과 성장 지급을 단일 Drift 트랜잭션으로 처리한다. 성장 단계는 원장 개수에서 파생하고 저장하지 않는다.
+- `(treeId, creditedLocalDate)`와 `sourceSessionId` unique constraint는 migration과 schema 검증 테스트로 보호한다.
 - 삭제는 DB row뿐 아니라 암호화 키, outbox, 캐시, notification schedule까지 포함한다.
 - 데이터 보관기간과 TTL은 코드·인프라·처리방침에서 일치해야 한다.
 
@@ -232,16 +247,19 @@ presentation → application → domain ← data
 - 무료·Plus 계획 한도, 앱 3개 한도, 두 번째 계획·반복 일정 페이월을 테스트한다.
 - 5·10·25·50분 외 세션 값이 거부되는지 테스트한다.
 - 이유 없는 2동작 우회와 `yes/no/skipped` 체크인 enum을 테스트한다.
+- 나무 단계 경계 0·1·3·7·14·30·60·90·120일, 다음 임계값과 90일 이후 30일 단위 나이테를 테스트한다.
+- 하루 중복, 중복 완료 콜백, 조기 종료, 취소, 5분 우회 후 완료, 보호 실패 후 타이머 완료, 재부팅 복구, 자정 통과와 시간대 변경의 성장 트랜잭션을 테스트한다.
 - Drift migration은 이전 두 schema version에서 최신으로 올리는 테스트를 둔다.
 - native adapter는 성공·거부·철회·unavailable·timeout·partial data 계약 테스트를 갖는다.
 - 핵심 E2E: 온보딩, 권한 거부 폴백, 첫 집중, 우회, 7일 회고, 구매 복원, 계정 삭제
 - iOS·Android 실제 기기에서 전화·지도·설정·인증 allowlist를 확인한다.
 - 프록시 또는 mock transport로 금지 필드 외부 전송 0건을 검증한다.
+- 프록시 또는 mock transport로 나무·성장일·세션 연결 정보 외부 전송 0건을 검증하고 로컬·계정 삭제 뒤 나무 row·키·캐시 잔존이 없는지 확인한다.
 - flaky test를 단순 retry로 숨기지 않는다. 담당자·원인·기한을 issue에 기록한다.
 
 ### 권장
 
-- 핵심 5화면 golden test, copy snapshot, Remote Config variant contract test를 둔다.
+- 나무 8단계 Light/Dark, 1536×1024·4×2·불투명 PNG 스프라이트 순서, Rive 실패 폴백을 포함한 핵심 화면 golden test, copy snapshot, Remote Config variant contract test를 둔다.
 - OEM·OS 조합을 위험 기반 device matrix로 관리한다.
 
 ## 11. 접근성 테스트
@@ -255,6 +273,8 @@ presentation → application → domain ← data
 - 최소 터치 영역은 iOS 44pt, Android 48dp다.
 - 타이머 변경과 보호 상태는 적절한 live region/announcement로 전달하되 매초 읽지 않는다.
 - Reduce Motion에서 불필요한 애니메이션을 제거한다.
+- 이정표 reveal은 최대 1.2초의 유일한 모션 길이 예외다. Reduce Motion에서는 최종 정적 프레임을 즉시 표시하고 완료·체크인 조작을 지연하지 않는다.
+- 나무는 `함께 자란 N일, 단계명` 하나의 semantics label로 제공하고 잎·빛·눈·꽃잎·낙엽 같은 장식 레이어는 접근성 트리에서 제외한다.
 
 ### 권장
 
@@ -268,6 +288,8 @@ presentation → application → domain ← data
 - 플랫폼 권한 거부·철회·unavailable 폴백이 있는가?
 - 로그·이벤트·DTO에 금지 개인정보가 없는가?
 - 위험 기능에 kill switch가 있는가?
+- 나무 원장이 UI·Rive 플래그와 독립적으로 기록되고 Rive 실패 시 정적 폴백이 동작하는가?
+- 나무·성장일·세션 연결 정보가 로그·분석·서버 DTO에 추가되지 않았는가?
 - 오류를 0이나 성공으로 위장하지 않는가?
 - 결제·삭제·연령·시간대 경계 테스트가 있는가?
 - 접근성 레이블, 초점 순서, 큰 글자가 검증됐는가?
@@ -310,6 +332,7 @@ presentation → application → domain ← data
 - 권한 거부·철회·오프라인·부분 데이터·kill switch를 검증했다.
 - 로그·분석·network payload 개인정보 검토가 완료됐다.
 - VoiceOver·TalkBack·200% 글자·다크 모드가 확인됐다.
+- 나무 8단계 Light/Dark·PNG 스프라이트 계약·Reduce Motion·Rive 실패 폴백이 확인되고, 두 정적 시트 합계 6MiB 이하를 충족했다. Rive 활성화 시 기준 기기 느린 프레임 5% 미만·one-shot 종료 후 ticker 0개·전체 나무 앱 에셋 6MiB 이하를 추가로 충족했다.
 - 사용자 문구와 비의료 표현이 검수됐다.
 - 새 데이터·SDK·권한이 문서와 스토어 선언에 반영됐다.
 - rollout·monitoring·rollback 담당자와 지표가 정해졌다.

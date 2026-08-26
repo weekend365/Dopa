@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  apple-identifiers:
+  repository-contracts:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -19,3 +19,62 @@ jobs:
       - name: Validate Apple identifier contract
         shell: pwsh
         run: ./tooling/validate_apple_identifiers.ps1
+
+      - name: Validate tree fallback assets
+        shell: pwsh
+        run: ./tooling/validate_tree_assets.ps1
+
+  flutter-workspace:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter 3.47.0
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.0
+          channel: stable
+          cache: true
+
+      - name: Verify pinned toolchain
+        run: |
+          flutter --version | grep -F "Flutter 3.47.0"
+          dart --version 2>&1 | grep -F "Dart SDK version: 3.13.0"
+
+      - name: Resolve workspace dependencies
+        run: flutter pub get
+
+      - name: Regenerate Drift sources
+        working-directory: packages/local_storage
+        run: dart run build_runner build
+
+      - name: Verify committed Drift output
+        run: git diff --exit-code -- packages/local_storage/lib/src/database/dopa_database.g.dart
+
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed apps/mobile packages/domain packages/local_storage
+
+      - name: Analyze domain
+        working-directory: packages/domain
+        run: dart analyze .
+
+      - name: Analyze local storage
+        working-directory: packages/local_storage
+        run: dart analyze .
+
+      - name: Analyze mobile app
+        working-directory: apps/mobile
+        run: flutter analyze .
+
+      - name: Test domain
+        working-directory: packages/domain
+        run: dart test
+
+      - name: Test local storage
+        working-directory: packages/local_storage
+        run: dart test
+
+      - name: Test mobile app
+        working-directory: apps/mobile
+        run: flutter test

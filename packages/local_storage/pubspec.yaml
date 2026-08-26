@@ -1,0 +1,20 @@
+name: dopa_local_storage
+description: Device-local Drift persistence for Dopa focus sessions and tree growth.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: '>=3.13.0 <3.14.0'
+
+resolution: workspace
+
+dependencies:
+  dopa_domain:
+    path: ../domain
+  drift: ^2.34.3
+  sqlite3: ^3.5.2
+
+dev_dependencies:
+  build_runner: ^2.16.0
+  drift_dev: ^2.34.5
+  test: ^1.25.0

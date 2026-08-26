@@ -18,6 +18,8 @@ firebase_options.dart
 
 # Flutter / Dart
 .dart_tool/
+.fvm/flutter_sdk
+.tooling/
 .flutter-plugins
 .flutter-plugins-dependencies
 .packages
