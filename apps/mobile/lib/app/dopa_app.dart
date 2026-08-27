@@ -6,10 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
 
-/// Authenticated app shell mounted after login and device-local data consent.
+/// Authenticated app shell mounted by DopaRoot after login and consent.
 ///
-/// Authentication/onboarding owns the outer scope and the
-/// `LocalAccountDataLifecycle` calls documented at the persistence boundary.
+/// Local wellbeing data is created only after those gates succeed.
 class DopaApp extends ConsumerWidget {
   const DopaApp({super.key});
 

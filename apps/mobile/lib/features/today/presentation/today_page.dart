@@ -33,6 +33,14 @@ class TodayPage extends ConsumerWidget {
     return DopaDestinationScaffold(
       selectedIndex: 0,
       title: '오늘',
+      actions: [
+        IconButton(
+          key: const ValueKey('today-account'),
+          tooltip: '계정',
+          icon: const Icon(Icons.person_outline),
+          onPressed: () => context.push('/account'),
+        ),
+      ],
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
           DopaSpacing.md,

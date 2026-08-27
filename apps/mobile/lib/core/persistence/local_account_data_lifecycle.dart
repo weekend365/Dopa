@@ -3,8 +3,8 @@ import 'package:dopa_local_storage/dopa_local_storage.dart';
 
 /// Explicit boundary between account/consent flows and device-local data.
 ///
-/// The authenticated app shell calls [initializeAfterLoginAndConsent] only
-/// after both gates succeed. Logout and account deletion must call
+/// [AuthController] calls [initializeAfterLoginAndConsent] only after login
+/// and consent succeed. Logout and account deletion must call
 /// [deleteForLogoutOrAccountDeletion] before disposing the account scope.
 final class LocalAccountDataLifecycle {
   const LocalAccountDataLifecycle({

@@ -12,18 +12,18 @@ Dopa는 자극적인 디지털 행동을 알아차리고 스스로 조절하도�
 
 Rive 원본 에셋은 전문 원화/리깅 납품 후 연결합니다. 그 전까지 `tree_rive_enabled`는 기본 OFF이며 정적 스프라이트가 제품 fallback입니다. 나무와 세션 연결 정보는 MVP에서 기기 로컬에만 저장합니다.
 
-현재 `DopaApp` 라우팅은 기존 로그인·로컬 저장 동의가 끝난 뒤 마운트되는
-authenticated app shell 범위입니다. 계정 흐름은
-`LocalAccountDataLifecycle.initializeAfterLoginAndConsent`를 통과해 씨앗을
-만들고, 로그아웃·계정 삭제 시
-`deleteForLogoutOrAccountDeletion`을 호출한 뒤 account scope를 폐기해야
-합니다. 로그인 SDK와 동의 화면 자체는 이 나무 기능 스캐폴드의 범위에
-포함하지 않습니다.
+현재 `DopaRoot`가 연령 확인·로그인·동의 게이트를 담당하고, `DopaApp`은 그 뒤에
+마운트되는 authenticated app shell입니다. 씨앗은
+`LocalAccountDataLifecycle.initializeAfterLoginAndConsent`가 동의 완료 시에만
+만듭니다. 로그아웃·계정 삭제는 `deleteForLogoutOrAccountDeletion`으로
+나무·세션·성장 원장을 지운 뒤 account scope를 폐기합니다. Apple·Google
+로그인 SDK는 `SignInPort` 뒤에 연결하며, 현재 기본 구현은 버튼 탭을 성공으로
+처리합니다.
 
 ## 출시 전 남은 통합 게이트
 
-- Flutter 3.47.0이 설치된 macOS에서 native host와 루트 `pubspec.lock`을 생성하고 Android/iOS 빌드를 검증해야 합니다.
-- 실제 인증·동의·로그아웃, 7일 실험 진행일, 체크인 저장, Remote Config를 현재 provider/lifecycle 경계에 연결해야 합니다.
+- Apple·Google 로그인 SDK를 `SignInPort`에 연결해야 합니다. 로컬 연령 확인·동의·로그아웃·삭제는 연결되어 있습니다.
+- 7일 실험 진행일, 체크인 저장, Remote Config를 현재 provider/lifecycle 경계에 연결해야 합니다.
 - 오래 방치된 active 세션을 언제 `invalidRecovery`로 종료할지 제품 기준을 확정한 뒤 복구 판정과 원래 하려던 일의 재시작 보존을 추가해야 합니다.
 - 전문 Rive 원본·상업적 사용권을 납품받은 뒤 데이터 바인딩, 비동기 실패 폴백, 성능 예산을 통과하기 전까지 `tree_rive_enabled`는 OFF로 유지해야 합니다.
 - Golden baseline, 실기기 VoiceOver/TalkBack·200% 글자, 네트워크 캡처, 느린 프레임, 성인 10명 사용성 검증은 출시 차단 게이트로 남아 있습니다.

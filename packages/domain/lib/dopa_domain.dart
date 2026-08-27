@@ -1,3 +1,5 @@
+export 'src/account/account_session.dart';
+export 'src/account/age_band.dart';
 export 'src/focus/focus_session.dart';
 export 'src/shared/local_date.dart';
 export 'src/tree/complete_focus_session.dart';

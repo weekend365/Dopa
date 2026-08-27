@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:dopa/core/persistence/dopa_database_providers.dart';
-import 'package:dopa/core/persistence/local_account_data_lifecycle.dart';
 import 'package:dopa_domain/dopa_domain.dart';
 import 'package:dopa_local_storage/dopa_local_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +9,6 @@ final treeProgressControllerProvider =
     StateNotifierProvider<TreeProgressController, TreeProgress>((ref) {
       return TreeProgressController(
         repository: ref.watch(focusTreeRepositoryProvider),
-        accountDataLifecycle: ref.watch(localAccountDataLifecycleProvider),
       );
     });
 
@@ -33,22 +31,17 @@ final weeklyGrowthDaysProvider = Provider<int>(
 );
 
 class TreeProgressController extends StateNotifier<TreeProgress> {
-  TreeProgressController({
-    required DriftFocusTreeRepository repository,
-    required LocalAccountDataLifecycle accountDataLifecycle,
-  }) : _repository = repository,
-       _accountDataLifecycle = accountDataLifecycle,
-       super(const TreeGrowthPolicy().progressFor(0)) {
+  TreeProgressController({required DriftFocusTreeRepository repository})
+    : _repository = repository,
+      super(const TreeGrowthPolicy().progressFor(0)) {
     unawaited(_initialise());
   }
 
   final DriftFocusTreeRepository _repository;
-  final LocalAccountDataLifecycle _accountDataLifecycle;
 
   Future<void> _initialise() async {
     try {
-      final progress = await _accountDataLifecycle
-          .initializeAfterLoginAndConsent(createdAtUtc: DateTime.now().toUtc());
+      final progress = await _repository.readTreeProgress();
       if (mounted) {
         state = progress;
       }

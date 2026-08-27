@@ -1,3 +1,4 @@
+import 'package:dopa/features/auth/presentation/account_page.dart';
 import 'package:dopa/features/focus/presentation/focus_completion_page.dart';
 import 'package:dopa/features/focus/presentation/focus_progress_page.dart';
 import 'package:dopa/features/focus/presentation/focus_setup_page.dart';
@@ -12,6 +13,10 @@ final dopaRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/today',
     routes: [
       GoRoute(path: '/today', builder: (context, state) => const TodayPage()),
+      GoRoute(
+        path: '/account',
+        builder: (context, state) => const AccountPage(),
+      ),
       GoRoute(
         path: '/focus',
         builder: (context, state) => const FocusSetupPage(),
