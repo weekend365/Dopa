@@ -24,11 +24,8 @@ final class LocalDate implements Comparable<LocalDate> {
 
   const LocalDate._(this.year, this.month, this.day);
 
-  factory LocalDate.fromLocal(DateTime localDateTime) => LocalDate(
-        localDateTime.year,
-        localDateTime.month,
-        localDateTime.day,
-      );
+  factory LocalDate.fromLocal(DateTime localDateTime) =>
+      LocalDate(localDateTime.year, localDateTime.month, localDateTime.day);
 
   factory LocalDate.parse(String value) {
     final match = RegExp(r'^(\d{4})-(\d{2})-(\d{2})$').firstMatch(value);
@@ -56,7 +53,8 @@ final class LocalDate implements Comparable<LocalDate> {
     return LocalDate(value.year, value.month, value.day);
   }
 
-  String toIso8601String() => '${year.toString().padLeft(4, '0')}-'
+  String toIso8601String() =>
+      '${year.toString().padLeft(4, '0')}-'
       '${month.toString().padLeft(2, '0')}-'
       '${day.toString().padLeft(2, '0')}';
 

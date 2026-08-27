@@ -20,7 +20,9 @@ void main() {
       expect(first.createdAtUtc, firstCreationAt);
       expect(first.ruleVersion, 1);
       expect(
-          const TreeGrowthPolicy().progressFor(0).stage, TreeGrowthStage.seed);
+        const TreeGrowthPolicy().progressFor(0).stage,
+        TreeGrowthStage.seed,
+      );
       expect(repository.treeCreationCount, 1);
     });
 
@@ -73,8 +75,10 @@ void main() {
       expect(result.didAwardGrowth, isTrue);
       expect(result.session.status, FocusSessionStatus.completed);
       expect(result.session.protectedDuration, const Duration(minutes: 7));
-      expect(repository.sessions[session.id]!.status,
-          FocusSessionStatus.completed);
+      expect(
+        repository.sessions[session.id]!.status,
+        FocusSessionStatus.completed,
+      );
       expect(result.credit!.sourceSessionId, session.id);
       expect(result.credit!.creditedLocalDate, session.startedLocalDate);
       expect(result.credit!.ruleVersion, 1);
@@ -100,10 +104,7 @@ void main() {
       );
 
       expect(first.awardStatus, GrowthAwardStatus.awarded);
-      expect(
-        second.awardStatus,
-        GrowthAwardStatus.alreadyAwardedForSession,
-      );
+      expect(second.awardStatus, GrowthAwardStatus.alreadyAwardedForSession);
       expect(repository.sessions[session.id]!.endedAtUtc, persistedEnd);
       expect(repository.credits, hasLength(1));
       expect(second.progress!.totalGrowthDays, 1);
@@ -151,7 +152,9 @@ void main() {
         GrowthAwardStatus.alreadyAwardedForLocalDate,
       );
       expect(
-          repository.sessions[second.id]!.status, FocusSessionStatus.completed);
+        repository.sessions[second.id]!.status,
+        FocusSessionStatus.completed,
+      );
       expect(repository.credits, hasLength(1));
       expect(secondResult.progress!.totalGrowthDays, 1);
     });
@@ -236,27 +239,29 @@ void main() {
       expect(repository.credits, isEmpty);
     });
 
-    test('midnight and timezone changes cannot move the logical credit date',
-        () async {
-      final repository = _MemoryFocusTreeRepository();
-      final session = _session(
-        id: 'cross-midnight',
-        localDate: LocalDate(2026, 8, 26),
-        // 23:55 in Korea at start; completion is after local midnight.
-        startedAtUtc: DateTime.utc(2026, 8, 26, 14, 55),
-      );
-      repository.sessions[session.id] = session;
-      final useCase = CompleteFocusSession(repository: repository);
+    test(
+      'midnight and timezone changes cannot move the logical credit date',
+      () async {
+        final repository = _MemoryFocusTreeRepository();
+        final session = _session(
+          id: 'cross-midnight',
+          localDate: LocalDate(2026, 8, 26),
+          // 23:55 in Korea at start; completion is after local midnight.
+          startedAtUtc: DateTime.utc(2026, 8, 26, 14, 55),
+        );
+        repository.sessions[session.id] = session;
+        final useCase = CompleteFocusSession(repository: repository);
 
-      final result = await useCase(
-        sessionId: session.id,
-        terminalStatus: FocusSessionStatus.completed,
-        endedAtUtc: DateTime.utc(2026, 8, 26, 15, 5),
-      );
+        final result = await useCase(
+          sessionId: session.id,
+          terminalStatus: FocusSessionStatus.completed,
+          endedAtUtc: DateTime.utc(2026, 8, 26, 15, 5),
+        );
 
-      expect(result.credit!.creditedLocalDate, LocalDate(2026, 8, 26));
-      expect(result.credit!.creditedAtUtc, DateTime.utc(2026, 8, 26, 15, 5));
-    });
+        expect(result.credit!.creditedLocalDate, LocalDate(2026, 8, 26));
+        expect(result.credit!.creditedAtUtc, DateTime.utc(2026, 8, 26, 15, 5));
+      },
+    );
 
     test('a terminal status cannot later be rewritten as completed', () async {
       final repository = _MemoryFocusTreeRepository();
@@ -385,7 +390,8 @@ FocusSession _session({
   final logicalDate = localDate ?? LocalDate(2026, 8, 26);
   return FocusSession(
     id: id,
-    startedAtUtc: startedAtUtc ??
+    startedAtUtc:
+        startedAtUtc ??
         DateTime.utc(logicalDate.year, logicalDate.month, logicalDate.day, 1),
     startedLocalDate: logicalDate,
     protectionMode: protectionMode,
@@ -395,12 +401,11 @@ FocusSession _session({
 Future<CompleteFocusSessionResult> _complete(
   CompleteFocusSession useCase,
   FocusSession session,
-) =>
-    useCase(
-      sessionId: session.id,
-      terminalStatus: FocusSessionStatus.completed,
-      endedAtUtc: session.startedAtUtc.add(const Duration(minutes: 10)),
-    );
+) => useCase(
+  sessionId: session.id,
+  terminalStatus: FocusSessionStatus.completed,
+  endedAtUtc: session.startedAtUtc.add(const Duration(minutes: 10)),
+);
 
 final class _MemoryFocusTreeRepository
     implements FocusTreeRepository, FocusTreeTransaction {

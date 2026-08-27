@@ -50,7 +50,8 @@ final class FocusSessionFinalizationConflict implements Exception {
   final FocusSessionStatus requestedStatus;
 
   @override
-  String toString() => 'FocusSessionFinalizationConflict('
+  String toString() =>
+      'FocusSessionFinalizationConflict('
       'sessionId: $sessionId, persisted: $persistedStatus, '
       'requested: $requestedStatus)';
 }
@@ -67,7 +68,8 @@ final class TreeRuleVersionConflict implements Exception {
   final int requestedRuleVersion;
 
   @override
-  String toString() => 'TreeRuleVersionConflict('
+  String toString() =>
+      'TreeRuleVersionConflict('
       'treeId: $treeId, persisted: $persistedRuleVersion, '
       'requested: $requestedRuleVersion)';
 }
@@ -161,8 +163,8 @@ final class CompleteFocusSession {
           requestedRuleVersion: policy.ruleVersion,
         );
       }
-      final existingCredit =
-          await transaction.findGrowthCreditBySourceSessionId(session.id);
+      final existingCredit = await transaction
+          .findGrowthCreditBySourceSessionId(session.id);
       if (existingCredit != null) {
         return _resultWithCurrentProgress(
           transaction: transaction,
@@ -192,8 +194,8 @@ final class CompleteFocusSession {
             credit: candidate,
           );
         case TreeGrowthCreditInsertOutcome.duplicateSourceSession:
-          final persistedCredit =
-              await transaction.findGrowthCreditBySourceSessionId(session.id);
+          final persistedCredit = await transaction
+              .findGrowthCreditBySourceSessionId(session.id);
           return _resultWithCurrentProgress(
             transaction: transaction,
             session: session,

@@ -73,26 +73,26 @@ class FocusCompletionPage extends ConsumerWidget {
       key: ValueKey('completion-${data.kind.name}'),
       body: SafeArea(
         child: largeText
-            ? ListView(
+            ? SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(
                   DopaSpacing.lg,
                   DopaSpacing.xl,
                   DopaSpacing.lg,
                   DopaSpacing.lg,
                 ),
-                children: [...content, actions],
+                child: Column(children: [...content, actions]),
               )
             : Column(
                 children: [
                   Expanded(
-                    child: ListView(
+                    child: SingleChildScrollView(
                       padding: const EdgeInsets.fromLTRB(
                         DopaSpacing.lg,
                         DopaSpacing.xl,
                         DopaSpacing.lg,
                         0,
                       ),
-                      children: content,
+                      child: Column(children: content),
                     ),
                   ),
                   Padding(

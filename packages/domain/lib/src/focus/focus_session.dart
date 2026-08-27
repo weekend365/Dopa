@@ -16,16 +16,16 @@ enum SessionDurationPreset {
   Duration get duration => Duration(minutes: minutes);
 
   static SessionDurationPreset fromMinutes(int minutes) => switch (minutes) {
-        5 => SessionDurationPreset.fiveMinutes,
-        10 => SessionDurationPreset.tenMinutes,
-        25 => SessionDurationPreset.twentyFiveMinutes,
-        50 => SessionDurationPreset.fiftyMinutes,
-        _ => throw ArgumentError.value(
-            minutes,
-            'minutes',
-            'Only 5, 10, 25, and 50 minute presets are supported.',
-          ),
-      };
+    5 => SessionDurationPreset.fiveMinutes,
+    10 => SessionDurationPreset.tenMinutes,
+    25 => SessionDurationPreset.twentyFiveMinutes,
+    50 => SessionDurationPreset.fiftyMinutes,
+    _ => throw ArgumentError.value(
+      minutes,
+      'minutes',
+      'Only 5, 10, 25, and 50 minute presets are supported.',
+    ),
+  };
 }
 
 /// A choice made from the two-step safety bypass UI.
@@ -160,9 +160,9 @@ final class FocusSession {
     return switch (action) {
       BypassAction.allowFiveMinutes => copyWith(usedFiveMinuteBypass: true),
       BypassAction.endSession => finish(
-          status: FocusSessionStatus.endedEarly,
-          endedAtUtc: occurredAtUtc,
-        ),
+        status: FocusSessionStatus.endedEarly,
+        endedAtUtc: occurredAtUtc,
+      ),
       BypassAction.cancel => this,
     };
   }
@@ -197,18 +197,17 @@ final class FocusSession {
     FocusSessionStatus? status,
     DateTime? endedAtUtc,
     bool? usedFiveMinuteBypass,
-  }) =>
-      FocusSession(
-        id: id,
-        startedAtUtc: startedAtUtc,
-        startedLocalDate: startedLocalDate,
-        protectionMode: protectionMode ?? this.protectionMode,
-        preset: preset ?? this.preset,
-        protectedDuration: protectedDuration ?? this.protectedDuration,
-        status: status ?? this.status,
-        endedAtUtc: endedAtUtc ?? this.endedAtUtc,
-        usedFiveMinuteBypass: usedFiveMinuteBypass ?? this.usedFiveMinuteBypass,
-      );
+  }) => FocusSession(
+    id: id,
+    startedAtUtc: startedAtUtc,
+    startedLocalDate: startedLocalDate,
+    protectionMode: protectionMode ?? this.protectionMode,
+    preset: preset ?? this.preset,
+    protectedDuration: protectedDuration ?? this.protectedDuration,
+    status: status ?? this.status,
+    endedAtUtc: endedAtUtc ?? this.endedAtUtc,
+    usedFiveMinuteBypass: usedFiveMinuteBypass ?? this.usedFiveMinuteBypass,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -226,14 +225,14 @@ final class FocusSession {
 
   @override
   int get hashCode => Object.hash(
-        id,
-        startedAtUtc,
-        startedLocalDate,
-        protectionMode,
-        preset,
-        protectedDuration,
-        status,
-        endedAtUtc,
-        usedFiveMinuteBypass,
-      );
+    id,
+    startedAtUtc,
+    startedLocalDate,
+    protectionMode,
+    preset,
+    protectedDuration,
+    status,
+    endedAtUtc,
+    usedFiveMinuteBypass,
+  );
 }

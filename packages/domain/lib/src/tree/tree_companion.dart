@@ -20,13 +20,12 @@ final class TreeCompanion {
     TreeSpecies species = TreeSpecies.zelkovaV1,
     required DateTime createdAtUtc,
     required int ruleVersion,
-  }) =>
-      TreeCompanion._(
-        id: requireNonBlank(id, 'id'),
-        species: species,
-        createdAtUtc: requireUtc(createdAtUtc, 'createdAtUtc'),
-        ruleVersion: requirePositive(ruleVersion, 'ruleVersion'),
-      );
+  }) => TreeCompanion._(
+    id: requireNonBlank(id, 'id'),
+    species: species,
+    createdAtUtc: requireUtc(createdAtUtc, 'createdAtUtc'),
+    ruleVersion: requirePositive(ruleVersion, 'ruleVersion'),
+  );
 
   const TreeCompanion._({
     required this.id,
@@ -61,14 +60,13 @@ final class TreeGrowthCredit {
     required LocalDate creditedLocalDate,
     required DateTime creditedAtUtc,
     required int ruleVersion,
-  }) =>
-      TreeGrowthCredit._(
-        treeId: requireNonBlank(treeId, 'treeId'),
-        sourceSessionId: requireNonBlank(sourceSessionId, 'sourceSessionId'),
-        creditedLocalDate: creditedLocalDate,
-        creditedAtUtc: requireUtc(creditedAtUtc, 'creditedAtUtc'),
-        ruleVersion: requirePositive(ruleVersion, 'ruleVersion'),
-      );
+  }) => TreeGrowthCredit._(
+    treeId: requireNonBlank(treeId, 'treeId'),
+    sourceSessionId: requireNonBlank(sourceSessionId, 'sourceSessionId'),
+    creditedLocalDate: creditedLocalDate,
+    creditedAtUtc: requireUtc(creditedAtUtc, 'creditedAtUtc'),
+    ruleVersion: requirePositive(ruleVersion, 'ruleVersion'),
+  );
 
   const TreeGrowthCredit._({
     required this.treeId,
@@ -96,12 +94,12 @@ final class TreeGrowthCredit {
 
   @override
   int get hashCode => Object.hash(
-        treeId,
-        sourceSessionId,
-        creditedLocalDate,
-        creditedAtUtc,
-        ruleVersion,
-      );
+    treeId,
+    sourceSessionId,
+    creditedLocalDate,
+    creditedAtUtc,
+    ruleVersion,
+  );
 }
 
 final class TreeProgress {
@@ -144,10 +142,6 @@ final class TreeProgress {
           postMatureRingCount == other.postMatureRingCount;
 
   @override
-  int get hashCode => Object.hash(
-        totalGrowthDays,
-        stage,
-        nextThreshold,
-        postMatureRingCount,
-      );
+  int get hashCode =>
+      Object.hash(totalGrowthDays, stage, nextThreshold, postMatureRingCount);
 }

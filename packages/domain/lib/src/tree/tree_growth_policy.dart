@@ -9,15 +9,7 @@ final class TreeGrowthPolicy {
 
   static const currentRuleVersion = 1;
 
-  static const List<int> revealMilestones = <int>[
-    1,
-    3,
-    7,
-    14,
-    30,
-    60,
-    90,
-  ];
+  static const List<int> revealMilestones = <int>[1, 3, 7, 14, 30, 60, 90];
 
   final int ruleVersion;
 
@@ -56,8 +48,9 @@ final class TreeGrowthPolicy {
       totalGrowthDays: totalGrowthDays,
       stage: stage,
       nextThreshold: _nextThresholdFor(stage),
-      postMatureRingCount:
-          totalGrowthDays < 120 ? 0 : (totalGrowthDays - 90) ~/ 30,
+      postMatureRingCount: totalGrowthDays < 120
+          ? 0
+          : (totalGrowthDays - 90) ~/ 30,
     );
   }
 
@@ -74,15 +67,15 @@ final class TreeGrowthPolicy {
   }
 
   static int? _nextThresholdFor(TreeGrowthStage stage) => switch (stage) {
-        TreeGrowthStage.seed => 1,
-        TreeGrowthStage.sprout => 3,
-        TreeGrowthStage.sapling => 7,
-        TreeGrowthStage.smallTree => 14,
-        TreeGrowthStage.youngZelkova => 30,
-        TreeGrowthStage.spreadingBranches => 60,
-        TreeGrowthStage.broadCanopy => 90,
-        TreeGrowthStage.mature => null,
-      };
+    TreeGrowthStage.seed => 1,
+    TreeGrowthStage.sprout => 3,
+    TreeGrowthStage.sapling => 7,
+    TreeGrowthStage.smallTree => 14,
+    TreeGrowthStage.youngZelkova => 30,
+    TreeGrowthStage.spreadingBranches => 60,
+    TreeGrowthStage.broadCanopy => 90,
+    TreeGrowthStage.mature => null,
+  };
 
   static void _validateTotal(int totalGrowthDays) {
     if (totalGrowthDays < 0) {

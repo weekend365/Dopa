@@ -39,6 +39,7 @@ void main() {
           treeFeatureFlagsProvider.overrideWithValue(
             const TreeFeatureFlags(treeUiEnabled: false),
           ),
+          treeProgressProvider.overrideWithValue(policy.progressFor(0)),
           experimentAttemptDaysProvider.overrideWithValue(3),
         ],
         child: const TestApp(home: TodayPage()),

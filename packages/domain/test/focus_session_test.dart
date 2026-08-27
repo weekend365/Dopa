@@ -7,32 +7,28 @@ void main() {
 
   FocusSession activeSession({
     ProtectionMode protectionMode = ProtectionMode.shield,
-  }) =>
-      FocusSession(
-        id: 'session-stable-id',
-        startedAtUtc: startedAtUtc,
-        startedLocalDate: localDate,
-        protectionMode: protectionMode,
-      );
+  }) => FocusSession(
+    id: 'session-stable-id',
+    startedAtUtc: startedAtUtc,
+    startedLocalDate: localDate,
+    protectionMode: protectionMode,
+  );
 
   group('FocusSession invariants', () {
     test('supports only the four product duration presets', () {
       expect(SessionDurationPreset.fromMinutes(5).minutes, 5);
-      expect(SessionDurationPreset.fromMinutes(10).duration,
-          const Duration(minutes: 10));
+      expect(
+        SessionDurationPreset.fromMinutes(10).duration,
+        const Duration(minutes: 10),
+      );
       expect(SessionDurationPreset.fromMinutes(25).minutes, 25);
       expect(SessionDurationPreset.fromMinutes(50).minutes, 50);
-      expect(
-        () => SessionDurationPreset.fromMinutes(15),
-        throwsArgumentError,
-      );
+      expect(() => SessionDurationPreset.fromMinutes(15), throwsArgumentError);
     });
 
     test('keeps a stable ID and logical start date through completion', () {
       final completed = activeSession()
-          .copyWith(
-            preset: SessionDurationPreset.twentyFiveMinutes,
-          )
+          .copyWith(preset: SessionDurationPreset.twentyFiveMinutes)
           .finish(
             status: FocusSessionStatus.completed,
             endedAtUtc: startedAtUtc.add(const Duration(minutes: 25)),
@@ -110,9 +106,7 @@ void main() {
       expect(
         () => activeSession().finish(
           status: FocusSessionStatus.completed,
-          endedAtUtc: startedAtUtc.add(
-            const Duration(minutes: 9, seconds: 59),
-          ),
+          endedAtUtc: startedAtUtc.add(const Duration(minutes: 9, seconds: 59)),
         ),
         throwsArgumentError,
       );

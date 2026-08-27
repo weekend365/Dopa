@@ -16,9 +16,6 @@ void main() {
   const policy = TreeGrowthPolicy();
 
   testWidgets('announces growth days and stage as one image', (tester) async {
-    final semantics = SemanticsTester(tester);
-    addTearDown(semantics.dispose);
-
     await tester.pumpWidget(
       ProviderScope(
         child: TestApp(
@@ -33,7 +30,7 @@ void main() {
       ),
     );
 
-    expect(semantics, includesNodeWith(label: '함께 자란 14일, 어린 느티나무'));
+    expect(find.bySemanticsLabel('함께 자란 14일, 어린 느티나무'), findsOneWidget);
   });
 
   testWidgets('reduce motion renders the reveal final frame immediately', (
@@ -289,8 +286,6 @@ void main() {
   });
 
   testWidgets('all eight visual stages select a sprite cell', (tester) async {
-    final semantics = SemanticsTester(tester);
-    addTearDown(semantics.dispose);
     for (final stage in TreeGrowthStage.values) {
       final days = switch (stage) {
         TreeGrowthStage.seed => 0,
@@ -314,8 +309,8 @@ void main() {
 
       expect(find.byKey(ValueKey('tree-stage-${stage.name}')), findsOneWidget);
       expect(
-        semantics,
-        includesNodeWith(label: '함께 자란 $days일, ${stage.koreanLabel}'),
+        find.bySemanticsLabel('함께 자란 $days일, ${stage.koreanLabel}'),
+        findsOneWidget,
       );
       expect(tester.takeException(), isNull);
     }

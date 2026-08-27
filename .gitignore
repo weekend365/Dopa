@@ -18,7 +18,6 @@ firebase_options.dart
 
 # Flutter / Dart
 .dart_tool/
-.fvm/flutter_sdk
 .tooling/
 .flutter-plugins
 .flutter-plugins-dependencies
@@ -37,3 +36,6 @@ xcuserdata/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# FVM Version Cache
+.fvm/

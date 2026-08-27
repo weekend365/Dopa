@@ -191,7 +191,7 @@ void main() {
       );
 
       expect(tester.takeException(), isNull);
-      expect(find.byType(ListView), findsOneWidget);
+      expect(find.byType(Scrollable), findsOneWidget);
       await tester.ensureVisible(find.text('오늘로 돌아가기'));
       await tester.pump();
       expect(find.text('오늘로 돌아가기').hitTestable(), findsOneWidget);
@@ -230,7 +230,7 @@ void main() {
 }
 
 class _SeededFocusSessionController extends FocusSessionController {
-  _SeededFocusSessionController(Ref ref, FocusSession session) : super(ref) {
+  _SeededFocusSessionController(super._ref, FocusSession session) {
     state = FocusSessionFlowState(session: session);
   }
 }
