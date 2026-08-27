@@ -168,9 +168,13 @@ class TreeRenderDiagnostics {
 }
 
 class LocalSpriteTreeRenderer implements TreeRenderer {
-  const LocalSpriteTreeRenderer({this.onFailure});
+  const LocalSpriteTreeRenderer({
+    this.onFailure,
+    this.spriteAssetForBrightness,
+  });
 
   final TreeRenderFailureReporter? onFailure;
+  final String Function(Brightness brightness)? spriteAssetForBrightness;
 
   @override
   String get rendererName => 'local-static';
@@ -224,7 +228,11 @@ class LocalSpriteTreeRenderer implements TreeRenderer {
         }
         return child!;
       },
-      child: _TreeScene(request: request, onFailure: onFailure),
+      child: _TreeScene(
+        request: request,
+        onFailure: onFailure,
+        spriteAsset: spriteAssetForBrightness?.call(request.brightness),
+      ),
     );
   }
 
@@ -281,10 +289,15 @@ class _GrowthPulsePainter extends CustomPainter {
 }
 
 class _TreeScene extends StatelessWidget {
-  const _TreeScene({required this.request, required this.onFailure});
+  const _TreeScene({
+    required this.request,
+    required this.onFailure,
+    this.spriteAsset,
+  });
 
   final TreeRenderRequest request;
   final TreeRenderFailureReporter? onFailure;
+  final String? spriteAsset;
 
   @override
   Widget build(BuildContext context) {
@@ -306,7 +319,11 @@ class _TreeScene extends StatelessWidget {
         Padding(
           key: const ValueKey('tree-sprite-layer'),
           padding: const EdgeInsets.all(DopaSpacing.xs),
-          child: _TreeSpriteCell(request: request, onFailure: onFailure),
+          child: _TreeSpriteCell(
+            request: request,
+            onFailure: onFailure,
+            spriteAsset: spriteAsset,
+          ),
         ),
         ExcludeSemantics(
           key: const ValueKey('tree-environment-overlay'),
@@ -366,19 +383,26 @@ class _TreeRingPulse extends StatelessWidget {
 }
 
 class _TreeSpriteCell extends StatelessWidget {
-  const _TreeSpriteCell({required this.request, required this.onFailure});
+  const _TreeSpriteCell({
+    required this.request,
+    required this.onFailure,
+    this.spriteAsset,
+  });
 
   final TreeRenderRequest request;
   final TreeRenderFailureReporter? onFailure;
+  final String? spriteAsset;
 
   @override
   Widget build(BuildContext context) {
     final stageIndex = request.stage.index;
     final column = stageIndex % TreeStaticAssetContract.columns;
     final row = stageIndex ~/ TreeStaticAssetContract.columns;
-    final asset = request.brightness == Brightness.dark
-        ? TreeStaticAssetContract.darkSprite
-        : TreeStaticAssetContract.lightSprite;
+    final asset =
+        spriteAsset ??
+        (request.brightness == Brightness.dark
+            ? TreeStaticAssetContract.darkSprite
+            : TreeStaticAssetContract.lightSprite);
 
     return Center(
       child: AspectRatio(

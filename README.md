@@ -29,7 +29,7 @@ Rive 원본 에셋은 전문 원화/리깅 납품 후 연결합니다. 그 전�
 - Apple·Google 로그인 SDK를 `SignInPort`에 연결해야 합니다. 로컬 연령 확인·동의·로그아웃·삭제는 연결되어 있습니다.
 - Remote Config를 현재 provider/lifecycle 경계에 연결해야 합니다.
 - 전문 Rive 원본·상업적 사용권을 납품받은 뒤 데이터 바인딩, 비동기 실패 폴백, 성능 예산을 통과하기 전까지 `tree_rive_enabled`는 OFF로 유지해야 합니다.
-- Golden baseline, 실기기 VoiceOver/TalkBack·200% 글자, 네트워크 캡처, 느린 프레임, 성인 10명 사용성 검증은 출시 차단 게이트로 남아 있습니다.
+- Golden baseline과 200% 글자 위젯 테스트는 연결되어 있습니다. 실기기 VoiceOver/TalkBack, 네트워크 캡처, 느린 프레임, 성인 10명 사용성 검증은 출시 차단 게이트로 남아 있습니다.
 
 ## 고정 도구 버전
 

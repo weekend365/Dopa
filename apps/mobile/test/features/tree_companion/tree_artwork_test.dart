@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dopa/app/theme/dopa_tokens.dart';
 import 'package:dopa/features/tree_companion/application/tree_season.dart';
 import 'package:dopa/features/tree_companion/application/tree_feature_flags.dart';
@@ -31,6 +33,10 @@ void main() {
     );
 
     expect(find.bySemanticsLabel('함께 자란 14일, 어린 느티나무'), findsOneWidget);
+
+    final semantics = tester.getSemantics(find.byType(TreeArtwork));
+    expect(semantics.label, '함께 자란 14일, 어린 느티나무');
+    expect(semantics.childrenCount, 0);
   });
 
   testWidgets('reduce motion renders the reveal final frame immediately', (
@@ -183,6 +189,69 @@ void main() {
     },
   );
 
+  testWidgets(
+    'asynchronous Rive load failure keeps the static fallback visible',
+    (tester) async {
+      final failures = <TreeRenderFailure>[];
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            treeFeatureFlagsProvider.overrideWithValue(
+              const TreeFeatureFlags(treeRiveEnabled: true),
+            ),
+            riveTreeRendererProvider.overrideWithValue(
+              const _AsyncFailingRiveRenderer(),
+            ),
+            treeRenderFailureReporterProvider.overrideWithValue(failures.add),
+          ],
+          child: TestApp(
+            home: Scaffold(body: TreeArtwork(progress: policy.progressFor(7))),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        find.byKey(const ValueKey('tree-stage-smallTree')),
+        findsOneWidget,
+      );
+      expect(failures, hasLength(1));
+      expect(failures.single.errorCode, 'rive_asset_load_failed');
+    },
+  );
+
+  testWidgets(
+    'missing local sprite reports asset_load_failed and keeps the painter',
+    (tester) async {
+      final failures = <TreeRenderFailure>[];
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            localTreeRendererProvider.overrideWithValue(
+              LocalSpriteTreeRenderer(
+                onFailure: failures.add,
+                spriteAssetForBrightness: (_) =>
+                    'assets/tree/missing_sprite.png',
+              ),
+            ),
+          ],
+          child: TestApp(
+            home: Scaffold(body: TreeArtwork(progress: policy.progressFor(1))),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+
+      expect(find.byKey(const ValueKey('tree-stage-sprout')), findsOneWidget);
+      expect(find.byKey(const ValueKey('tree-sprite-surface')), findsOneWidget);
+      expect(
+        failures.any((failure) => failure.errorCode == 'asset_load_failed'),
+        isTrue,
+      );
+    },
+  );
+
   test('render diagnostics redact adapter-controlled values', () {
     final failures = <TreeRenderFailure>[];
     final diagnostics = TreeRenderDiagnostics();
@@ -315,6 +384,58 @@ void main() {
       expect(tester.takeException(), isNull);
     }
   });
+}
+
+class _AsyncFailingRiveRenderer implements RiveTreeRenderer {
+  const _AsyncFailingRiveRenderer();
+
+  @override
+  String get rendererName => 'rive';
+
+  @override
+  Widget renderWithFallback(
+    TreeRenderRequest request, {
+    required Widget fallback,
+    required TreeRenderFailureReporter onFailure,
+  }) {
+    return _DelayedRiveFallback(fallback: fallback, onFailure: onFailure);
+  }
+}
+
+class _DelayedRiveFallback extends StatefulWidget {
+  const _DelayedRiveFallback({required this.fallback, required this.onFailure});
+
+  final Widget fallback;
+  final TreeRenderFailureReporter onFailure;
+
+  @override
+  State<_DelayedRiveFallback> createState() => _DelayedRiveFallbackState();
+}
+
+class _DelayedRiveFallbackState extends State<_DelayedRiveFallback> {
+  var _failed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    scheduleMicrotask(() {
+      widget.onFailure(
+        TreeRenderFailure(
+          renderer: 'rive',
+          platform: defaultTargetPlatform.name,
+          errorCode: 'rive_asset_load_failed',
+        ),
+      );
+      if (mounted) {
+        setState(() => _failed = true);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _failed ? widget.fallback : const SizedBox.shrink();
+  }
 }
 
 class _ThrowingRiveRenderer implements RiveTreeRenderer {

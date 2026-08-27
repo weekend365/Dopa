@@ -29,4 +29,25 @@ void main() {
     expect(find.textContaining('스트릭'), findsNothing);
     expect(find.byKey(const ValueKey('weekly-tree-summary')), findsOneWidget);
   });
+
+  testWidgets('weekly report remains operable at 200 percent text scale', (
+    tester,
+  ) async {
+    const policy = TreeGrowthPolicy();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          treeProgressProvider.overrideWithValue(policy.progressFor(30)),
+          weeklyGrowthDaysProvider.overrideWithValue(3),
+          experimentAttemptDaysProvider.overrideWithValue(4),
+        ],
+        child: const TestApp(textScale: 2, home: WeeklyReportPage()),
+      ),
+    );
+
+    await tester.drag(find.byType(ListView).first, const Offset(0, -500));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    expect(find.text('시도한 날'), findsOneWidget);
+  });
 }
