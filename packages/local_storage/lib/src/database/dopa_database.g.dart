@@ -118,6 +118,18 @@ class $FocusSessionsTable extends FocusSessions
       'CHECK ("used_five_minute_bypass" IN (0, 1))',
     ),
   );
+  static const VerificationMeta _intentionMeta = const VerificationMeta(
+    'intention',
+  );
+  @override
+  late final GeneratedColumn<String> intention = GeneratedColumn<String>(
+    'intention',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant<String>(''),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -130,6 +142,7 @@ class $FocusSessionsTable extends FocusSessions
     status,
     endedAtUtcMicros,
     usedFiveMinuteBypass,
+    intention,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -242,6 +255,12 @@ class $FocusSessionsTable extends FocusSessions
     } else if (isInserting) {
       context.missing(_usedFiveMinuteBypassMeta);
     }
+    if (data.containsKey('intention')) {
+      context.handle(
+        _intentionMeta,
+        intention.isAcceptableOrUnknown(data['intention']!, _intentionMeta),
+      );
+    }
     return context;
   }
 
@@ -291,6 +310,10 @@ class $FocusSessionsTable extends FocusSessions
         DriftSqlType.bool,
         data['${effectivePrefix}used_five_minute_bypass'],
       )!,
+      intention: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}intention'],
+      )!,
     );
   }
 
@@ -311,6 +334,7 @@ class FocusSessionRow extends DataClass implements Insertable<FocusSessionRow> {
   final String status;
   final int? endedAtUtcMicros;
   final bool usedFiveMinuteBypass;
+  final String intention;
   const FocusSessionRow({
     required this.id,
     required this.startedAtUtcMicros,
@@ -322,6 +346,7 @@ class FocusSessionRow extends DataClass implements Insertable<FocusSessionRow> {
     required this.status,
     this.endedAtUtcMicros,
     required this.usedFiveMinuteBypass,
+    required this.intention,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -338,6 +363,7 @@ class FocusSessionRow extends DataClass implements Insertable<FocusSessionRow> {
       map['ended_at_utc_micros'] = Variable<int>(endedAtUtcMicros);
     }
     map['used_five_minute_bypass'] = Variable<bool>(usedFiveMinuteBypass);
+    map['intention'] = Variable<String>(intention);
     return map;
   }
 
@@ -355,6 +381,7 @@ class FocusSessionRow extends DataClass implements Insertable<FocusSessionRow> {
           ? const Value.absent()
           : Value(endedAtUtcMicros),
       usedFiveMinuteBypass: Value(usedFiveMinuteBypass),
+      intention: Value(intention),
     );
   }
 
@@ -382,6 +409,7 @@ class FocusSessionRow extends DataClass implements Insertable<FocusSessionRow> {
       usedFiveMinuteBypass: serializer.fromJson<bool>(
         json['usedFiveMinuteBypass'],
       ),
+      intention: serializer.fromJson<String>(json['intention']),
     );
   }
   @override
@@ -400,6 +428,7 @@ class FocusSessionRow extends DataClass implements Insertable<FocusSessionRow> {
       'status': serializer.toJson<String>(status),
       'endedAtUtcMicros': serializer.toJson<int?>(endedAtUtcMicros),
       'usedFiveMinuteBypass': serializer.toJson<bool>(usedFiveMinuteBypass),
+      'intention': serializer.toJson<String>(intention),
     };
   }
 
@@ -414,6 +443,7 @@ class FocusSessionRow extends DataClass implements Insertable<FocusSessionRow> {
     String? status,
     Value<int?> endedAtUtcMicros = const Value.absent(),
     bool? usedFiveMinuteBypass,
+    String? intention,
   }) => FocusSessionRow(
     id: id ?? this.id,
     startedAtUtcMicros: startedAtUtcMicros ?? this.startedAtUtcMicros,
@@ -429,6 +459,7 @@ class FocusSessionRow extends DataClass implements Insertable<FocusSessionRow> {
         ? endedAtUtcMicros.value
         : this.endedAtUtcMicros,
     usedFiveMinuteBypass: usedFiveMinuteBypass ?? this.usedFiveMinuteBypass,
+    intention: intention ?? this.intention,
   );
   FocusSessionRow copyWithCompanion(FocusSessionsCompanion data) {
     return FocusSessionRow(
@@ -458,6 +489,7 @@ class FocusSessionRow extends DataClass implements Insertable<FocusSessionRow> {
       usedFiveMinuteBypass: data.usedFiveMinuteBypass.present
           ? data.usedFiveMinuteBypass.value
           : this.usedFiveMinuteBypass,
+      intention: data.intention.present ? data.intention.value : this.intention,
     );
   }
 
@@ -473,7 +505,8 @@ class FocusSessionRow extends DataClass implements Insertable<FocusSessionRow> {
           ..write('protectedDurationSeconds: $protectedDurationSeconds, ')
           ..write('status: $status, ')
           ..write('endedAtUtcMicros: $endedAtUtcMicros, ')
-          ..write('usedFiveMinuteBypass: $usedFiveMinuteBypass')
+          ..write('usedFiveMinuteBypass: $usedFiveMinuteBypass, ')
+          ..write('intention: $intention')
           ..write(')'))
         .toString();
   }
@@ -490,6 +523,7 @@ class FocusSessionRow extends DataClass implements Insertable<FocusSessionRow> {
     status,
     endedAtUtcMicros,
     usedFiveMinuteBypass,
+    intention,
   );
   @override
   bool operator ==(Object other) =>
@@ -504,7 +538,8 @@ class FocusSessionRow extends DataClass implements Insertable<FocusSessionRow> {
           other.protectedDurationSeconds == this.protectedDurationSeconds &&
           other.status == this.status &&
           other.endedAtUtcMicros == this.endedAtUtcMicros &&
-          other.usedFiveMinuteBypass == this.usedFiveMinuteBypass);
+          other.usedFiveMinuteBypass == this.usedFiveMinuteBypass &&
+          other.intention == this.intention);
 }
 
 class FocusSessionsCompanion extends UpdateCompanion<FocusSessionRow> {
@@ -518,6 +553,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSessionRow> {
   final Value<String> status;
   final Value<int?> endedAtUtcMicros;
   final Value<bool> usedFiveMinuteBypass;
+  final Value<String> intention;
   final Value<int> rowid;
   const FocusSessionsCompanion({
     this.id = const Value.absent(),
@@ -530,6 +566,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSessionRow> {
     this.status = const Value.absent(),
     this.endedAtUtcMicros = const Value.absent(),
     this.usedFiveMinuteBypass = const Value.absent(),
+    this.intention = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   FocusSessionsCompanion.insert({
@@ -543,6 +580,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSessionRow> {
     required String status,
     this.endedAtUtcMicros = const Value.absent(),
     required bool usedFiveMinuteBypass,
+    this.intention = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        startedAtUtcMicros = Value(startedAtUtcMicros),
@@ -564,6 +602,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSessionRow> {
     Expression<String>? status,
     Expression<int>? endedAtUtcMicros,
     Expression<bool>? usedFiveMinuteBypass,
+    Expression<String>? intention,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -582,6 +621,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSessionRow> {
       if (endedAtUtcMicros != null) 'ended_at_utc_micros': endedAtUtcMicros,
       if (usedFiveMinuteBypass != null)
         'used_five_minute_bypass': usedFiveMinuteBypass,
+      if (intention != null) 'intention': intention,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -597,6 +637,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSessionRow> {
     Value<String>? status,
     Value<int?>? endedAtUtcMicros,
     Value<bool>? usedFiveMinuteBypass,
+    Value<String>? intention,
     Value<int>? rowid,
   }) {
     return FocusSessionsCompanion(
@@ -613,6 +654,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSessionRow> {
       status: status ?? this.status,
       endedAtUtcMicros: endedAtUtcMicros ?? this.endedAtUtcMicros,
       usedFiveMinuteBypass: usedFiveMinuteBypass ?? this.usedFiveMinuteBypass,
+      intention: intention ?? this.intention,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -658,6 +700,9 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSessionRow> {
         usedFiveMinuteBypass.value,
       );
     }
+    if (intention.present) {
+      map['intention'] = Variable<String>(intention.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -677,6 +722,7 @@ class FocusSessionsCompanion extends UpdateCompanion<FocusSessionRow> {
           ..write('status: $status, ')
           ..write('endedAtUtcMicros: $endedAtUtcMicros, ')
           ..write('usedFiveMinuteBypass: $usedFiveMinuteBypass, ')
+          ..write('intention: $intention, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1510,6 +1556,7 @@ typedef $$FocusSessionsTableCreateCompanionBuilder =
       required String status,
       Value<int?> endedAtUtcMicros,
       required bool usedFiveMinuteBypass,
+      Value<String> intention,
       Value<int> rowid,
     });
 typedef $$FocusSessionsTableUpdateCompanionBuilder =
@@ -1524,6 +1571,7 @@ typedef $$FocusSessionsTableUpdateCompanionBuilder =
       Value<String> status,
       Value<int?> endedAtUtcMicros,
       Value<bool> usedFiveMinuteBypass,
+      Value<String> intention,
       Value<int> rowid,
     });
 
@@ -1620,6 +1668,11 @@ class $$FocusSessionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get intention => $composableBuilder(
+    column: $table.intention,
+    builder: (column) => ColumnFilters(column),
+  );
+
   Expression<bool> treeGrowthCreditsRefs(
     Expression<bool> Function($$TreeGrowthCreditsTableFilterComposer f) f,
   ) {
@@ -1704,6 +1757,11 @@ class $$FocusSessionsTableOrderingComposer
     column: $table.usedFiveMinuteBypass,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get intention => $composableBuilder(
+    column: $table.intention,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$FocusSessionsTableAnnotationComposer
@@ -1760,6 +1818,9 @@ class $$FocusSessionsTableAnnotationComposer
     column: $table.usedFiveMinuteBypass,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get intention =>
+      $composableBuilder(column: $table.intention, builder: (column) => column);
 
   Expression<T> treeGrowthCreditsRefs<T extends Object>(
     Expression<T> Function($$TreeGrowthCreditsTableAnnotationComposer a) f,
@@ -1826,6 +1887,7 @@ class $$FocusSessionsTableTableManager
                 Value<String> status = const Value.absent(),
                 Value<int?> endedAtUtcMicros = const Value.absent(),
                 Value<bool> usedFiveMinuteBypass = const Value.absent(),
+                Value<String> intention = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FocusSessionsCompanion(
                 id: id,
@@ -1838,6 +1900,7 @@ class $$FocusSessionsTableTableManager
                 status: status,
                 endedAtUtcMicros: endedAtUtcMicros,
                 usedFiveMinuteBypass: usedFiveMinuteBypass,
+                intention: intention,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -1852,6 +1915,7 @@ class $$FocusSessionsTableTableManager
                 required String status,
                 Value<int?> endedAtUtcMicros = const Value.absent(),
                 required bool usedFiveMinuteBypass,
+                Value<String> intention = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => FocusSessionsCompanion.insert(
                 id: id,
@@ -1864,6 +1928,7 @@ class $$FocusSessionsTableTableManager
                 status: status,
                 endedAtUtcMicros: endedAtUtcMicros,
                 usedFiveMinuteBypass: usedFiveMinuteBypass,
+                intention: intention,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

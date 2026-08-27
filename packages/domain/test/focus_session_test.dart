@@ -26,7 +26,7 @@ void main() {
       expect(() => SessionDurationPreset.fromMinutes(15), throwsArgumentError);
     });
 
-    test('keeps a stable ID and logical start date through completion', () {
+    test('keeps a stable ID, local date, and intention through completion', () {
       final completed = activeSession()
           .copyWith(preset: SessionDurationPreset.twentyFiveMinutes)
           .finish(
@@ -37,6 +37,7 @@ void main() {
 
       expect(completed.id, 'session-stable-id');
       expect(completed.startedLocalDate, localDate);
+      expect(completed.intention, isEmpty);
       expect(completed.preset, SessionDurationPreset.twentyFiveMinutes);
       expect(completed.plannedDuration, const Duration(minutes: 25));
       expect(completed.protectedDuration, const Duration(minutes: 8));
@@ -61,6 +62,27 @@ void main() {
           startedAtUtc: DateTime(2026, 8, 26),
           startedLocalDate: localDate,
           protectionMode: ProtectionMode.timerOnly,
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test('trims intention and rejects oversized copy', () {
+      final session = FocusSession(
+        id: 'session',
+        startedAtUtc: startedAtUtc,
+        startedLocalDate: localDate,
+        protectionMode: ProtectionMode.timerOnly,
+        intention: '  읽던 문서  ',
+      );
+      expect(session.intention, '읽던 문서');
+      expect(
+        () => FocusSession(
+          id: 'session',
+          startedAtUtc: startedAtUtc,
+          startedLocalDate: localDate,
+          protectionMode: ProtectionMode.timerOnly,
+          intention: '가' * (FocusSession.maxIntentionLength + 1),
         ),
         throwsArgumentError,
       );

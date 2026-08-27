@@ -12,6 +12,17 @@ DateTime requireUtc(DateTime value, String name) {
   return value;
 }
 
+String requireMaxLength(String value, String name, int maxLength) {
+  if (value.length > maxLength) {
+    throw ArgumentError.value(
+      value,
+      name,
+      'Must be at most $maxLength characters.',
+    );
+  }
+  return value;
+}
+
 int requirePositive(int value, String name) {
   if (value <= 0) {
     throw ArgumentError.value(value, name, 'Must be greater than zero.');

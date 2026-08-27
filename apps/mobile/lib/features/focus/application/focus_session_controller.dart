@@ -24,22 +24,31 @@ final sessionIdFactoryProvider = Provider<SessionIdFactory>(
 );
 
 class FocusSessionFlowState {
-  const FocusSessionFlowState({this.session, this.isBusy = false, this.error});
+  const FocusSessionFlowState({
+    this.session,
+    this.isBusy = false,
+    this.error,
+    this.recoveryKind,
+  });
 
   final FocusSession? session;
   final bool isBusy;
   final Object? error;
+  final ActiveFocusRecoveryKind? recoveryKind;
 
   FocusSessionFlowState copyWith({
     FocusSession? session,
     bool? isBusy,
     Object? error,
+    ActiveFocusRecoveryKind? recoveryKind,
     bool clearError = false,
+    bool clearRecovery = false,
   }) {
     return FocusSessionFlowState(
       session: session ?? this.session,
       isBusy: isBusy ?? this.isBusy,
       error: clearError ? null : error ?? this.error,
+      recoveryKind: clearRecovery ? null : recoveryKind ?? this.recoveryKind,
     );
   }
 }
@@ -68,8 +77,40 @@ class FocusSessionController extends StateNotifier<FocusSessionFlowState> {
       final session = await _ref
           .read(focusTreeRepositoryProvider)
           .readActiveFocusSession();
-      if (session != null && mounted) {
-        state = FocusSessionFlowState(session: session);
+      if (session == null || !mounted) {
+        return;
+      }
+
+      _ref
+          .read(focusSetupControllerProvider.notifier)
+          .restoreFromSession(session);
+
+      final nowUtc = _ref.read(localNowProvider)().toUtc();
+      final kind = classifyActiveFocusRecovery(
+        session: session,
+        nowUtc: nowUtc,
+      );
+      if (kind != ActiveFocusRecoveryKind.invalidate) {
+        state = FocusSessionFlowState(session: session, recoveryKind: kind);
+        return;
+      }
+
+      final result =
+          await CompleteFocusSession(
+            repository: _ref.read(focusTreeRepositoryProvider),
+          )(
+            sessionId: session.id,
+            terminalStatus: FocusSessionStatus.invalidRecovery,
+            endedAtUtc: invalidRecoveryEndedAtUtc(
+              session: session,
+              nowUtc: nowUtc,
+            ),
+          );
+      if (mounted) {
+        state = FocusSessionFlowState(
+          session: result.session,
+          recoveryKind: ActiveFocusRecoveryKind.invalidate,
+        );
       }
     } on Object catch (error) {
       if (mounted) {
@@ -97,6 +138,7 @@ class FocusSessionController extends StateNotifier<FocusSessionFlowState> {
         startedLocalDate: LocalDate.fromLocal(localNow),
         protectionMode: setup.protectionMode,
         preset: SessionDurationPreset.fromMinutes(setup.durationMinutes),
+        intention: setup.intention,
       );
       final repository = _ref.read(focusTreeRepositoryProvider);
       await repository.writeTransaction(

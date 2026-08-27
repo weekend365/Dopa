@@ -42,6 +42,7 @@ void main() {
               id: 'session-round-trip',
               protectionMode: ProtectionMode.accessibility,
               preset: SessionDurationPreset.twentyFiveMinutes,
+              intention: '보고서 첫 문단',
             ).applyBypass(
               action: BypassAction.allowFiveMinutes,
               occurredAtUtc: DateTime.utc(2026, 8, 26, 1, 2),
@@ -64,6 +65,7 @@ void main() {
         expect(reloaded.protectionMode, ProtectionMode.accessibility);
         expect(reloaded.protectedDuration, const Duration(minutes: 17));
         expect(reloaded.usedFiveMinuteBypass, isTrue);
+        expect(reloaded.intention, '보고서 첫 문단');
         expect(
           await database.select(database.focusSessions).get(),
           hasLength(1),
@@ -377,12 +379,14 @@ FocusSession _session({
   LocalDate? startedLocalDate,
   ProtectionMode protectionMode = ProtectionMode.timerOnly,
   SessionDurationPreset preset = SessionDurationPreset.tenMinutes,
+  String intention = '',
 }) => FocusSession(
   id: id,
   startedAtUtc: startedAtUtc ?? DateTime.utc(2026, 8, 26, 1),
   startedLocalDate: startedLocalDate ?? LocalDate(2026, 8, 26),
   protectionMode: protectionMode,
   preset: preset,
+  intention: intention,
 );
 
 Future<void> _save(DriftFocusTreeRepository repository, FocusSession session) =>

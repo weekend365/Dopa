@@ -26,6 +26,14 @@ class FocusSetupState {
 class FocusSetupController extends StateNotifier<FocusSetupState> {
   FocusSetupController() : super(const FocusSetupState());
 
+  void restoreFromSession(FocusSession session) {
+    state = FocusSetupState(
+      durationMinutes: session.preset.minutes,
+      protectionMode: session.protectionMode,
+      intention: session.intention,
+    );
+  }
+
   void selectDuration(int minutes) {
     if (const [5, 10, 25, 50].contains(minutes)) {
       state = state.copyWith(durationMinutes: minutes);
@@ -37,7 +45,14 @@ class FocusSetupController extends StateNotifier<FocusSetupState> {
   }
 
   void updateIntention(String value) {
-    state = state.copyWith(intention: value.trim());
+    final trimmed = value.trim();
+    if (trimmed.length > FocusSession.maxIntentionLength) {
+      state = state.copyWith(
+        intention: trimmed.substring(0, FocusSession.maxIntentionLength),
+      );
+      return;
+    }
+    state = state.copyWith(intention: trimmed);
   }
 }
 

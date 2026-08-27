@@ -47,10 +47,13 @@ extension FocusSessionStatusSemantics on FocusSessionStatus {
 
 /// A locally persisted focus attempt.
 ///
-/// [id] and [startedLocalDate] are captured at session start and never change.
-/// Only a normally [FocusSessionStatus.completed] session is eligible for tree
-/// growth. Protection mode and a five-minute bypass do not affect eligibility.
+/// [id], [startedLocalDate], and [intention] are captured at session start and
+/// never change. Only a normally [FocusSessionStatus.completed] session is
+/// eligible for tree growth. Protection mode and a five-minute bypass do not
+/// affect eligibility.
 final class FocusSession {
+  static const maxIntentionLength = 200;
+
   factory FocusSession({
     required String id,
     required DateTime startedAtUtc,
@@ -61,9 +64,15 @@ final class FocusSession {
     FocusSessionStatus status = FocusSessionStatus.active,
     DateTime? endedAtUtc,
     bool usedFiveMinuteBypass = false,
+    String intention = '',
   }) {
     final validId = requireNonBlank(id, 'id');
     final validStartedAtUtc = requireUtc(startedAtUtc, 'startedAtUtc');
+    final validIntention = requireMaxLength(
+      intention.trim(),
+      'intention',
+      maxIntentionLength,
+    );
     if (protectedDuration.isNegative) {
       throw ArgumentError.value(
         protectedDuration,
@@ -106,6 +115,7 @@ final class FocusSession {
       status: status,
       endedAtUtc: endedAtUtc,
       usedFiveMinuteBypass: usedFiveMinuteBypass,
+      intention: validIntention,
     );
   }
 
@@ -119,6 +129,7 @@ final class FocusSession {
     required this.status,
     required this.endedAtUtc,
     required this.usedFiveMinuteBypass,
+    required this.intention,
   });
 
   final String id;
@@ -136,6 +147,10 @@ final class FocusSession {
   final FocusSessionStatus status;
   final DateTime? endedAtUtc;
   final bool usedFiveMinuteBypass;
+
+  /// The task the user named at start. Restored after process death so they
+  /// can continue or try again. Never sent off-device.
+  final String intention;
 
   bool get isTerminal => status.isTerminal;
   bool get isNormallyCompleted => status == FocusSessionStatus.completed;
@@ -207,6 +222,7 @@ final class FocusSession {
     status: status ?? this.status,
     endedAtUtc: endedAtUtc ?? this.endedAtUtc,
     usedFiveMinuteBypass: usedFiveMinuteBypass ?? this.usedFiveMinuteBypass,
+    intention: intention,
   );
 
   @override
@@ -221,7 +237,8 @@ final class FocusSession {
           protectedDuration == other.protectedDuration &&
           status == other.status &&
           endedAtUtc == other.endedAtUtc &&
-          usedFiveMinuteBypass == other.usedFiveMinuteBypass;
+          usedFiveMinuteBypass == other.usedFiveMinuteBypass &&
+          intention == other.intention;
 
   @override
   int get hashCode => Object.hash(
@@ -234,5 +251,6 @@ final class FocusSession {
     status,
     endedAtUtc,
     usedFiveMinuteBypass,
+    intention,
   );
 }

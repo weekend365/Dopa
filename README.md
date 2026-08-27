@@ -18,13 +18,14 @@ Rive 원본 에셋은 전문 원화/리깅 납품 후 연결합니다. 그 전�
 만듭니다. 로그아웃·계정 삭제는 `deleteForLogoutOrAccountDeletion`으로
 나무·세션·성장 원장을 지운 뒤 account scope를 폐기합니다. Apple·Google
 로그인 SDK는 `SignInPort` 뒤에 연결하며, 현재 기본 구현은 버튼 탭을 성공으로
-처리합니다.
+처리합니다. 재부팅 뒤에도 계획 시간이 남아 있으면 집중을 재개하고, 끝난 지
+1시간 안이면 완료를 허용하며, 그보다 오래됐거나 시계가 시작보다 이전이면
+`invalidRecovery`로 닫고 원래 하려던 일만 남깁니다.
 
 ## 출시 전 남은 통합 게이트
 
 - Apple·Google 로그인 SDK를 `SignInPort`에 연결해야 합니다. 로컬 연령 확인·동의·로그아웃·삭제는 연결되어 있습니다.
 - 7일 실험 진행일, 체크인 저장, Remote Config를 현재 provider/lifecycle 경계에 연결해야 합니다.
-- 오래 방치된 active 세션을 언제 `invalidRecovery`로 종료할지 제품 기준을 확정한 뒤 복구 판정과 원래 하려던 일의 재시작 보존을 추가해야 합니다.
 - 전문 Rive 원본·상업적 사용권을 납품받은 뒤 데이터 바인딩, 비동기 실패 폴백, 성능 예산을 통과하기 전까지 `tree_rive_enabled`는 OFF로 유지해야 합니다.
 - Golden baseline, 실기기 VoiceOver/TalkBack·200% 글자, 네트워크 캡처, 느린 프레임, 성인 10명 사용성 검증은 출시 차단 게이트로 남아 있습니다.
 

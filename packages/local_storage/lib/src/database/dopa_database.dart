@@ -27,6 +27,8 @@ class FocusSessions extends Table {
 
   BoolColumn get usedFiveMinuteBypass => boolean()();
 
+  TextColumn get intention => text().withDefault(const Constant<String>(''))();
+
   @override
   List<String> get customConstraints => const <String>[
     "CHECK (protection_mode IN ('shield', 'accessibility', 'timerOnly'))",
@@ -101,14 +103,14 @@ class DopaDatabase extends _$DopaDatabase {
   DopaDatabase(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (Migrator migrator) => migrator.createAll(),
     onUpgrade: (Migrator migrator, int from, int to) async {
-      if (from < 1) {
-        await migrator.createAll();
+      if (from < 2) {
+        await migrator.addColumn(focusSessions, focusSessions.intention);
       }
     },
     beforeOpen: (OpeningDetails details) async {

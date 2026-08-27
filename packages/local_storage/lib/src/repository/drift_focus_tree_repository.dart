@@ -291,6 +291,7 @@ FocusSessionsCompanion _sessionToCompanion(domain.FocusSession session) =>
       status: session.status.name,
       endedAtUtcMicros: Value<int?>(session.endedAtUtc?.microsecondsSinceEpoch),
       usedFiveMinuteBypass: session.usedFiveMinuteBypass,
+      intention: Value<String>(session.intention),
     );
 
 domain.FocusSession _sessionFromRow(FocusSessionRow row) {
@@ -322,6 +323,7 @@ domain.FocusSession _sessionFromRow(FocusSessionRow row) {
           ? null
           : _utcFromMicros(row.endedAtUtcMicros!),
       usedFiveMinuteBypass: row.usedFiveMinuteBypass,
+      intention: row.intention,
     );
   } on Object catch (error) {
     throw StoredDataIntegrityException(
@@ -382,7 +384,8 @@ void _validateSessionUpdate({
       existing.startedAtUtc != next.startedAtUtc ||
       existing.startedLocalDate != next.startedLocalDate ||
       existing.protectionMode != next.protectionMode ||
-      existing.preset != next.preset;
+      existing.preset != next.preset ||
+      existing.intention != next.intention;
   if (startMetadataChanged) {
     throw StateError('A persisted session\'s start metadata is immutable.');
   }

@@ -4,6 +4,7 @@ import 'package:dopa/features/focus/application/focus_session_controller.dart';
 import 'package:dopa/features/focus/application/focus_setup_controller.dart';
 import 'package:dopa_domain/dopa_domain.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,6 +41,24 @@ class FocusSetupPage extends ConsumerWidget {
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: DopaSpacing.lg),
+          if (sessionFlow.recoveryKind == ActiveFocusRecoveryKind.invalidate)
+            Padding(
+              padding: const EdgeInsets.only(bottom: DopaSpacing.lg),
+              child: Text(
+                '이전 집중은 너무 오래되어 종료했어요. 같은 일로 다시 시작할 수 있어요.',
+                key: const ValueKey('focus-recovery-invalidated'),
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+          if (sessionFlow.recoveryKind == ActiveFocusRecoveryKind.complete)
+            Padding(
+              padding: const EdgeInsets.only(bottom: DopaSpacing.lg),
+              child: Text(
+                '집중 시간이 지나 있어요. 돌아가서 완료할 수 있어요.',
+                key: const ValueKey('focus-recovery-elapsed'),
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
           Semantics(
             label: '집중 시간 선택',
             child: Wrap(
@@ -59,10 +78,15 @@ class FocusSetupPage extends ConsumerWidget {
           Text('원래 하려던 일', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: DopaSpacing.xs),
           TextFormField(
+            key: ValueKey('focus-intention-${state.intention}'),
             initialValue: state.intention,
             minLines: 1,
             maxLines: 3,
+            maxLength: FocusSession.maxIntentionLength,
             textInputAction: TextInputAction.done,
+            inputFormatters: [
+              LengthLimitingTextInputFormatter(FocusSession.maxIntentionLength),
+            ],
             decoration: const InputDecoration(
               hintText: '예: 보고서 첫 문단 쓰기',
               border: OutlineInputBorder(),
