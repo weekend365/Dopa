@@ -98,12 +98,57 @@ class TreeGrowthCredits extends Table {
   String get tableName => 'tree_growth_credits';
 }
 
-@DriftDatabase(tables: <Type>[FocusSessions, TreeCompanions, TreeGrowthCredits])
+@DataClassName('SevenDayExperimentRow')
+class SevenDayExperiments extends Table {
+  IntColumn get singletonKey => integer()
+      .withDefault(const Constant<int>(1))
+      .check(singletonKey.equals(1))();
+
+  TextColumn get startedLocalDate => text()();
+
+  IntColumn get lengthDays => integer()
+      .withDefault(const Constant<int>(7))
+      .check(lengthDays.equals(7))();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{singletonKey};
+
+  @override
+  String get tableName => 'seven_day_experiments';
+}
+
+@DataClassName('DailyCheckInRow')
+class DailyCheckIns extends Table {
+  TextColumn get localDate => text()();
+
+  TextColumn get intentionAlignment => text()();
+
+  @override
+  List<String> get customConstraints => const <String>[
+    "CHECK (intention_alignment IN ('yes', 'no', 'skipped'))",
+  ];
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{localDate};
+
+  @override
+  String get tableName => 'daily_check_ins';
+}
+
+@DriftDatabase(
+  tables: <Type>[
+    FocusSessions,
+    TreeCompanions,
+    TreeGrowthCredits,
+    SevenDayExperiments,
+    DailyCheckIns,
+  ],
+)
 class DopaDatabase extends _$DopaDatabase {
   DopaDatabase(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -111,6 +156,10 @@ class DopaDatabase extends _$DopaDatabase {
     onUpgrade: (Migrator migrator, int from, int to) async {
       if (from < 2) {
         await migrator.addColumn(focusSessions, focusSessions.intention);
+      }
+      if (from < 3) {
+        await migrator.createTable(sevenDayExperiments);
+        await migrator.createTable(dailyCheckIns);
       }
     },
     beforeOpen: (OpeningDetails details) async {
@@ -124,6 +173,8 @@ class DopaDatabase extends _$DopaDatabase {
   /// sessions are removed afterwards so the ledger's source-session reference
   /// can remain restrictive during ordinary operation.
   Future<void> deleteAllLocalData() => transaction(() async {
+    await delete(dailyCheckIns).go();
+    await delete(sevenDayExperiments).go();
     await delete(treeCompanions).go();
     await delete(focusSessions).go();
   });

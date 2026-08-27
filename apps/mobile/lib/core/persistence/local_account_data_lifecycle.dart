@@ -19,6 +19,9 @@ final class LocalAccountDataLifecycle {
     await EnsureTreeCompanion(repository: _repository)(
       createdAtUtc: createdAtUtc,
     );
+    await EnsureSevenDayExperiment(repository: _repository)(
+      startedOn: LocalDate.fromLocal(createdAtUtc.toLocal()),
+    );
     return _repository.readTreeProgress();
   }
 

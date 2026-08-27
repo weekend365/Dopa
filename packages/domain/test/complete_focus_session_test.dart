@@ -490,4 +490,23 @@ final class _MemoryFocusTreeRepository
   @override
   Future<int> countGrowthCredits(String treeId) async =>
       credits.where((credit) => credit.treeId == treeId).length;
+
+  SevenDayExperiment? experiment;
+  final Map<String, DailyCheckIn> checkIns = <String, DailyCheckIn>{};
+
+  @override
+  Future<SevenDayExperiment> getOrCreateExperiment({
+    required LocalDate startedOn,
+  }) async {
+    return experiment ??= SevenDayExperiment(startedOn: startedOn);
+  }
+
+  @override
+  Future<void> saveCheckIn(DailyCheckIn checkIn) async {
+    checkIns[checkIn.localDate.toIso8601String()] = checkIn;
+  }
+
+  @override
+  Future<DailyCheckIn?> findCheckIn(LocalDate localDate) async =>
+      checkIns[localDate.toIso8601String()];
 }

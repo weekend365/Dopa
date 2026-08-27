@@ -1,4 +1,5 @@
 import 'package:dopa/app/theme/dopa_tokens.dart';
+import 'package:dopa/features/experiment/application/daily_check_in_controller.dart';
 import 'package:dopa/features/tree_companion/application/tree_companion_providers.dart';
 import 'package:dopa/features/tree_companion/application/tree_feature_flags.dart';
 import 'package:dopa/features/tree_companion/presentation/tree_artwork.dart';
@@ -66,7 +67,9 @@ class FocusCompletionPage extends ConsumerWidget {
       ),
       const SizedBox(height: DopaSpacing.md),
     ];
-    final actions = _CompletionActions(onFinish: _finish(context));
+    final actions = _CompletionActions(
+      onSelect: (alignment) => _selectCheckIn(context, ref, alignment),
+    );
     final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
 
     return Scaffold(
@@ -110,8 +113,18 @@ class FocusCompletionPage extends ConsumerWidget {
     );
   }
 
-  VoidCallback _finish(BuildContext context) =>
-      () => context.go('/today');
+  Future<void> _selectCheckIn(
+    BuildContext context,
+    WidgetRef ref,
+    IntentionAlignment? alignment,
+  ) async {
+    if (alignment != null) {
+      await ref.read(dailyCheckInControllerProvider.notifier).record(alignment);
+    }
+    if (context.mounted) {
+      context.go('/today');
+    }
+  }
 
   String get _title => switch (data.kind) {
     TreeCompletionKind.milestone => _milestoneTitle,
@@ -145,9 +158,9 @@ class FocusCompletionPage extends ConsumerWidget {
 }
 
 class _CompletionActions extends StatelessWidget {
-  const _CompletionActions({required this.onFinish});
+  const _CompletionActions({required this.onSelect});
 
-  final VoidCallback onFinish;
+  final Future<void> Function(IntentionAlignment? alignment) onSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -166,16 +179,28 @@ class _CompletionActions extends StatelessWidget {
           spacing: DopaSpacing.xs,
           runSpacing: DopaSpacing.xs,
           children: [
-            _CheckInButton(label: '맞았어요', onPressed: onFinish),
-            _CheckInButton(label: '아니었어요', onPressed: onFinish),
-            _CheckInButton(label: '건너뛰기', onPressed: onFinish),
+            _CheckInButton(
+              key: const ValueKey('check-in-yes'),
+              label: '맞았어요',
+              onPressed: () => onSelect(IntentionAlignment.yes),
+            ),
+            _CheckInButton(
+              key: const ValueKey('check-in-no'),
+              label: '아니었어요',
+              onPressed: () => onSelect(IntentionAlignment.no),
+            ),
+            _CheckInButton(
+              key: const ValueKey('check-in-skipped'),
+              label: '건너뛰기',
+              onPressed: () => onSelect(IntentionAlignment.skipped),
+            ),
           ],
         ),
         const SizedBox(height: DopaSpacing.md),
         SizedBox(
           width: double.infinity,
           child: FilledButton(
-            onPressed: onFinish,
+            onPressed: () => onSelect(null),
             child: const Text('오늘로 돌아가기'),
           ),
         ),
@@ -185,7 +210,11 @@ class _CompletionActions extends StatelessWidget {
 }
 
 class _CheckInButton extends StatelessWidget {
-  const _CheckInButton({required this.label, required this.onPressed});
+  const _CheckInButton({
+    required this.label,
+    required this.onPressed,
+    super.key,
+  });
 
   final String label;
   final VoidCallback onPressed;

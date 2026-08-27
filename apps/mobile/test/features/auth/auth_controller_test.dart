@@ -78,6 +78,10 @@ void main() {
     await auth.acceptConsent();
     expect(container.read(authControllerProvider).phase, AuthPhase.ready);
     expect(await database.select(database.treeCompanions).get(), hasLength(1));
+    expect(
+      await database.select(database.sevenDayExperiments).get(),
+      hasLength(1),
+    );
   });
 
   test('logout deletes the tree ledger and returns to sign-in', () async {
@@ -92,6 +96,8 @@ void main() {
     expect(await database.select(database.treeCompanions).get(), isEmpty);
     expect(await database.select(database.focusSessions).get(), isEmpty);
     expect(await database.select(database.treeGrowthCredits).get(), isEmpty);
+    expect(await database.select(database.sevenDayExperiments).get(), isEmpty);
+    expect(await database.select(database.dailyCheckIns).get(), isEmpty);
   });
 
   test('account deletion clears the age session', () async {

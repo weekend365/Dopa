@@ -86,6 +86,10 @@ void main() {
 
     expect(find.byKey(const ValueKey('today-account')), findsOneWidget);
     expect(await database.select(database.treeCompanions).get(), hasLength(1));
+    expect(
+      await database.select(database.sevenDayExperiments).get(),
+      hasLength(1),
+    );
   });
 
   testWidgets('logout from account returns to sign-in without a tree', (

@@ -1,6 +1,7 @@
 import 'package:dopa/core/persistence/dopa_database_providers.dart';
 import 'package:dopa/features/auth/application/auth_session_store.dart';
 import 'package:dopa/features/auth/application/sign_in_port.dart';
+import 'package:dopa/features/experiment/application/daily_check_in_controller.dart';
 import 'package:dopa/features/tree_companion/application/tree_companion_providers.dart';
 import 'package:dopa_domain/dopa_domain.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -170,6 +171,8 @@ class AuthController extends StateNotifier<AuthState> {
     _ref.invalidate(localAccountDataLifecycleProvider);
     _ref.invalidate(treeProgressControllerProvider);
     _ref.invalidate(weeklyGrowthDaysControllerProvider);
+    _ref.invalidate(experimentAttemptDaysControllerProvider);
+    _ref.invalidate(dailyCheckInControllerProvider);
   }
 
   AuthPhase _phaseFor(AccountSession? session, DateTime now) {

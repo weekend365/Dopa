@@ -1,4 +1,7 @@
+import '../experiment/daily_check_in.dart';
+import '../experiment/seven_day_experiment.dart';
 import '../focus/focus_session.dart';
+import '../shared/local_date.dart';
 import 'tree_companion.dart';
 
 /// Result of a conflict-safe ledger insert.
@@ -41,4 +44,12 @@ abstract interface class FocusTreeTransaction {
   );
 
   Future<int> countGrowthCredits(String treeId);
+
+  Future<SevenDayExperiment> getOrCreateExperiment({
+    required LocalDate startedOn,
+  });
+
+  Future<void> saveCheckIn(DailyCheckIn checkIn);
+
+  Future<DailyCheckIn?> findCheckIn(LocalDate localDate);
 }

@@ -26,12 +26,21 @@ void main() {
         await database.select(database.treeCompanions).get(),
         hasLength(1),
       );
+      expect(
+        await database.select(database.sevenDayExperiments).get(),
+        hasLength(1),
+      );
 
       await lifecycle.deleteForLogoutOrAccountDeletion();
 
       expect(await database.select(database.treeCompanions).get(), isEmpty);
       expect(await database.select(database.treeGrowthCredits).get(), isEmpty);
       expect(await database.select(database.focusSessions).get(), isEmpty);
+      expect(
+        await database.select(database.sevenDayExperiments).get(),
+        isEmpty,
+      );
+      expect(await database.select(database.dailyCheckIns).get(), isEmpty);
     },
   );
 }

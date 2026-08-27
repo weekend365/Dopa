@@ -119,6 +119,48 @@ final class DriftFocusTreeRepository implements domain.FocusTreeRepository {
     return row == null ? null : _sessionFromRow(row);
   }
 
+  Future<domain.SevenDayExperiment?> readExperiment() async {
+    final query = _database.select(_database.sevenDayExperiments)
+      ..where((SevenDayExperiments table) => table.singletonKey.equals(1));
+    final row = await query.getSingleOrNull();
+    return row == null ? null : _experimentFromRow(row);
+  }
+
+  /// Distinct local dates with a real attempt inside the experiment window.
+  ///
+  /// [domain.FocusSessionStatus.invalidRecovery] is excluded so abandoned rows
+  /// do not inflate the 7-day count. Check-ins never contribute.
+  Future<int> countExperimentAttemptDays() async {
+    final experiment = await readExperiment();
+    if (experiment == null) {
+      return 0;
+    }
+    final countExpression = _database.focusSessions.startedLocalDate.count(
+      distinct: true,
+    );
+    final query = _database.selectOnly(_database.focusSessions)
+      ..addColumns(<Expression<Object>>[countExpression])
+      ..where(
+        _database.focusSessions.status.isNotValue(
+              domain.FocusSessionStatus.invalidRecovery.name,
+            ) &
+            _database.focusSessions.startedLocalDate.isBiggerOrEqualValue(
+              experiment.startedOn.toIso8601String(),
+            ) &
+            _database.focusSessions.startedLocalDate.isSmallerThanValue(
+              experiment.endExclusive.toIso8601String(),
+            ),
+      );
+    final row = await query.getSingle();
+    return row.read(countExpression) ?? 0;
+  }
+
+  Future<domain.DailyCheckIn?> readCheckIn(domain.LocalDate localDate) {
+    return writeTransaction(
+      (transaction) => transaction.findCheckIn(localDate),
+    );
+  }
+
   /// Removes sessions, the singleton tree, and all growth credits atomically.
   Future<void> deleteAllLocalData() => _database.deleteAllLocalData();
 
@@ -271,6 +313,62 @@ final class _DriftFocusTreeTransaction implements domain.FocusTreeTransaction {
     return row.read(countExpression) ?? 0;
   }
 
+  @override
+  Future<domain.SevenDayExperiment> getOrCreateExperiment({
+    required domain.LocalDate startedOn,
+  }) async {
+    final existing = await _findExperiment();
+    if (existing != null) {
+      return existing;
+    }
+    try {
+      await _database
+          .into(_database.sevenDayExperiments)
+          .insert(
+            SevenDayExperimentsCompanion.insert(
+              startedLocalDate: startedOn.toIso8601String(),
+            ),
+          );
+      return domain.SevenDayExperiment(startedOn: startedOn);
+    } on SqliteException catch (error) {
+      final concurrentlyCreated = await _findExperiment();
+      if (concurrentlyCreated != null) {
+        return concurrentlyCreated;
+      }
+      Error.throwWithStackTrace(error, StackTrace.current);
+    }
+  }
+
+  @override
+  Future<void> saveCheckIn(domain.DailyCheckIn checkIn) async {
+    await _database
+        .into(_database.dailyCheckIns)
+        .insertOnConflictUpdate(
+          DailyCheckInsCompanion.insert(
+            localDate: checkIn.localDate.toIso8601String(),
+            intentionAlignment: checkIn.intentionAlignment.name,
+          ),
+        );
+  }
+
+  @override
+  Future<domain.DailyCheckIn?> findCheckIn(domain.LocalDate localDate) async {
+    final query = _database.select(_database.dailyCheckIns)
+      ..where(
+        (DailyCheckIns table) =>
+            table.localDate.equals(localDate.toIso8601String()),
+      );
+    final row = await query.getSingleOrNull();
+    return row == null ? null : _checkInFromRow(row);
+  }
+
+  Future<domain.SevenDayExperiment?> _findExperiment() async {
+    final query = _database.select(_database.sevenDayExperiments)
+      ..where((SevenDayExperiments table) => table.singletonKey.equals(1));
+    final row = await query.getSingleOrNull();
+    return row == null ? null : _experimentFromRow(row);
+  }
+
   Future<domain.TreeCompanion?> _findSingletonTree() async {
     final query = _database.select(_database.treeCompanions)
       ..where((TreeCompanions table) => table.singletonKey.equals(1));
@@ -371,6 +469,48 @@ domain.TreeGrowthCredit _creditFromRow(TreeGrowthCreditRow row) {
       table: 'tree_growth_credits',
       rowIdentifier: row.sourceSessionId,
       reason: 'Stored growth credit violates the domain contract.',
+      cause: error,
+    );
+  }
+}
+
+domain.SevenDayExperiment _experimentFromRow(SevenDayExperimentRow row) {
+  if (row.lengthDays != domain.SevenDayExperiment.lengthDays) {
+    throw StoredDataIntegrityException(
+      table: 'seven_day_experiments',
+      rowIdentifier: '${row.singletonKey}',
+      reason: 'Experiment length is not supported by this client.',
+    );
+  }
+  try {
+    return domain.SevenDayExperiment(
+      startedOn: domain.LocalDate.parse(row.startedLocalDate),
+    );
+  } on Object catch (error) {
+    throw StoredDataIntegrityException(
+      table: 'seven_day_experiments',
+      rowIdentifier: '${row.singletonKey}',
+      reason: 'Stored experiment violates the domain contract.',
+      cause: error,
+    );
+  }
+}
+
+domain.DailyCheckIn _checkInFromRow(DailyCheckInRow row) {
+  try {
+    return domain.DailyCheckIn(
+      localDate: domain.LocalDate.parse(row.localDate),
+      intentionAlignment: _enumByName(
+        values: domain.IntentionAlignment.values,
+        name: row.intentionAlignment,
+        field: 'intentionAlignment',
+      ),
+    );
+  } on Object catch (error) {
+    throw StoredDataIntegrityException(
+      table: 'daily_check_ins',
+      rowIdentifier: row.localDate,
+      reason: 'Stored check-in violates the domain contract.',
       cause: error,
     );
   }

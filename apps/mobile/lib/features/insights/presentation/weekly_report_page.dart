@@ -13,6 +13,8 @@ class WeeklyReportPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final progress = ref.watch(treeProgressProvider);
     final weeklyDays = ref.watch(weeklyGrowthDaysProvider);
+    final attemptDays = ref.watch(experimentAttemptDaysProvider);
+    final experimentLength = ref.watch(experimentLengthDaysProvider);
     final flags = ref.watch(treeFeatureFlagsProvider);
 
     return DopaDestinationScaffold(
@@ -41,7 +43,10 @@ class WeeklyReportPage extends ConsumerWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: DopaSpacing.md),
-                  _ReportRow(label: '시도한 날', value: '$weeklyDays일'),
+                  _ReportRow(
+                    label: '시도한 날',
+                    value: '$attemptDays/$experimentLength일',
+                  ),
                   const SizedBox(height: DopaSpacing.md),
                   Text(
                     '쉬었던 날은 실패로 계산하지 않아요. 다음 시도를 가볍게 골라보세요.',

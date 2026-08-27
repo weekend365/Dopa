@@ -369,7 +369,86 @@ void main() {
       expect(await database.select(database.focusSessions).get(), isEmpty);
       expect(await database.select(database.treeCompanions).get(), isEmpty);
       expect(await database.select(database.treeGrowthCredits).get(), isEmpty);
+      expect(
+        await database.select(database.sevenDayExperiments).get(),
+        isEmpty,
+      );
+      expect(await database.select(database.dailyCheckIns).get(), isEmpty);
     });
+
+    test(
+      'experiment attempt days ignore check-ins and invalid recovery',
+      () async {
+        await repository.writeTransaction(
+          (transaction) => transaction.getOrCreateExperiment(
+            startedOn: LocalDate(2026, 8, 27),
+          ),
+        );
+        await _save(
+          repository,
+          _session(
+            id: 'attempt-1',
+            startedAtUtc: DateTime.utc(2026, 8, 27, 1),
+            startedLocalDate: LocalDate(2026, 8, 27),
+          ),
+        );
+        await _save(
+          repository,
+          _session(
+            id: 'early-same-day',
+            startedAtUtc: DateTime.utc(2026, 8, 27, 4),
+            startedLocalDate: LocalDate(2026, 8, 27),
+          ).finish(
+            status: FocusSessionStatus.endedEarly,
+            endedAtUtc: DateTime.utc(2026, 8, 27, 4, 2),
+          ),
+        );
+        await _save(
+          repository,
+          _session(
+            id: 'attempt-2',
+            startedAtUtc: DateTime.utc(2026, 8, 28, 1),
+            startedLocalDate: LocalDate(2026, 8, 28),
+          ),
+        );
+        await _save(
+          repository,
+          _session(
+            id: 'outside-window',
+            startedAtUtc: DateTime.utc(2026, 9, 4, 1),
+            startedLocalDate: LocalDate(2026, 9, 4),
+          ),
+        );
+        await _save(
+          repository,
+          _session(
+            id: 'invalid',
+            startedAtUtc: DateTime.utc(2026, 8, 29, 1),
+            startedLocalDate: LocalDate(2026, 8, 29),
+          ).finish(
+            status: FocusSessionStatus.invalidRecovery,
+            endedAtUtc: DateTime.utc(2026, 8, 29, 3),
+          ),
+        );
+        await repository.writeTransaction(
+          (transaction) => transaction.saveCheckIn(
+            DailyCheckIn(
+              localDate: LocalDate(2026, 8, 30),
+              intentionAlignment: IntentionAlignment.yes,
+            ),
+          ),
+        );
+
+        expect(await repository.countExperimentAttemptDays(), 2);
+
+        final kept = await repository.writeTransaction(
+          (transaction) => transaction.getOrCreateExperiment(
+            startedOn: LocalDate(2026, 9, 1),
+          ),
+        );
+        expect(kept.startedOn, LocalDate(2026, 8, 27));
+      },
+    );
   });
 }
 

@@ -1516,6 +1516,508 @@ class TreeGrowthCreditsCompanion extends UpdateCompanion<TreeGrowthCreditRow> {
   }
 }
 
+class $SevenDayExperimentsTable extends SevenDayExperiments
+    with TableInfo<$SevenDayExperimentsTable, SevenDayExperimentRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SevenDayExperimentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _singletonKeyMeta = const VerificationMeta(
+    'singletonKey',
+  );
+  @override
+  late final GeneratedColumn<int> singletonKey = GeneratedColumn<int>(
+    'singleton_key',
+    aliasedName,
+    false,
+    check: () => singletonKey.equals(1),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant<int>(1),
+  );
+  static const VerificationMeta _startedLocalDateMeta = const VerificationMeta(
+    'startedLocalDate',
+  );
+  @override
+  late final GeneratedColumn<String> startedLocalDate = GeneratedColumn<String>(
+    'started_local_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lengthDaysMeta = const VerificationMeta(
+    'lengthDays',
+  );
+  @override
+  late final GeneratedColumn<int> lengthDays = GeneratedColumn<int>(
+    'length_days',
+    aliasedName,
+    false,
+    check: () => lengthDays.equals(7),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant<int>(7),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    singletonKey,
+    startedLocalDate,
+    lengthDays,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'seven_day_experiments';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SevenDayExperimentRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('singleton_key')) {
+      context.handle(
+        _singletonKeyMeta,
+        singletonKey.isAcceptableOrUnknown(
+          data['singleton_key']!,
+          _singletonKeyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('started_local_date')) {
+      context.handle(
+        _startedLocalDateMeta,
+        startedLocalDate.isAcceptableOrUnknown(
+          data['started_local_date']!,
+          _startedLocalDateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_startedLocalDateMeta);
+    }
+    if (data.containsKey('length_days')) {
+      context.handle(
+        _lengthDaysMeta,
+        lengthDays.isAcceptableOrUnknown(data['length_days']!, _lengthDaysMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {singletonKey};
+  @override
+  SevenDayExperimentRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SevenDayExperimentRow(
+      singletonKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}singleton_key'],
+      )!,
+      startedLocalDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}started_local_date'],
+      )!,
+      lengthDays: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}length_days'],
+      )!,
+    );
+  }
+
+  @override
+  $SevenDayExperimentsTable createAlias(String alias) {
+    return $SevenDayExperimentsTable(attachedDatabase, alias);
+  }
+}
+
+class SevenDayExperimentRow extends DataClass
+    implements Insertable<SevenDayExperimentRow> {
+  final int singletonKey;
+  final String startedLocalDate;
+  final int lengthDays;
+  const SevenDayExperimentRow({
+    required this.singletonKey,
+    required this.startedLocalDate,
+    required this.lengthDays,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['singleton_key'] = Variable<int>(singletonKey);
+    map['started_local_date'] = Variable<String>(startedLocalDate);
+    map['length_days'] = Variable<int>(lengthDays);
+    return map;
+  }
+
+  SevenDayExperimentsCompanion toCompanion(bool nullToAbsent) {
+    return SevenDayExperimentsCompanion(
+      singletonKey: Value(singletonKey),
+      startedLocalDate: Value(startedLocalDate),
+      lengthDays: Value(lengthDays),
+    );
+  }
+
+  factory SevenDayExperimentRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SevenDayExperimentRow(
+      singletonKey: serializer.fromJson<int>(json['singletonKey']),
+      startedLocalDate: serializer.fromJson<String>(json['startedLocalDate']),
+      lengthDays: serializer.fromJson<int>(json['lengthDays']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'singletonKey': serializer.toJson<int>(singletonKey),
+      'startedLocalDate': serializer.toJson<String>(startedLocalDate),
+      'lengthDays': serializer.toJson<int>(lengthDays),
+    };
+  }
+
+  SevenDayExperimentRow copyWith({
+    int? singletonKey,
+    String? startedLocalDate,
+    int? lengthDays,
+  }) => SevenDayExperimentRow(
+    singletonKey: singletonKey ?? this.singletonKey,
+    startedLocalDate: startedLocalDate ?? this.startedLocalDate,
+    lengthDays: lengthDays ?? this.lengthDays,
+  );
+  SevenDayExperimentRow copyWithCompanion(SevenDayExperimentsCompanion data) {
+    return SevenDayExperimentRow(
+      singletonKey: data.singletonKey.present
+          ? data.singletonKey.value
+          : this.singletonKey,
+      startedLocalDate: data.startedLocalDate.present
+          ? data.startedLocalDate.value
+          : this.startedLocalDate,
+      lengthDays: data.lengthDays.present
+          ? data.lengthDays.value
+          : this.lengthDays,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SevenDayExperimentRow(')
+          ..write('singletonKey: $singletonKey, ')
+          ..write('startedLocalDate: $startedLocalDate, ')
+          ..write('lengthDays: $lengthDays')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(singletonKey, startedLocalDate, lengthDays);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SevenDayExperimentRow &&
+          other.singletonKey == this.singletonKey &&
+          other.startedLocalDate == this.startedLocalDate &&
+          other.lengthDays == this.lengthDays);
+}
+
+class SevenDayExperimentsCompanion
+    extends UpdateCompanion<SevenDayExperimentRow> {
+  final Value<int> singletonKey;
+  final Value<String> startedLocalDate;
+  final Value<int> lengthDays;
+  const SevenDayExperimentsCompanion({
+    this.singletonKey = const Value.absent(),
+    this.startedLocalDate = const Value.absent(),
+    this.lengthDays = const Value.absent(),
+  });
+  SevenDayExperimentsCompanion.insert({
+    this.singletonKey = const Value.absent(),
+    required String startedLocalDate,
+    this.lengthDays = const Value.absent(),
+  }) : startedLocalDate = Value(startedLocalDate);
+  static Insertable<SevenDayExperimentRow> custom({
+    Expression<int>? singletonKey,
+    Expression<String>? startedLocalDate,
+    Expression<int>? lengthDays,
+  }) {
+    return RawValuesInsertable({
+      if (singletonKey != null) 'singleton_key': singletonKey,
+      if (startedLocalDate != null) 'started_local_date': startedLocalDate,
+      if (lengthDays != null) 'length_days': lengthDays,
+    });
+  }
+
+  SevenDayExperimentsCompanion copyWith({
+    Value<int>? singletonKey,
+    Value<String>? startedLocalDate,
+    Value<int>? lengthDays,
+  }) {
+    return SevenDayExperimentsCompanion(
+      singletonKey: singletonKey ?? this.singletonKey,
+      startedLocalDate: startedLocalDate ?? this.startedLocalDate,
+      lengthDays: lengthDays ?? this.lengthDays,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (singletonKey.present) {
+      map['singleton_key'] = Variable<int>(singletonKey.value);
+    }
+    if (startedLocalDate.present) {
+      map['started_local_date'] = Variable<String>(startedLocalDate.value);
+    }
+    if (lengthDays.present) {
+      map['length_days'] = Variable<int>(lengthDays.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SevenDayExperimentsCompanion(')
+          ..write('singletonKey: $singletonKey, ')
+          ..write('startedLocalDate: $startedLocalDate, ')
+          ..write('lengthDays: $lengthDays')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DailyCheckInsTable extends DailyCheckIns
+    with TableInfo<$DailyCheckInsTable, DailyCheckInRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DailyCheckInsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _localDateMeta = const VerificationMeta(
+    'localDate',
+  );
+  @override
+  late final GeneratedColumn<String> localDate = GeneratedColumn<String>(
+    'local_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _intentionAlignmentMeta =
+      const VerificationMeta('intentionAlignment');
+  @override
+  late final GeneratedColumn<String> intentionAlignment =
+      GeneratedColumn<String>(
+        'intention_alignment',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [localDate, intentionAlignment];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'daily_check_ins';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DailyCheckInRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('local_date')) {
+      context.handle(
+        _localDateMeta,
+        localDate.isAcceptableOrUnknown(data['local_date']!, _localDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localDateMeta);
+    }
+    if (data.containsKey('intention_alignment')) {
+      context.handle(
+        _intentionAlignmentMeta,
+        intentionAlignment.isAcceptableOrUnknown(
+          data['intention_alignment']!,
+          _intentionAlignmentMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_intentionAlignmentMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {localDate};
+  @override
+  DailyCheckInRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DailyCheckInRow(
+      localDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_date'],
+      )!,
+      intentionAlignment: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}intention_alignment'],
+      )!,
+    );
+  }
+
+  @override
+  $DailyCheckInsTable createAlias(String alias) {
+    return $DailyCheckInsTable(attachedDatabase, alias);
+  }
+}
+
+class DailyCheckInRow extends DataClass implements Insertable<DailyCheckInRow> {
+  final String localDate;
+  final String intentionAlignment;
+  const DailyCheckInRow({
+    required this.localDate,
+    required this.intentionAlignment,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['local_date'] = Variable<String>(localDate);
+    map['intention_alignment'] = Variable<String>(intentionAlignment);
+    return map;
+  }
+
+  DailyCheckInsCompanion toCompanion(bool nullToAbsent) {
+    return DailyCheckInsCompanion(
+      localDate: Value(localDate),
+      intentionAlignment: Value(intentionAlignment),
+    );
+  }
+
+  factory DailyCheckInRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DailyCheckInRow(
+      localDate: serializer.fromJson<String>(json['localDate']),
+      intentionAlignment: serializer.fromJson<String>(
+        json['intentionAlignment'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'localDate': serializer.toJson<String>(localDate),
+      'intentionAlignment': serializer.toJson<String>(intentionAlignment),
+    };
+  }
+
+  DailyCheckInRow copyWith({String? localDate, String? intentionAlignment}) =>
+      DailyCheckInRow(
+        localDate: localDate ?? this.localDate,
+        intentionAlignment: intentionAlignment ?? this.intentionAlignment,
+      );
+  DailyCheckInRow copyWithCompanion(DailyCheckInsCompanion data) {
+    return DailyCheckInRow(
+      localDate: data.localDate.present ? data.localDate.value : this.localDate,
+      intentionAlignment: data.intentionAlignment.present
+          ? data.intentionAlignment.value
+          : this.intentionAlignment,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DailyCheckInRow(')
+          ..write('localDate: $localDate, ')
+          ..write('intentionAlignment: $intentionAlignment')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(localDate, intentionAlignment);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DailyCheckInRow &&
+          other.localDate == this.localDate &&
+          other.intentionAlignment == this.intentionAlignment);
+}
+
+class DailyCheckInsCompanion extends UpdateCompanion<DailyCheckInRow> {
+  final Value<String> localDate;
+  final Value<String> intentionAlignment;
+  final Value<int> rowid;
+  const DailyCheckInsCompanion({
+    this.localDate = const Value.absent(),
+    this.intentionAlignment = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DailyCheckInsCompanion.insert({
+    required String localDate,
+    required String intentionAlignment,
+    this.rowid = const Value.absent(),
+  }) : localDate = Value(localDate),
+       intentionAlignment = Value(intentionAlignment);
+  static Insertable<DailyCheckInRow> custom({
+    Expression<String>? localDate,
+    Expression<String>? intentionAlignment,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (localDate != null) 'local_date': localDate,
+      if (intentionAlignment != null) 'intention_alignment': intentionAlignment,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DailyCheckInsCompanion copyWith({
+    Value<String>? localDate,
+    Value<String>? intentionAlignment,
+    Value<int>? rowid,
+  }) {
+    return DailyCheckInsCompanion(
+      localDate: localDate ?? this.localDate,
+      intentionAlignment: intentionAlignment ?? this.intentionAlignment,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (localDate.present) {
+      map['local_date'] = Variable<String>(localDate.value);
+    }
+    if (intentionAlignment.present) {
+      map['intention_alignment'] = Variable<String>(intentionAlignment.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DailyCheckInsCompanion(')
+          ..write('localDate: $localDate, ')
+          ..write('intentionAlignment: $intentionAlignment, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$DopaDatabase extends GeneratedDatabase {
   _$DopaDatabase(QueryExecutor e) : super(e);
   $DopaDatabaseManager get managers => $DopaDatabaseManager(this);
@@ -1523,6 +2025,9 @@ abstract class _$DopaDatabase extends GeneratedDatabase {
   late final $TreeCompanionsTable treeCompanions = $TreeCompanionsTable(this);
   late final $TreeGrowthCreditsTable treeGrowthCredits =
       $TreeGrowthCreditsTable(this);
+  late final $SevenDayExperimentsTable sevenDayExperiments =
+      $SevenDayExperimentsTable(this);
+  late final $DailyCheckInsTable dailyCheckIns = $DailyCheckInsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1531,6 +2036,8 @@ abstract class _$DopaDatabase extends GeneratedDatabase {
     focusSessions,
     treeCompanions,
     treeGrowthCredits,
+    sevenDayExperiments,
+    dailyCheckIns,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -2733,6 +3240,333 @@ typedef $$TreeGrowthCreditsTableProcessedTableManager =
       TreeGrowthCreditRow,
       PrefetchHooks Function({bool treeId, bool sourceSessionId})
     >;
+typedef $$SevenDayExperimentsTableCreateCompanionBuilder =
+    SevenDayExperimentsCompanion Function({
+      Value<int> singletonKey,
+      required String startedLocalDate,
+      Value<int> lengthDays,
+    });
+typedef $$SevenDayExperimentsTableUpdateCompanionBuilder =
+    SevenDayExperimentsCompanion Function({
+      Value<int> singletonKey,
+      Value<String> startedLocalDate,
+      Value<int> lengthDays,
+    });
+
+class $$SevenDayExperimentsTableFilterComposer
+    extends Composer<_$DopaDatabase, $SevenDayExperimentsTable> {
+  $$SevenDayExperimentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get singletonKey => $composableBuilder(
+    column: $table.singletonKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get startedLocalDate => $composableBuilder(
+    column: $table.startedLocalDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get lengthDays => $composableBuilder(
+    column: $table.lengthDays,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SevenDayExperimentsTableOrderingComposer
+    extends Composer<_$DopaDatabase, $SevenDayExperimentsTable> {
+  $$SevenDayExperimentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get singletonKey => $composableBuilder(
+    column: $table.singletonKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get startedLocalDate => $composableBuilder(
+    column: $table.startedLocalDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lengthDays => $composableBuilder(
+    column: $table.lengthDays,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SevenDayExperimentsTableAnnotationComposer
+    extends Composer<_$DopaDatabase, $SevenDayExperimentsTable> {
+  $$SevenDayExperimentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get singletonKey => $composableBuilder(
+    column: $table.singletonKey,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get startedLocalDate => $composableBuilder(
+    column: $table.startedLocalDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get lengthDays => $composableBuilder(
+    column: $table.lengthDays,
+    builder: (column) => column,
+  );
+}
+
+class $$SevenDayExperimentsTableTableManager
+    extends
+        RootTableManager<
+          _$DopaDatabase,
+          $SevenDayExperimentsTable,
+          SevenDayExperimentRow,
+          $$SevenDayExperimentsTableFilterComposer,
+          $$SevenDayExperimentsTableOrderingComposer,
+          $$SevenDayExperimentsTableAnnotationComposer,
+          $$SevenDayExperimentsTableCreateCompanionBuilder,
+          $$SevenDayExperimentsTableUpdateCompanionBuilder,
+          (
+            SevenDayExperimentRow,
+            BaseReferences<
+              _$DopaDatabase,
+              $SevenDayExperimentsTable,
+              SevenDayExperimentRow
+            >,
+          ),
+          SevenDayExperimentRow,
+          PrefetchHooks Function()
+        > {
+  $$SevenDayExperimentsTableTableManager(
+    _$DopaDatabase db,
+    $SevenDayExperimentsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SevenDayExperimentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SevenDayExperimentsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$SevenDayExperimentsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> singletonKey = const Value.absent(),
+                Value<String> startedLocalDate = const Value.absent(),
+                Value<int> lengthDays = const Value.absent(),
+              }) => SevenDayExperimentsCompanion(
+                singletonKey: singletonKey,
+                startedLocalDate: startedLocalDate,
+                lengthDays: lengthDays,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> singletonKey = const Value.absent(),
+                required String startedLocalDate,
+                Value<int> lengthDays = const Value.absent(),
+              }) => SevenDayExperimentsCompanion.insert(
+                singletonKey: singletonKey,
+                startedLocalDate: startedLocalDate,
+                lengthDays: lengthDays,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SevenDayExperimentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$DopaDatabase,
+      $SevenDayExperimentsTable,
+      SevenDayExperimentRow,
+      $$SevenDayExperimentsTableFilterComposer,
+      $$SevenDayExperimentsTableOrderingComposer,
+      $$SevenDayExperimentsTableAnnotationComposer,
+      $$SevenDayExperimentsTableCreateCompanionBuilder,
+      $$SevenDayExperimentsTableUpdateCompanionBuilder,
+      (
+        SevenDayExperimentRow,
+        BaseReferences<
+          _$DopaDatabase,
+          $SevenDayExperimentsTable,
+          SevenDayExperimentRow
+        >,
+      ),
+      SevenDayExperimentRow,
+      PrefetchHooks Function()
+    >;
+typedef $$DailyCheckInsTableCreateCompanionBuilder =
+    DailyCheckInsCompanion Function({
+      required String localDate,
+      required String intentionAlignment,
+      Value<int> rowid,
+    });
+typedef $$DailyCheckInsTableUpdateCompanionBuilder =
+    DailyCheckInsCompanion Function({
+      Value<String> localDate,
+      Value<String> intentionAlignment,
+      Value<int> rowid,
+    });
+
+class $$DailyCheckInsTableFilterComposer
+    extends Composer<_$DopaDatabase, $DailyCheckInsTable> {
+  $$DailyCheckInsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get localDate => $composableBuilder(
+    column: $table.localDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get intentionAlignment => $composableBuilder(
+    column: $table.intentionAlignment,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DailyCheckInsTableOrderingComposer
+    extends Composer<_$DopaDatabase, $DailyCheckInsTable> {
+  $$DailyCheckInsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get localDate => $composableBuilder(
+    column: $table.localDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get intentionAlignment => $composableBuilder(
+    column: $table.intentionAlignment,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DailyCheckInsTableAnnotationComposer
+    extends Composer<_$DopaDatabase, $DailyCheckInsTable> {
+  $$DailyCheckInsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get localDate =>
+      $composableBuilder(column: $table.localDate, builder: (column) => column);
+
+  GeneratedColumn<String> get intentionAlignment => $composableBuilder(
+    column: $table.intentionAlignment,
+    builder: (column) => column,
+  );
+}
+
+class $$DailyCheckInsTableTableManager
+    extends
+        RootTableManager<
+          _$DopaDatabase,
+          $DailyCheckInsTable,
+          DailyCheckInRow,
+          $$DailyCheckInsTableFilterComposer,
+          $$DailyCheckInsTableOrderingComposer,
+          $$DailyCheckInsTableAnnotationComposer,
+          $$DailyCheckInsTableCreateCompanionBuilder,
+          $$DailyCheckInsTableUpdateCompanionBuilder,
+          (
+            DailyCheckInRow,
+            BaseReferences<
+              _$DopaDatabase,
+              $DailyCheckInsTable,
+              DailyCheckInRow
+            >,
+          ),
+          DailyCheckInRow,
+          PrefetchHooks Function()
+        > {
+  $$DailyCheckInsTableTableManager(_$DopaDatabase db, $DailyCheckInsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DailyCheckInsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DailyCheckInsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DailyCheckInsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> localDate = const Value.absent(),
+                Value<String> intentionAlignment = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DailyCheckInsCompanion(
+                localDate: localDate,
+                intentionAlignment: intentionAlignment,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String localDate,
+                required String intentionAlignment,
+                Value<int> rowid = const Value.absent(),
+              }) => DailyCheckInsCompanion.insert(
+                localDate: localDate,
+                intentionAlignment: intentionAlignment,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DailyCheckInsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$DopaDatabase,
+      $DailyCheckInsTable,
+      DailyCheckInRow,
+      $$DailyCheckInsTableFilterComposer,
+      $$DailyCheckInsTableOrderingComposer,
+      $$DailyCheckInsTableAnnotationComposer,
+      $$DailyCheckInsTableCreateCompanionBuilder,
+      $$DailyCheckInsTableUpdateCompanionBuilder,
+      (
+        DailyCheckInRow,
+        BaseReferences<_$DopaDatabase, $DailyCheckInsTable, DailyCheckInRow>,
+      ),
+      DailyCheckInRow,
+      PrefetchHooks Function()
+    >;
 
 class $DopaDatabaseManager {
   final _$DopaDatabase _db;
@@ -2743,4 +3577,8 @@ class $DopaDatabaseManager {
       $$TreeCompanionsTableTableManager(_db, _db.treeCompanions);
   $$TreeGrowthCreditsTableTableManager get treeGrowthCredits =>
       $$TreeGrowthCreditsTableTableManager(_db, _db.treeGrowthCredits);
+  $$SevenDayExperimentsTableTableManager get sevenDayExperiments =>
+      $$SevenDayExperimentsTableTableManager(_db, _db.sevenDayExperiments);
+  $$DailyCheckInsTableTableManager get dailyCheckIns =>
+      $$DailyCheckInsTableTableManager(_db, _db.dailyCheckIns);
 }

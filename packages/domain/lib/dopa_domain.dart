@@ -1,5 +1,8 @@
 export 'src/account/account_session.dart';
 export 'src/account/age_band.dart';
+export 'src/experiment/daily_check_in.dart';
+export 'src/experiment/ensure_seven_day_experiment.dart';
+export 'src/experiment/seven_day_experiment.dart';
 export 'src/focus/active_focus_recovery.dart';
 export 'src/focus/focus_session.dart';
 export 'src/shared/local_date.dart';

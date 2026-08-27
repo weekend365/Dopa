@@ -18,8 +18,18 @@ final treeProgressProvider = Provider<TreeProgress>(
   (ref) => ref.watch(treeProgressControllerProvider),
 );
 
-final experimentAttemptDaysProvider = Provider<int>((ref) => 0);
-final experimentLengthDaysProvider = Provider<int>((ref) => 7);
+final experimentAttemptDaysControllerProvider =
+    StateNotifierProvider<ExperimentAttemptDaysController, int>((ref) {
+      return ExperimentAttemptDaysController(
+        repository: ref.watch(focusTreeRepositoryProvider),
+      );
+    });
+final experimentAttemptDaysProvider = Provider<int>(
+  (ref) => ref.watch(experimentAttemptDaysControllerProvider),
+);
+final experimentLengthDaysProvider = Provider<int>(
+  (ref) => SevenDayExperiment.lengthDays,
+);
 final weeklyGrowthDaysControllerProvider =
     StateNotifierProvider<WeeklyGrowthDaysController, int>((ref) {
       return WeeklyGrowthDaysController(
@@ -62,6 +72,32 @@ class TreeProgressController extends StateNotifier<TreeProgress> {
     final progress = result.progress;
     if (progress != null && mounted) {
       state = progress;
+    }
+  }
+}
+
+class ExperimentAttemptDaysController extends StateNotifier<int> {
+  ExperimentAttemptDaysController({
+    required DriftFocusTreeRepository repository,
+  }) : _repository = repository,
+       super(0) {
+    unawaited(_initialise());
+  }
+
+  final DriftFocusTreeRepository _repository;
+
+  Future<void> _initialise() async {
+    try {
+      await refresh();
+    } on Object {
+      // Keep zero until an explicit refresh after a session attempt.
+    }
+  }
+
+  Future<void> refresh() async {
+    final count = await _repository.countExperimentAttemptDays();
+    if (mounted) {
+      state = count;
     }
   }
 }

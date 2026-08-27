@@ -147,6 +147,7 @@ class FocusSessionController extends StateNotifier<FocusSessionFlowState> {
       if (mounted) {
         state = FocusSessionFlowState(session: session);
       }
+      await _refreshExperimentDays();
       return session;
     } on Object catch (error) {
       if (mounted) {
@@ -263,6 +264,9 @@ class FocusSessionController extends StateNotifier<FocusSessionFlowState> {
           .applyCompletion(result);
       try {
         await _ref.read(weeklyGrowthDaysControllerProvider.notifier).refresh();
+        await _ref
+            .read(experimentAttemptDaysControllerProvider.notifier)
+            .refresh();
       } on Object {
         // The transaction already committed. A report refresh failure must not
         // make a successful focus completion look like a failed save.
@@ -290,6 +294,16 @@ class FocusSessionController extends StateNotifier<FocusSessionFlowState> {
       throw StateError('The focus session has already ended.');
     }
     return current;
+  }
+
+  Future<void> _refreshExperimentDays() async {
+    try {
+      await _ref
+          .read(experimentAttemptDaysControllerProvider.notifier)
+          .refresh();
+    } on Object {
+      // Attempt-day refresh must not fail a successful session start.
+    }
   }
 }
 

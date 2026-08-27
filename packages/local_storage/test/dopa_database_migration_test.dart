@@ -42,6 +42,8 @@ void main() {
     expect(row.id, 'legacy-session');
     expect(row.intention, isEmpty);
     expect(row.status, 'active');
+    expect(await database.select(database.sevenDayExperiments).get(), isEmpty);
+    expect(await database.select(database.dailyCheckIns).get(), isEmpty);
   });
 }
 
