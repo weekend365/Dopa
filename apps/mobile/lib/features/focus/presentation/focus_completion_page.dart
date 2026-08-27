@@ -68,6 +68,7 @@ class FocusCompletionPage extends ConsumerWidget {
       const SizedBox(height: DopaSpacing.md),
     ];
     final actions = _CompletionActions(
+      existing: ref.watch(todaysCheckInProvider),
       onSelect: (alignment) => _selectCheckIn(context, ref, alignment),
     );
     final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
@@ -158,44 +159,48 @@ class FocusCompletionPage extends ConsumerWidget {
 }
 
 class _CompletionActions extends StatelessWidget {
-  const _CompletionActions({required this.onSelect});
+  const _CompletionActions({required this.existing, required this.onSelect});
 
+  final DailyCheckIn? existing;
   final Future<void> Function(IntentionAlignment? alignment) onSelect;
 
   @override
   Widget build(BuildContext context) {
+    final answered = existing != null;
     return Column(
       key: const ValueKey('completion-immediate-actions'),
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          '오늘 사용은 내 의도와 맞았나요?',
+          answered ? '오늘의 체크인을 남겨 두었어요.' : '오늘 사용은 내 의도와 맞았나요?',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        const SizedBox(height: DopaSpacing.md),
-        Wrap(
-          alignment: WrapAlignment.center,
-          spacing: DopaSpacing.xs,
-          runSpacing: DopaSpacing.xs,
-          children: [
-            _CheckInButton(
-              key: const ValueKey('check-in-yes'),
-              label: '맞았어요',
-              onPressed: () => onSelect(IntentionAlignment.yes),
-            ),
-            _CheckInButton(
-              key: const ValueKey('check-in-no'),
-              label: '아니었어요',
-              onPressed: () => onSelect(IntentionAlignment.no),
-            ),
-            _CheckInButton(
-              key: const ValueKey('check-in-skipped'),
-              label: '건너뛰기',
-              onPressed: () => onSelect(IntentionAlignment.skipped),
-            ),
-          ],
-        ),
+        if (!answered) ...[
+          const SizedBox(height: DopaSpacing.md),
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: DopaSpacing.xs,
+            runSpacing: DopaSpacing.xs,
+            children: [
+              _CheckInButton(
+                key: const ValueKey('check-in-yes'),
+                label: '맞았어요',
+                onPressed: () => onSelect(IntentionAlignment.yes),
+              ),
+              _CheckInButton(
+                key: const ValueKey('check-in-no'),
+                label: '아니었어요',
+                onPressed: () => onSelect(IntentionAlignment.no),
+              ),
+              _CheckInButton(
+                key: const ValueKey('check-in-skipped'),
+                label: '건너뛰기',
+                onPressed: () => onSelect(IntentionAlignment.skipped),
+              ),
+            ],
+          ),
+        ],
         const SizedBox(height: DopaSpacing.md),
         SizedBox(
           width: double.infinity,

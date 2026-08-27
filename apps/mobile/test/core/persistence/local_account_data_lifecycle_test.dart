@@ -43,4 +43,30 @@ void main() {
       expect(await database.select(database.dailyCheckIns).get(), isEmpty);
     },
   );
+
+  test('existing trees without an experiment get the 7-day window', () async {
+    final database = DopaDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final repository = DriftFocusTreeRepository(
+      database: database,
+      treeIdFactory: () => 'tree-legacy',
+    );
+    final lifecycle = LocalAccountDataLifecycle(repository: repository);
+
+    await EnsureTreeCompanion(repository: repository)(
+      createdAtUtc: DateTime.utc(2026, 8, 20, 12),
+    );
+    expect(await database.select(database.sevenDayExperiments).get(), isEmpty);
+
+    await lifecycle.ensureExperimentForExistingTree();
+
+    expect(
+      await database.select(database.sevenDayExperiments).get(),
+      hasLength(1),
+    );
+    expect(
+      (await repository.readExperiment())!.startedOn,
+      LocalDate.fromLocal(DateTime.utc(2026, 8, 20, 12).toLocal()),
+    );
+  });
 }

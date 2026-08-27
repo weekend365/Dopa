@@ -447,8 +447,45 @@ void main() {
           ),
         );
         expect(kept.startedOn, LocalDate(2026, 8, 27));
+
+        await repository.writeTransaction(
+          (transaction) => transaction.saveCheckIn(
+            DailyCheckIn(
+              localDate: LocalDate(2026, 8, 30),
+              intentionAlignment: IntentionAlignment.no,
+            ),
+          ),
+        );
+        expect(
+          (await repository.readCheckIn(LocalDate(2026, 8, 30)))!
+              .intentionAlignment,
+          IntentionAlignment.yes,
+        );
       },
     );
+
+    test('missing experiment is created from an existing tree', () async {
+      await repository.writeTransaction(
+        (transaction) => transaction.getOrCreateTree(
+          createdAtUtc: DateTime.utc(2026, 8, 20, 12),
+          ruleVersion: 1,
+        ),
+      );
+      expect(await repository.readExperiment(), isNull);
+
+      final created = await EnsureSevenDayExperiment(repository: repository)
+          .fromExistingTree();
+      expect(
+        created!.startedOn,
+        LocalDate.fromLocal(DateTime.utc(2026, 8, 20, 12).toLocal()),
+      );
+      expect(
+        (await EnsureSevenDayExperiment(
+          repository: repository,
+        ).fromExistingTree())!.startedOn,
+        created.startedOn,
+      );
+    });
   });
 }
 

@@ -440,6 +440,9 @@ final class _MemoryFocusTreeRepository
   }
 
   @override
+  Future<TreeCompanion?> findTree() async => tree;
+
+  @override
   Future<TreeCompanion> getOrCreateTree({
     required DateTime createdAtUtc,
     required int ruleVersion,
@@ -502,8 +505,11 @@ final class _MemoryFocusTreeRepository
   }
 
   @override
-  Future<void> saveCheckIn(DailyCheckIn checkIn) async {
-    checkIns[checkIn.localDate.toIso8601String()] = checkIn;
+  Future<DailyCheckIn> saveCheckIn(DailyCheckIn checkIn) async {
+    return checkIns.putIfAbsent(
+      checkIn.localDate.toIso8601String(),
+      () => checkIn,
+    );
   }
 
   @override

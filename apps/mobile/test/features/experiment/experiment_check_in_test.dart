@@ -59,4 +59,34 @@ void main() {
       );
     },
   );
+
+  test('the first check-in of the day is kept', () async {
+    final database = DopaDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final repository = DriftFocusTreeRepository(
+      database: database,
+      treeIdFactory: () => 'tree-check-in-once',
+    );
+    final container = ProviderContainer(
+      overrides: [
+        focusTreeRepositoryProvider.overrideWithValue(repository),
+        localNowProvider.overrideWithValue(() => DateTime.utc(2026, 8, 27, 12)),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final controller = container.read(dailyCheckInControllerProvider.notifier);
+    await controller.record(IntentionAlignment.yes);
+    await controller.record(IntentionAlignment.no);
+
+    expect(
+      container.read(dailyCheckInControllerProvider)!.intentionAlignment,
+      IntentionAlignment.yes,
+    );
+    expect(
+      (await repository.readCheckIn(LocalDate(2026, 8, 27)))!
+          .intentionAlignment,
+      IntentionAlignment.yes,
+    );
+  });
 }

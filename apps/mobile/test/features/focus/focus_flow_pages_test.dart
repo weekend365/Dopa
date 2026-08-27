@@ -1,3 +1,4 @@
+import 'package:dopa/features/experiment/application/daily_check_in_controller.dart';
 import 'package:dopa/features/focus/application/focus_session_controller.dart';
 import 'package:dopa/features/focus/presentation/focus_completion_page.dart';
 import 'package:dopa/features/focus/presentation/focus_progress_page.dart';
@@ -83,11 +84,9 @@ void main() {
     (tester) async {
       final data = TreeCompletionViewData.forRoute('milestone');
       await tester.pumpWidget(
-        ProviderScope(
-          child: TestApp(
-            disableAnimations: true,
-            home: FocusCompletionPage(data: data),
-          ),
+        _completionScope(
+          disableAnimations: true,
+          home: FocusCompletionPage(data: data),
         ),
       );
 
@@ -102,14 +101,12 @@ void main() {
   testWidgets('90-day milestone uses mature-stage reveal copy', (tester) async {
     const policy = TreeGrowthPolicy();
     await tester.pumpWidget(
-      ProviderScope(
-        child: TestApp(
-          disableAnimations: true,
-          home: FocusCompletionPage(
-            data: TreeCompletionViewData(
-              kind: TreeCompletionKind.milestone,
-              progress: policy.progressFor(90),
-            ),
+      _completionScope(
+        disableAnimations: true,
+        home: FocusCompletionPage(
+          data: TreeCompletionViewData(
+            kind: TreeCompletionKind.milestone,
+            progress: policy.progressFor(90),
           ),
         ),
       ),
@@ -124,16 +121,14 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      ProviderScope(
+      _completionScope(
         overrides: [
           treeFeatureFlagsProvider.overrideWithValue(
             const TreeFeatureFlags(treeUiEnabled: false),
           ),
         ],
-        child: TestApp(
-          home: FocusCompletionPage(
-            data: TreeCompletionViewData.forRoute('milestone'),
-          ),
+        home: FocusCompletionPage(
+          data: TreeCompletionViewData.forRoute('milestone'),
         ),
       ),
     );
@@ -157,12 +152,10 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     await tester.pumpWidget(
-      ProviderScope(
-        child: TestApp(
-          disableAnimations: true,
-          home: FocusCompletionPage(
-            data: TreeCompletionViewData.forRoute('milestone'),
-          ),
+      _completionScope(
+        disableAnimations: true,
+        home: FocusCompletionPage(
+          data: TreeCompletionViewData.forRoute('milestone'),
         ),
       ),
     );
@@ -179,13 +172,11 @@ void main() {
     'completion actions remain scroll-accessible at 200 percent text',
     (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          child: TestApp(
-            textScale: 2,
-            disableAnimations: true,
-            home: FocusCompletionPage(
-              data: TreeCompletionViewData.forRoute('milestone'),
-            ),
+        _completionScope(
+          textScale: 2,
+          disableAnimations: true,
+          home: FocusCompletionPage(
+            data: TreeCompletionViewData.forRoute('milestone'),
           ),
         ),
       );
@@ -204,9 +195,7 @@ void main() {
     (tester) async {
       final data = TreeCompletionViewData.forRoute('duplicate');
       await tester.pumpWidget(
-        ProviderScope(
-          child: TestApp(home: FocusCompletionPage(data: data)),
-        ),
+        _completionScope(home: FocusCompletionPage(data: data)),
       );
 
       expect(find.text('오늘의 성장은 이미 남겨졌어요'), findsOneWidget);
@@ -219,14 +208,56 @@ void main() {
   ) async {
     final data = TreeCompletionViewData.forRoute('ring');
     await tester.pumpWidget(
-      ProviderScope(
-        child: TestApp(home: FocusCompletionPage(data: data)),
-      ),
+      _completionScope(home: FocusCompletionPage(data: data)),
     );
 
     expect(find.text('나이테가 하나 더 새겨졌어요'), findsOneWidget);
     expect(find.text('함께 자란 120일 · 성목'), findsOneWidget);
   });
+
+  testWidgets('already stored check-in hides completion choices', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _completionScope(
+        disableAnimations: true,
+        overrides: [
+          todaysCheckInProvider.overrideWithValue(
+            DailyCheckIn(
+              localDate: LocalDate(2026, 8, 27),
+              intentionAlignment: IntentionAlignment.yes,
+            ),
+          ),
+        ],
+        home: FocusCompletionPage(
+          data: TreeCompletionViewData.forRoute('milestone'),
+        ),
+      ),
+    );
+
+    expect(find.text('오늘의 체크인을 남겨 두었어요.'), findsOneWidget);
+    expect(find.byKey(const ValueKey('check-in-yes')), findsNothing);
+    expect(find.text('오늘로 돌아가기'), findsOneWidget);
+  });
+}
+
+ProviderScope _completionScope({
+  required Widget home,
+  List<Override> overrides = const <Override>[],
+  double textScale = 1,
+  bool disableAnimations = false,
+}) {
+  return ProviderScope(
+    overrides: <Override>[
+      todaysCheckInProvider.overrideWithValue(null),
+      ...overrides,
+    ],
+    child: TestApp(
+      textScale: textScale,
+      disableAnimations: disableAnimations,
+      home: home,
+    ),
+  );
 }
 
 class _SeededFocusSessionController extends FocusSessionController {

@@ -88,6 +88,8 @@ class ExperimentAttemptDaysController extends StateNotifier<int> {
 
   Future<void> _initialise() async {
     try {
+      await EnsureSevenDayExperiment(repository: _repository)
+          .fromExistingTree();
       await refresh();
     } on Object {
       // Keep zero until an explicit refresh after a session attempt.

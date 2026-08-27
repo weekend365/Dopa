@@ -214,6 +214,9 @@ final class _DriftFocusTreeTransaction implements domain.FocusTreeTransaction {
   }
 
   @override
+  Future<domain.TreeCompanion?> findTree() => _findSingletonTree();
+
+  @override
   Future<domain.TreeCompanion> getOrCreateTree({
     required DateTime createdAtUtc,
     required int ruleVersion,
@@ -340,15 +343,21 @@ final class _DriftFocusTreeTransaction implements domain.FocusTreeTransaction {
   }
 
   @override
-  Future<void> saveCheckIn(domain.DailyCheckIn checkIn) async {
+  Future<domain.DailyCheckIn> saveCheckIn(domain.DailyCheckIn checkIn) async {
     await _database
         .into(_database.dailyCheckIns)
-        .insertOnConflictUpdate(
+        .insert(
           DailyCheckInsCompanion.insert(
             localDate: checkIn.localDate.toIso8601String(),
             intentionAlignment: checkIn.intentionAlignment.name,
           ),
+          mode: InsertMode.insertOrIgnore,
         );
+    final stored = await findCheckIn(checkIn.localDate);
+    if (stored == null) {
+      throw StateError('Expected a persisted daily check-in.');
+    }
+    return stored;
   }
 
   @override

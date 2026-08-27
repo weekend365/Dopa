@@ -14,4 +14,18 @@ final class EnsureSevenDayExperiment {
       (transaction) => transaction.getOrCreateExperiment(startedOn: startedOn),
     );
   }
+
+  /// Starts the window from the existing tree when the experiment row is
+  /// missing. Returns `null` before consent, so no check-in store is created.
+  Future<SevenDayExperiment?> fromExistingTree() {
+    return _repository.writeTransaction((transaction) async {
+      final tree = await transaction.findTree();
+      if (tree == null) {
+        return null;
+      }
+      return transaction.getOrCreateExperiment(
+        startedOn: LocalDate.fromLocal(tree.createdAtUtc.toLocal()),
+      );
+    });
+  }
 }

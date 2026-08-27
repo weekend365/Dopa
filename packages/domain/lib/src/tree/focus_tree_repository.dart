@@ -27,6 +27,9 @@ abstract interface class FocusTreeTransaction {
 
   Future<void> saveSession(FocusSession session);
 
+  /// Returns the device-local tree when consent has already created it.
+  Future<TreeCompanion?> findTree();
+
   /// Returns the one device-local tree, creating it atomically when absent.
   Future<TreeCompanion> getOrCreateTree({
     required DateTime createdAtUtc,
@@ -49,7 +52,9 @@ abstract interface class FocusTreeTransaction {
     required LocalDate startedOn,
   });
 
-  Future<void> saveCheckIn(DailyCheckIn checkIn);
+  /// Persists the first answer for [DailyCheckIn.localDate]. Later writes
+  /// return the stored row instead of replacing it.
+  Future<DailyCheckIn> saveCheckIn(DailyCheckIn checkIn);
 
   Future<DailyCheckIn?> findCheckIn(LocalDate localDate);
 }

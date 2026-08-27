@@ -25,6 +25,14 @@ final class LocalAccountDataLifecycle {
     return _repository.readTreeProgress();
   }
 
+  /// Creates the 7-day window for a tree that predates schema v3.
+  ///
+  /// No-ops when the account has not consented yet, so the check-in store is
+  /// not opened before login.
+  Future<void> ensureExperimentForExistingTree() async {
+    await EnsureSevenDayExperiment(repository: _repository).fromExistingTree();
+  }
+
   Future<void> deleteForLogoutOrAccountDeletion() =>
       _repository.deleteAllLocalData();
 }

@@ -123,4 +123,36 @@ void main() {
     expect(await store.read(), isNull);
     expect(await database.select(database.treeCompanions).get(), isEmpty);
   });
+
+  test(
+    'restoring a consented session backfills a missing experiment',
+    () async {
+      await EnsureTreeCompanion(
+        repository: DriftFocusTreeRepository(
+          database: database,
+          treeIdFactory: () => 'tree-legacy',
+        ),
+      )(createdAtUtc: DateTime.utc(2026, 8, 20, 12));
+      expect(
+        await database.select(database.sevenDayExperiments).get(),
+        isEmpty,
+      );
+
+      await store.save(
+        AccountSession(
+          ageBand: AgeBand.adult18Plus,
+          ageAttestedAtUtc: DateTime.utc(2026, 8, 20),
+          provider: SignInProvider.apple,
+          consentVersion: AccountSession.currentConsentVersion,
+        ),
+      );
+
+      await controller();
+      expect(container.read(authControllerProvider).phase, AuthPhase.ready);
+      expect(
+        await database.select(database.sevenDayExperiments).get(),
+        hasLength(1),
+      );
+    },
+  );
 }

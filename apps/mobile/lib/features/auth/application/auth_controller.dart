@@ -46,7 +46,18 @@ class AuthController extends StateNotifier<AuthState> {
   Future<void> _restore() async {
     try {
       final session = await _store.read();
-      state = AuthState(phase: _phaseFor(session, _clock()), session: session);
+      final phase = _phaseFor(session, _clock());
+      if (phase == AuthPhase.ready) {
+        try {
+          await _ref
+              .read(localAccountDataLifecycleProvider)
+              .ensureExperimentForExistingTree();
+        } on Object {
+          // The authenticated shell can still open. Experiment days stay at
+          // zero until a later successful refresh.
+        }
+      }
+      state = AuthState(phase: phase, session: session);
     } on Object {
       await _store.clear();
       state = const AuthState(phase: AuthPhase.needsAge);
