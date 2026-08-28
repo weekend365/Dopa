@@ -46,8 +46,10 @@ Flutter SDK와 FVM이 설치된 환경에서 저장소 루트 기준으로 실�
 fvm use 3.47.0
 fvm flutter pub get
 cd apps/mobile
-fvm flutter run
+fvm flutter run --flavor dev
 ```
+
+개발·운영 앱 식별자와 Firebase 환경 분리는 [`docs/platform/MOBILE_ENVIRONMENTS_KO.md`](docs/platform/MOBILE_ENVIRONMENTS_KO.md)를 따른다. 운영 빌드는 `prod` flavor를 명시한다.
 
 FVM을 사용하지 않는다면 PATH에 Flutter `3.47.0`을 선택한 뒤 `flutter pub get`을 실행합니다. iOS/Android host 프로젝트가 아직 없다면 macOS에서 다음 명령으로 생성합니다.
 
