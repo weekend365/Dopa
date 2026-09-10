@@ -2018,6 +2018,991 @@ class DailyCheckInsCompanion extends UpdateCompanion<DailyCheckInRow> {
   }
 }
 
+class $CompanionRunsTable extends CompanionRuns
+    with TableInfo<$CompanionRunsTable, CompanionRunRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CompanionRunsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _contentIdMeta = const VerificationMeta(
+    'contentId',
+  );
+  @override
+  late final GeneratedColumn<String> contentId = GeneratedColumn<String>(
+    'content_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _contentVersionMeta = const VerificationMeta(
+    'contentVersion',
+  );
+  @override
+  late final GeneratedColumn<int> contentVersion = GeneratedColumn<int>(
+    'content_version',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(contentVersion).isBiggerThanValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startedAtUtcMicrosMeta =
+      const VerificationMeta('startedAtUtcMicros');
+  @override
+  late final GeneratedColumn<int> startedAtUtcMicros = GeneratedColumn<int>(
+    'started_at_utc_micros',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startedLocalDateMeta = const VerificationMeta(
+    'startedLocalDate',
+  );
+  @override
+  late final GeneratedColumn<String> startedLocalDate = GeneratedColumn<String>(
+    'started_local_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _stepCountMeta = const VerificationMeta(
+    'stepCount',
+  );
+  @override
+  late final GeneratedColumn<int> stepCount = GeneratedColumn<int>(
+    'step_count',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(stepCount).isBiggerThanValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _stepIndexMeta = const VerificationMeta(
+    'stepIndex',
+  );
+  @override
+  late final GeneratedColumn<int> stepIndex = GeneratedColumn<int>(
+    'step_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _guideCompletedMeta = const VerificationMeta(
+    'guideCompleted',
+  );
+  @override
+  late final GeneratedColumn<bool> guideCompleted = GeneratedColumn<bool>(
+    'guide_completed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("guide_completed" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _awaitingOutcomeMeta = const VerificationMeta(
+    'awaitingOutcome',
+  );
+  @override
+  late final GeneratedColumn<bool> awaitingOutcome = GeneratedColumn<bool>(
+    'awaiting_outcome',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("awaiting_outcome" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _activeSlotMeta = const VerificationMeta(
+    'activeSlot',
+  );
+  @override
+  late final GeneratedColumn<int> activeSlot = GeneratedColumn<int>(
+    'active_slot',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    contentId,
+    contentVersion,
+    startedAtUtcMicros,
+    startedLocalDate,
+    stepCount,
+    stepIndex,
+    guideCompleted,
+    awaitingOutcome,
+    activeSlot,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'companion_runs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CompanionRunRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('content_id')) {
+      context.handle(
+        _contentIdMeta,
+        contentId.isAcceptableOrUnknown(data['content_id']!, _contentIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_contentIdMeta);
+    }
+    if (data.containsKey('content_version')) {
+      context.handle(
+        _contentVersionMeta,
+        contentVersion.isAcceptableOrUnknown(
+          data['content_version']!,
+          _contentVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_contentVersionMeta);
+    }
+    if (data.containsKey('started_at_utc_micros')) {
+      context.handle(
+        _startedAtUtcMicrosMeta,
+        startedAtUtcMicros.isAcceptableOrUnknown(
+          data['started_at_utc_micros']!,
+          _startedAtUtcMicrosMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_startedAtUtcMicrosMeta);
+    }
+    if (data.containsKey('started_local_date')) {
+      context.handle(
+        _startedLocalDateMeta,
+        startedLocalDate.isAcceptableOrUnknown(
+          data['started_local_date']!,
+          _startedLocalDateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_startedLocalDateMeta);
+    }
+    if (data.containsKey('step_count')) {
+      context.handle(
+        _stepCountMeta,
+        stepCount.isAcceptableOrUnknown(data['step_count']!, _stepCountMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_stepCountMeta);
+    }
+    if (data.containsKey('step_index')) {
+      context.handle(
+        _stepIndexMeta,
+        stepIndex.isAcceptableOrUnknown(data['step_index']!, _stepIndexMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_stepIndexMeta);
+    }
+    if (data.containsKey('guide_completed')) {
+      context.handle(
+        _guideCompletedMeta,
+        guideCompleted.isAcceptableOrUnknown(
+          data['guide_completed']!,
+          _guideCompletedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_guideCompletedMeta);
+    }
+    if (data.containsKey('awaiting_outcome')) {
+      context.handle(
+        _awaitingOutcomeMeta,
+        awaitingOutcome.isAcceptableOrUnknown(
+          data['awaiting_outcome']!,
+          _awaitingOutcomeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_awaitingOutcomeMeta);
+    }
+    if (data.containsKey('active_slot')) {
+      context.handle(
+        _activeSlotMeta,
+        activeSlot.isAcceptableOrUnknown(data['active_slot']!, _activeSlotMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CompanionRunRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CompanionRunRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      contentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content_id'],
+      )!,
+      contentVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}content_version'],
+      )!,
+      startedAtUtcMicros: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}started_at_utc_micros'],
+      )!,
+      startedLocalDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}started_local_date'],
+      )!,
+      stepCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}step_count'],
+      )!,
+      stepIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}step_index'],
+      )!,
+      guideCompleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}guide_completed'],
+      )!,
+      awaitingOutcome: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}awaiting_outcome'],
+      )!,
+      activeSlot: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}active_slot'],
+      ),
+    );
+  }
+
+  @override
+  $CompanionRunsTable createAlias(String alias) {
+    return $CompanionRunsTable(attachedDatabase, alias);
+  }
+}
+
+class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
+  final String id;
+  final String contentId;
+  final int contentVersion;
+  final int startedAtUtcMicros;
+  final String startedLocalDate;
+  final int stepCount;
+  final int stepIndex;
+  final bool guideCompleted;
+  final bool awaitingOutcome;
+  final int? activeSlot;
+  const CompanionRunRow({
+    required this.id,
+    required this.contentId,
+    required this.contentVersion,
+    required this.startedAtUtcMicros,
+    required this.startedLocalDate,
+    required this.stepCount,
+    required this.stepIndex,
+    required this.guideCompleted,
+    required this.awaitingOutcome,
+    this.activeSlot,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['content_id'] = Variable<String>(contentId);
+    map['content_version'] = Variable<int>(contentVersion);
+    map['started_at_utc_micros'] = Variable<int>(startedAtUtcMicros);
+    map['started_local_date'] = Variable<String>(startedLocalDate);
+    map['step_count'] = Variable<int>(stepCount);
+    map['step_index'] = Variable<int>(stepIndex);
+    map['guide_completed'] = Variable<bool>(guideCompleted);
+    map['awaiting_outcome'] = Variable<bool>(awaitingOutcome);
+    if (!nullToAbsent || activeSlot != null) {
+      map['active_slot'] = Variable<int>(activeSlot);
+    }
+    return map;
+  }
+
+  CompanionRunsCompanion toCompanion(bool nullToAbsent) {
+    return CompanionRunsCompanion(
+      id: Value(id),
+      contentId: Value(contentId),
+      contentVersion: Value(contentVersion),
+      startedAtUtcMicros: Value(startedAtUtcMicros),
+      startedLocalDate: Value(startedLocalDate),
+      stepCount: Value(stepCount),
+      stepIndex: Value(stepIndex),
+      guideCompleted: Value(guideCompleted),
+      awaitingOutcome: Value(awaitingOutcome),
+      activeSlot: activeSlot == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activeSlot),
+    );
+  }
+
+  factory CompanionRunRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CompanionRunRow(
+      id: serializer.fromJson<String>(json['id']),
+      contentId: serializer.fromJson<String>(json['contentId']),
+      contentVersion: serializer.fromJson<int>(json['contentVersion']),
+      startedAtUtcMicros: serializer.fromJson<int>(json['startedAtUtcMicros']),
+      startedLocalDate: serializer.fromJson<String>(json['startedLocalDate']),
+      stepCount: serializer.fromJson<int>(json['stepCount']),
+      stepIndex: serializer.fromJson<int>(json['stepIndex']),
+      guideCompleted: serializer.fromJson<bool>(json['guideCompleted']),
+      awaitingOutcome: serializer.fromJson<bool>(json['awaitingOutcome']),
+      activeSlot: serializer.fromJson<int?>(json['activeSlot']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'contentId': serializer.toJson<String>(contentId),
+      'contentVersion': serializer.toJson<int>(contentVersion),
+      'startedAtUtcMicros': serializer.toJson<int>(startedAtUtcMicros),
+      'startedLocalDate': serializer.toJson<String>(startedLocalDate),
+      'stepCount': serializer.toJson<int>(stepCount),
+      'stepIndex': serializer.toJson<int>(stepIndex),
+      'guideCompleted': serializer.toJson<bool>(guideCompleted),
+      'awaitingOutcome': serializer.toJson<bool>(awaitingOutcome),
+      'activeSlot': serializer.toJson<int?>(activeSlot),
+    };
+  }
+
+  CompanionRunRow copyWith({
+    String? id,
+    String? contentId,
+    int? contentVersion,
+    int? startedAtUtcMicros,
+    String? startedLocalDate,
+    int? stepCount,
+    int? stepIndex,
+    bool? guideCompleted,
+    bool? awaitingOutcome,
+    Value<int?> activeSlot = const Value.absent(),
+  }) => CompanionRunRow(
+    id: id ?? this.id,
+    contentId: contentId ?? this.contentId,
+    contentVersion: contentVersion ?? this.contentVersion,
+    startedAtUtcMicros: startedAtUtcMicros ?? this.startedAtUtcMicros,
+    startedLocalDate: startedLocalDate ?? this.startedLocalDate,
+    stepCount: stepCount ?? this.stepCount,
+    stepIndex: stepIndex ?? this.stepIndex,
+    guideCompleted: guideCompleted ?? this.guideCompleted,
+    awaitingOutcome: awaitingOutcome ?? this.awaitingOutcome,
+    activeSlot: activeSlot.present ? activeSlot.value : this.activeSlot,
+  );
+  CompanionRunRow copyWithCompanion(CompanionRunsCompanion data) {
+    return CompanionRunRow(
+      id: data.id.present ? data.id.value : this.id,
+      contentId: data.contentId.present ? data.contentId.value : this.contentId,
+      contentVersion: data.contentVersion.present
+          ? data.contentVersion.value
+          : this.contentVersion,
+      startedAtUtcMicros: data.startedAtUtcMicros.present
+          ? data.startedAtUtcMicros.value
+          : this.startedAtUtcMicros,
+      startedLocalDate: data.startedLocalDate.present
+          ? data.startedLocalDate.value
+          : this.startedLocalDate,
+      stepCount: data.stepCount.present ? data.stepCount.value : this.stepCount,
+      stepIndex: data.stepIndex.present ? data.stepIndex.value : this.stepIndex,
+      guideCompleted: data.guideCompleted.present
+          ? data.guideCompleted.value
+          : this.guideCompleted,
+      awaitingOutcome: data.awaitingOutcome.present
+          ? data.awaitingOutcome.value
+          : this.awaitingOutcome,
+      activeSlot: data.activeSlot.present
+          ? data.activeSlot.value
+          : this.activeSlot,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CompanionRunRow(')
+          ..write('id: $id, ')
+          ..write('contentId: $contentId, ')
+          ..write('contentVersion: $contentVersion, ')
+          ..write('startedAtUtcMicros: $startedAtUtcMicros, ')
+          ..write('startedLocalDate: $startedLocalDate, ')
+          ..write('stepCount: $stepCount, ')
+          ..write('stepIndex: $stepIndex, ')
+          ..write('guideCompleted: $guideCompleted, ')
+          ..write('awaitingOutcome: $awaitingOutcome, ')
+          ..write('activeSlot: $activeSlot')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    contentId,
+    contentVersion,
+    startedAtUtcMicros,
+    startedLocalDate,
+    stepCount,
+    stepIndex,
+    guideCompleted,
+    awaitingOutcome,
+    activeSlot,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CompanionRunRow &&
+          other.id == this.id &&
+          other.contentId == this.contentId &&
+          other.contentVersion == this.contentVersion &&
+          other.startedAtUtcMicros == this.startedAtUtcMicros &&
+          other.startedLocalDate == this.startedLocalDate &&
+          other.stepCount == this.stepCount &&
+          other.stepIndex == this.stepIndex &&
+          other.guideCompleted == this.guideCompleted &&
+          other.awaitingOutcome == this.awaitingOutcome &&
+          other.activeSlot == this.activeSlot);
+}
+
+class CompanionRunsCompanion extends UpdateCompanion<CompanionRunRow> {
+  final Value<String> id;
+  final Value<String> contentId;
+  final Value<int> contentVersion;
+  final Value<int> startedAtUtcMicros;
+  final Value<String> startedLocalDate;
+  final Value<int> stepCount;
+  final Value<int> stepIndex;
+  final Value<bool> guideCompleted;
+  final Value<bool> awaitingOutcome;
+  final Value<int?> activeSlot;
+  final Value<int> rowid;
+  const CompanionRunsCompanion({
+    this.id = const Value.absent(),
+    this.contentId = const Value.absent(),
+    this.contentVersion = const Value.absent(),
+    this.startedAtUtcMicros = const Value.absent(),
+    this.startedLocalDate = const Value.absent(),
+    this.stepCount = const Value.absent(),
+    this.stepIndex = const Value.absent(),
+    this.guideCompleted = const Value.absent(),
+    this.awaitingOutcome = const Value.absent(),
+    this.activeSlot = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CompanionRunsCompanion.insert({
+    required String id,
+    required String contentId,
+    required int contentVersion,
+    required int startedAtUtcMicros,
+    required String startedLocalDate,
+    required int stepCount,
+    required int stepIndex,
+    required bool guideCompleted,
+    required bool awaitingOutcome,
+    this.activeSlot = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       contentId = Value(contentId),
+       contentVersion = Value(contentVersion),
+       startedAtUtcMicros = Value(startedAtUtcMicros),
+       startedLocalDate = Value(startedLocalDate),
+       stepCount = Value(stepCount),
+       stepIndex = Value(stepIndex),
+       guideCompleted = Value(guideCompleted),
+       awaitingOutcome = Value(awaitingOutcome);
+  static Insertable<CompanionRunRow> custom({
+    Expression<String>? id,
+    Expression<String>? contentId,
+    Expression<int>? contentVersion,
+    Expression<int>? startedAtUtcMicros,
+    Expression<String>? startedLocalDate,
+    Expression<int>? stepCount,
+    Expression<int>? stepIndex,
+    Expression<bool>? guideCompleted,
+    Expression<bool>? awaitingOutcome,
+    Expression<int>? activeSlot,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (contentId != null) 'content_id': contentId,
+      if (contentVersion != null) 'content_version': contentVersion,
+      if (startedAtUtcMicros != null)
+        'started_at_utc_micros': startedAtUtcMicros,
+      if (startedLocalDate != null) 'started_local_date': startedLocalDate,
+      if (stepCount != null) 'step_count': stepCount,
+      if (stepIndex != null) 'step_index': stepIndex,
+      if (guideCompleted != null) 'guide_completed': guideCompleted,
+      if (awaitingOutcome != null) 'awaiting_outcome': awaitingOutcome,
+      if (activeSlot != null) 'active_slot': activeSlot,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CompanionRunsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? contentId,
+    Value<int>? contentVersion,
+    Value<int>? startedAtUtcMicros,
+    Value<String>? startedLocalDate,
+    Value<int>? stepCount,
+    Value<int>? stepIndex,
+    Value<bool>? guideCompleted,
+    Value<bool>? awaitingOutcome,
+    Value<int?>? activeSlot,
+    Value<int>? rowid,
+  }) {
+    return CompanionRunsCompanion(
+      id: id ?? this.id,
+      contentId: contentId ?? this.contentId,
+      contentVersion: contentVersion ?? this.contentVersion,
+      startedAtUtcMicros: startedAtUtcMicros ?? this.startedAtUtcMicros,
+      startedLocalDate: startedLocalDate ?? this.startedLocalDate,
+      stepCount: stepCount ?? this.stepCount,
+      stepIndex: stepIndex ?? this.stepIndex,
+      guideCompleted: guideCompleted ?? this.guideCompleted,
+      awaitingOutcome: awaitingOutcome ?? this.awaitingOutcome,
+      activeSlot: activeSlot ?? this.activeSlot,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (contentId.present) {
+      map['content_id'] = Variable<String>(contentId.value);
+    }
+    if (contentVersion.present) {
+      map['content_version'] = Variable<int>(contentVersion.value);
+    }
+    if (startedAtUtcMicros.present) {
+      map['started_at_utc_micros'] = Variable<int>(startedAtUtcMicros.value);
+    }
+    if (startedLocalDate.present) {
+      map['started_local_date'] = Variable<String>(startedLocalDate.value);
+    }
+    if (stepCount.present) {
+      map['step_count'] = Variable<int>(stepCount.value);
+    }
+    if (stepIndex.present) {
+      map['step_index'] = Variable<int>(stepIndex.value);
+    }
+    if (guideCompleted.present) {
+      map['guide_completed'] = Variable<bool>(guideCompleted.value);
+    }
+    if (awaitingOutcome.present) {
+      map['awaiting_outcome'] = Variable<bool>(awaitingOutcome.value);
+    }
+    if (activeSlot.present) {
+      map['active_slot'] = Variable<int>(activeSlot.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CompanionRunsCompanion(')
+          ..write('id: $id, ')
+          ..write('contentId: $contentId, ')
+          ..write('contentVersion: $contentVersion, ')
+          ..write('startedAtUtcMicros: $startedAtUtcMicros, ')
+          ..write('startedLocalDate: $startedLocalDate, ')
+          ..write('stepCount: $stepCount, ')
+          ..write('stepIndex: $stepIndex, ')
+          ..write('guideCompleted: $guideCompleted, ')
+          ..write('awaitingOutcome: $awaitingOutcome, ')
+          ..write('activeSlot: $activeSlot, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CompanionOutcomesTable extends CompanionOutcomes
+    with TableInfo<$CompanionOutcomesTable, CompanionOutcomeRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CompanionOutcomesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _runIdMeta = const VerificationMeta('runId');
+  @override
+  late final GeneratedColumn<String> runId = GeneratedColumn<String>(
+    'run_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES companion_runs (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _outcomeMeta = const VerificationMeta(
+    'outcome',
+  );
+  @override
+  late final GeneratedColumn<String> outcome = GeneratedColumn<String>(
+    'outcome',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _confirmedAtUtcMicrosMeta =
+      const VerificationMeta('confirmedAtUtcMicros');
+  @override
+  late final GeneratedColumn<int> confirmedAtUtcMicros = GeneratedColumn<int>(
+    'confirmed_at_utc_micros',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _confirmedLocalDateMeta =
+      const VerificationMeta('confirmedLocalDate');
+  @override
+  late final GeneratedColumn<String> confirmedLocalDate =
+      GeneratedColumn<String>(
+        'confirmed_local_date',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    runId,
+    outcome,
+    confirmedAtUtcMicros,
+    confirmedLocalDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'companion_outcomes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CompanionOutcomeRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('run_id')) {
+      context.handle(
+        _runIdMeta,
+        runId.isAcceptableOrUnknown(data['run_id']!, _runIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_runIdMeta);
+    }
+    if (data.containsKey('outcome')) {
+      context.handle(
+        _outcomeMeta,
+        outcome.isAcceptableOrUnknown(data['outcome']!, _outcomeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_outcomeMeta);
+    }
+    if (data.containsKey('confirmed_at_utc_micros')) {
+      context.handle(
+        _confirmedAtUtcMicrosMeta,
+        confirmedAtUtcMicros.isAcceptableOrUnknown(
+          data['confirmed_at_utc_micros']!,
+          _confirmedAtUtcMicrosMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_confirmedAtUtcMicrosMeta);
+    }
+    if (data.containsKey('confirmed_local_date')) {
+      context.handle(
+        _confirmedLocalDateMeta,
+        confirmedLocalDate.isAcceptableOrUnknown(
+          data['confirmed_local_date']!,
+          _confirmedLocalDateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_confirmedLocalDateMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {runId};
+  @override
+  CompanionOutcomeRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CompanionOutcomeRow(
+      runId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}run_id'],
+      )!,
+      outcome: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}outcome'],
+      )!,
+      confirmedAtUtcMicros: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}confirmed_at_utc_micros'],
+      )!,
+      confirmedLocalDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}confirmed_local_date'],
+      )!,
+    );
+  }
+
+  @override
+  $CompanionOutcomesTable createAlias(String alias) {
+    return $CompanionOutcomesTable(attachedDatabase, alias);
+  }
+}
+
+class CompanionOutcomeRow extends DataClass
+    implements Insertable<CompanionOutcomeRow> {
+  final String runId;
+  final String outcome;
+  final int confirmedAtUtcMicros;
+  final String confirmedLocalDate;
+  const CompanionOutcomeRow({
+    required this.runId,
+    required this.outcome,
+    required this.confirmedAtUtcMicros,
+    required this.confirmedLocalDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['run_id'] = Variable<String>(runId);
+    map['outcome'] = Variable<String>(outcome);
+    map['confirmed_at_utc_micros'] = Variable<int>(confirmedAtUtcMicros);
+    map['confirmed_local_date'] = Variable<String>(confirmedLocalDate);
+    return map;
+  }
+
+  CompanionOutcomesCompanion toCompanion(bool nullToAbsent) {
+    return CompanionOutcomesCompanion(
+      runId: Value(runId),
+      outcome: Value(outcome),
+      confirmedAtUtcMicros: Value(confirmedAtUtcMicros),
+      confirmedLocalDate: Value(confirmedLocalDate),
+    );
+  }
+
+  factory CompanionOutcomeRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CompanionOutcomeRow(
+      runId: serializer.fromJson<String>(json['runId']),
+      outcome: serializer.fromJson<String>(json['outcome']),
+      confirmedAtUtcMicros: serializer.fromJson<int>(
+        json['confirmedAtUtcMicros'],
+      ),
+      confirmedLocalDate: serializer.fromJson<String>(
+        json['confirmedLocalDate'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'runId': serializer.toJson<String>(runId),
+      'outcome': serializer.toJson<String>(outcome),
+      'confirmedAtUtcMicros': serializer.toJson<int>(confirmedAtUtcMicros),
+      'confirmedLocalDate': serializer.toJson<String>(confirmedLocalDate),
+    };
+  }
+
+  CompanionOutcomeRow copyWith({
+    String? runId,
+    String? outcome,
+    int? confirmedAtUtcMicros,
+    String? confirmedLocalDate,
+  }) => CompanionOutcomeRow(
+    runId: runId ?? this.runId,
+    outcome: outcome ?? this.outcome,
+    confirmedAtUtcMicros: confirmedAtUtcMicros ?? this.confirmedAtUtcMicros,
+    confirmedLocalDate: confirmedLocalDate ?? this.confirmedLocalDate,
+  );
+  CompanionOutcomeRow copyWithCompanion(CompanionOutcomesCompanion data) {
+    return CompanionOutcomeRow(
+      runId: data.runId.present ? data.runId.value : this.runId,
+      outcome: data.outcome.present ? data.outcome.value : this.outcome,
+      confirmedAtUtcMicros: data.confirmedAtUtcMicros.present
+          ? data.confirmedAtUtcMicros.value
+          : this.confirmedAtUtcMicros,
+      confirmedLocalDate: data.confirmedLocalDate.present
+          ? data.confirmedLocalDate.value
+          : this.confirmedLocalDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CompanionOutcomeRow(')
+          ..write('runId: $runId, ')
+          ..write('outcome: $outcome, ')
+          ..write('confirmedAtUtcMicros: $confirmedAtUtcMicros, ')
+          ..write('confirmedLocalDate: $confirmedLocalDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(runId, outcome, confirmedAtUtcMicros, confirmedLocalDate);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CompanionOutcomeRow &&
+          other.runId == this.runId &&
+          other.outcome == this.outcome &&
+          other.confirmedAtUtcMicros == this.confirmedAtUtcMicros &&
+          other.confirmedLocalDate == this.confirmedLocalDate);
+}
+
+class CompanionOutcomesCompanion extends UpdateCompanion<CompanionOutcomeRow> {
+  final Value<String> runId;
+  final Value<String> outcome;
+  final Value<int> confirmedAtUtcMicros;
+  final Value<String> confirmedLocalDate;
+  final Value<int> rowid;
+  const CompanionOutcomesCompanion({
+    this.runId = const Value.absent(),
+    this.outcome = const Value.absent(),
+    this.confirmedAtUtcMicros = const Value.absent(),
+    this.confirmedLocalDate = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CompanionOutcomesCompanion.insert({
+    required String runId,
+    required String outcome,
+    required int confirmedAtUtcMicros,
+    required String confirmedLocalDate,
+    this.rowid = const Value.absent(),
+  }) : runId = Value(runId),
+       outcome = Value(outcome),
+       confirmedAtUtcMicros = Value(confirmedAtUtcMicros),
+       confirmedLocalDate = Value(confirmedLocalDate);
+  static Insertable<CompanionOutcomeRow> custom({
+    Expression<String>? runId,
+    Expression<String>? outcome,
+    Expression<int>? confirmedAtUtcMicros,
+    Expression<String>? confirmedLocalDate,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (runId != null) 'run_id': runId,
+      if (outcome != null) 'outcome': outcome,
+      if (confirmedAtUtcMicros != null)
+        'confirmed_at_utc_micros': confirmedAtUtcMicros,
+      if (confirmedLocalDate != null)
+        'confirmed_local_date': confirmedLocalDate,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CompanionOutcomesCompanion copyWith({
+    Value<String>? runId,
+    Value<String>? outcome,
+    Value<int>? confirmedAtUtcMicros,
+    Value<String>? confirmedLocalDate,
+    Value<int>? rowid,
+  }) {
+    return CompanionOutcomesCompanion(
+      runId: runId ?? this.runId,
+      outcome: outcome ?? this.outcome,
+      confirmedAtUtcMicros: confirmedAtUtcMicros ?? this.confirmedAtUtcMicros,
+      confirmedLocalDate: confirmedLocalDate ?? this.confirmedLocalDate,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (runId.present) {
+      map['run_id'] = Variable<String>(runId.value);
+    }
+    if (outcome.present) {
+      map['outcome'] = Variable<String>(outcome.value);
+    }
+    if (confirmedAtUtcMicros.present) {
+      map['confirmed_at_utc_micros'] = Variable<int>(
+        confirmedAtUtcMicros.value,
+      );
+    }
+    if (confirmedLocalDate.present) {
+      map['confirmed_local_date'] = Variable<String>(confirmedLocalDate.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CompanionOutcomesCompanion(')
+          ..write('runId: $runId, ')
+          ..write('outcome: $outcome, ')
+          ..write('confirmedAtUtcMicros: $confirmedAtUtcMicros, ')
+          ..write('confirmedLocalDate: $confirmedLocalDate, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$DopaDatabase extends GeneratedDatabase {
   _$DopaDatabase(QueryExecutor e) : super(e);
   $DopaDatabaseManager get managers => $DopaDatabaseManager(this);
@@ -2028,6 +3013,9 @@ abstract class _$DopaDatabase extends GeneratedDatabase {
   late final $SevenDayExperimentsTable sevenDayExperiments =
       $SevenDayExperimentsTable(this);
   late final $DailyCheckInsTable dailyCheckIns = $DailyCheckInsTable(this);
+  late final $CompanionRunsTable companionRuns = $CompanionRunsTable(this);
+  late final $CompanionOutcomesTable companionOutcomes =
+      $CompanionOutcomesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2038,6 +3026,8 @@ abstract class _$DopaDatabase extends GeneratedDatabase {
     treeGrowthCredits,
     sevenDayExperiments,
     dailyCheckIns,
+    companionRuns,
+    companionOutcomes,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -2047,6 +3037,13 @@ abstract class _$DopaDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('tree_growth_credits', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'companion_runs',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('companion_outcomes', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -3567,6 +4564,739 @@ typedef $$DailyCheckInsTableProcessedTableManager =
       DailyCheckInRow,
       PrefetchHooks Function()
     >;
+typedef $$CompanionRunsTableCreateCompanionBuilder =
+    CompanionRunsCompanion Function({
+      required String id,
+      required String contentId,
+      required int contentVersion,
+      required int startedAtUtcMicros,
+      required String startedLocalDate,
+      required int stepCount,
+      required int stepIndex,
+      required bool guideCompleted,
+      required bool awaitingOutcome,
+      Value<int?> activeSlot,
+      Value<int> rowid,
+    });
+typedef $$CompanionRunsTableUpdateCompanionBuilder =
+    CompanionRunsCompanion Function({
+      Value<String> id,
+      Value<String> contentId,
+      Value<int> contentVersion,
+      Value<int> startedAtUtcMicros,
+      Value<String> startedLocalDate,
+      Value<int> stepCount,
+      Value<int> stepIndex,
+      Value<bool> guideCompleted,
+      Value<bool> awaitingOutcome,
+      Value<int?> activeSlot,
+      Value<int> rowid,
+    });
+
+final class $$CompanionRunsTableReferences
+    extends
+        BaseReferences<_$DopaDatabase, $CompanionRunsTable, CompanionRunRow> {
+  $$CompanionRunsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<$CompanionOutcomesTable, List<CompanionOutcomeRow>>
+  _companionOutcomesRefsTable(_$DopaDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.companionOutcomes,
+        aliasName: 'companion_runs__id__companion_outcomes__run_id',
+      );
+
+  $$CompanionOutcomesTableProcessedTableManager get companionOutcomesRefs {
+    final manager = $$CompanionOutcomesTableTableManager(
+      $_db,
+      $_db.companionOutcomes,
+    ).filter((f) => f.runId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _companionOutcomesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$CompanionRunsTableFilterComposer
+    extends Composer<_$DopaDatabase, $CompanionRunsTable> {
+  $$CompanionRunsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get contentId => $composableBuilder(
+    column: $table.contentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get contentVersion => $composableBuilder(
+    column: $table.contentVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get startedAtUtcMicros => $composableBuilder(
+    column: $table.startedAtUtcMicros,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get startedLocalDate => $composableBuilder(
+    column: $table.startedLocalDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get stepCount => $composableBuilder(
+    column: $table.stepCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get stepIndex => $composableBuilder(
+    column: $table.stepIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get guideCompleted => $composableBuilder(
+    column: $table.guideCompleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get awaitingOutcome => $composableBuilder(
+    column: $table.awaitingOutcome,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get activeSlot => $composableBuilder(
+    column: $table.activeSlot,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> companionOutcomesRefs(
+    Expression<bool> Function($$CompanionOutcomesTableFilterComposer f) f,
+  ) {
+    final $$CompanionOutcomesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.companionOutcomes,
+      getReferencedColumn: (t) => t.runId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CompanionOutcomesTableFilterComposer(
+            $db: $db,
+            $table: $db.companionOutcomes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CompanionRunsTableOrderingComposer
+    extends Composer<_$DopaDatabase, $CompanionRunsTable> {
+  $$CompanionRunsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get contentId => $composableBuilder(
+    column: $table.contentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get contentVersion => $composableBuilder(
+    column: $table.contentVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get startedAtUtcMicros => $composableBuilder(
+    column: $table.startedAtUtcMicros,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get startedLocalDate => $composableBuilder(
+    column: $table.startedLocalDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get stepCount => $composableBuilder(
+    column: $table.stepCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get stepIndex => $composableBuilder(
+    column: $table.stepIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get guideCompleted => $composableBuilder(
+    column: $table.guideCompleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get awaitingOutcome => $composableBuilder(
+    column: $table.awaitingOutcome,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get activeSlot => $composableBuilder(
+    column: $table.activeSlot,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CompanionRunsTableAnnotationComposer
+    extends Composer<_$DopaDatabase, $CompanionRunsTable> {
+  $$CompanionRunsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get contentId =>
+      $composableBuilder(column: $table.contentId, builder: (column) => column);
+
+  GeneratedColumn<int> get contentVersion => $composableBuilder(
+    column: $table.contentVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get startedAtUtcMicros => $composableBuilder(
+    column: $table.startedAtUtcMicros,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get startedLocalDate => $composableBuilder(
+    column: $table.startedLocalDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get stepCount =>
+      $composableBuilder(column: $table.stepCount, builder: (column) => column);
+
+  GeneratedColumn<int> get stepIndex =>
+      $composableBuilder(column: $table.stepIndex, builder: (column) => column);
+
+  GeneratedColumn<bool> get guideCompleted => $composableBuilder(
+    column: $table.guideCompleted,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get awaitingOutcome => $composableBuilder(
+    column: $table.awaitingOutcome,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get activeSlot => $composableBuilder(
+    column: $table.activeSlot,
+    builder: (column) => column,
+  );
+
+  Expression<T> companionOutcomesRefs<T extends Object>(
+    Expression<T> Function($$CompanionOutcomesTableAnnotationComposer a) f,
+  ) {
+    final $$CompanionOutcomesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.companionOutcomes,
+          getReferencedColumn: (t) => t.runId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CompanionOutcomesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.companionOutcomes,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$CompanionRunsTableTableManager
+    extends
+        RootTableManager<
+          _$DopaDatabase,
+          $CompanionRunsTable,
+          CompanionRunRow,
+          $$CompanionRunsTableFilterComposer,
+          $$CompanionRunsTableOrderingComposer,
+          $$CompanionRunsTableAnnotationComposer,
+          $$CompanionRunsTableCreateCompanionBuilder,
+          $$CompanionRunsTableUpdateCompanionBuilder,
+          (CompanionRunRow, $$CompanionRunsTableReferences),
+          CompanionRunRow,
+          PrefetchHooks Function({bool companionOutcomesRefs})
+        > {
+  $$CompanionRunsTableTableManager(_$DopaDatabase db, $CompanionRunsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CompanionRunsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CompanionRunsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CompanionRunsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> contentId = const Value.absent(),
+                Value<int> contentVersion = const Value.absent(),
+                Value<int> startedAtUtcMicros = const Value.absent(),
+                Value<String> startedLocalDate = const Value.absent(),
+                Value<int> stepCount = const Value.absent(),
+                Value<int> stepIndex = const Value.absent(),
+                Value<bool> guideCompleted = const Value.absent(),
+                Value<bool> awaitingOutcome = const Value.absent(),
+                Value<int?> activeSlot = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CompanionRunsCompanion(
+                id: id,
+                contentId: contentId,
+                contentVersion: contentVersion,
+                startedAtUtcMicros: startedAtUtcMicros,
+                startedLocalDate: startedLocalDate,
+                stepCount: stepCount,
+                stepIndex: stepIndex,
+                guideCompleted: guideCompleted,
+                awaitingOutcome: awaitingOutcome,
+                activeSlot: activeSlot,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String contentId,
+                required int contentVersion,
+                required int startedAtUtcMicros,
+                required String startedLocalDate,
+                required int stepCount,
+                required int stepIndex,
+                required bool guideCompleted,
+                required bool awaitingOutcome,
+                Value<int?> activeSlot = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CompanionRunsCompanion.insert(
+                id: id,
+                contentId: contentId,
+                contentVersion: contentVersion,
+                startedAtUtcMicros: startedAtUtcMicros,
+                startedLocalDate: startedLocalDate,
+                stepCount: stepCount,
+                stepIndex: stepIndex,
+                guideCompleted: guideCompleted,
+                awaitingOutcome: awaitingOutcome,
+                activeSlot: activeSlot,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CompanionRunsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({companionOutcomesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (companionOutcomesRefs) db.companionOutcomes,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (companionOutcomesRefs)
+                    await $_getPrefetchedData<
+                      CompanionRunRow,
+                      $CompanionRunsTable,
+                      CompanionOutcomeRow
+                    >(
+                      currentTable: table,
+                      referencedTable: $$CompanionRunsTableReferences
+                          ._companionOutcomesRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$CompanionRunsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).companionOutcomesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.runId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CompanionRunsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$DopaDatabase,
+      $CompanionRunsTable,
+      CompanionRunRow,
+      $$CompanionRunsTableFilterComposer,
+      $$CompanionRunsTableOrderingComposer,
+      $$CompanionRunsTableAnnotationComposer,
+      $$CompanionRunsTableCreateCompanionBuilder,
+      $$CompanionRunsTableUpdateCompanionBuilder,
+      (CompanionRunRow, $$CompanionRunsTableReferences),
+      CompanionRunRow,
+      PrefetchHooks Function({bool companionOutcomesRefs})
+    >;
+typedef $$CompanionOutcomesTableCreateCompanionBuilder =
+    CompanionOutcomesCompanion Function({
+      required String runId,
+      required String outcome,
+      required int confirmedAtUtcMicros,
+      required String confirmedLocalDate,
+      Value<int> rowid,
+    });
+typedef $$CompanionOutcomesTableUpdateCompanionBuilder =
+    CompanionOutcomesCompanion Function({
+      Value<String> runId,
+      Value<String> outcome,
+      Value<int> confirmedAtUtcMicros,
+      Value<String> confirmedLocalDate,
+      Value<int> rowid,
+    });
+
+final class $$CompanionOutcomesTableReferences
+    extends
+        BaseReferences<
+          _$DopaDatabase,
+          $CompanionOutcomesTable,
+          CompanionOutcomeRow
+        > {
+  $$CompanionOutcomesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $CompanionRunsTable _runIdTable(_$DopaDatabase db) => db.companionRuns
+      .createAlias('companion_outcomes__run_id__companion_runs__id');
+
+  $$CompanionRunsTableProcessedTableManager get runId {
+    final $_column = $_itemColumn<String>('run_id')!;
+
+    final manager = $$CompanionRunsTableTableManager(
+      $_db,
+      $_db.companionRuns,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_runIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$CompanionOutcomesTableFilterComposer
+    extends Composer<_$DopaDatabase, $CompanionOutcomesTable> {
+  $$CompanionOutcomesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get outcome => $composableBuilder(
+    column: $table.outcome,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get confirmedAtUtcMicros => $composableBuilder(
+    column: $table.confirmedAtUtcMicros,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get confirmedLocalDate => $composableBuilder(
+    column: $table.confirmedLocalDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CompanionRunsTableFilterComposer get runId {
+    final $$CompanionRunsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.runId,
+      referencedTable: $db.companionRuns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CompanionRunsTableFilterComposer(
+            $db: $db,
+            $table: $db.companionRuns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CompanionOutcomesTableOrderingComposer
+    extends Composer<_$DopaDatabase, $CompanionOutcomesTable> {
+  $$CompanionOutcomesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get outcome => $composableBuilder(
+    column: $table.outcome,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get confirmedAtUtcMicros => $composableBuilder(
+    column: $table.confirmedAtUtcMicros,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get confirmedLocalDate => $composableBuilder(
+    column: $table.confirmedLocalDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CompanionRunsTableOrderingComposer get runId {
+    final $$CompanionRunsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.runId,
+      referencedTable: $db.companionRuns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CompanionRunsTableOrderingComposer(
+            $db: $db,
+            $table: $db.companionRuns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CompanionOutcomesTableAnnotationComposer
+    extends Composer<_$DopaDatabase, $CompanionOutcomesTable> {
+  $$CompanionOutcomesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get outcome =>
+      $composableBuilder(column: $table.outcome, builder: (column) => column);
+
+  GeneratedColumn<int> get confirmedAtUtcMicros => $composableBuilder(
+    column: $table.confirmedAtUtcMicros,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get confirmedLocalDate => $composableBuilder(
+    column: $table.confirmedLocalDate,
+    builder: (column) => column,
+  );
+
+  $$CompanionRunsTableAnnotationComposer get runId {
+    final $$CompanionRunsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.runId,
+      referencedTable: $db.companionRuns,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CompanionRunsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.companionRuns,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CompanionOutcomesTableTableManager
+    extends
+        RootTableManager<
+          _$DopaDatabase,
+          $CompanionOutcomesTable,
+          CompanionOutcomeRow,
+          $$CompanionOutcomesTableFilterComposer,
+          $$CompanionOutcomesTableOrderingComposer,
+          $$CompanionOutcomesTableAnnotationComposer,
+          $$CompanionOutcomesTableCreateCompanionBuilder,
+          $$CompanionOutcomesTableUpdateCompanionBuilder,
+          (CompanionOutcomeRow, $$CompanionOutcomesTableReferences),
+          CompanionOutcomeRow,
+          PrefetchHooks Function({bool runId})
+        > {
+  $$CompanionOutcomesTableTableManager(
+    _$DopaDatabase db,
+    $CompanionOutcomesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CompanionOutcomesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CompanionOutcomesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CompanionOutcomesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> runId = const Value.absent(),
+                Value<String> outcome = const Value.absent(),
+                Value<int> confirmedAtUtcMicros = const Value.absent(),
+                Value<String> confirmedLocalDate = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CompanionOutcomesCompanion(
+                runId: runId,
+                outcome: outcome,
+                confirmedAtUtcMicros: confirmedAtUtcMicros,
+                confirmedLocalDate: confirmedLocalDate,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String runId,
+                required String outcome,
+                required int confirmedAtUtcMicros,
+                required String confirmedLocalDate,
+                Value<int> rowid = const Value.absent(),
+              }) => CompanionOutcomesCompanion.insert(
+                runId: runId,
+                outcome: outcome,
+                confirmedAtUtcMicros: confirmedAtUtcMicros,
+                confirmedLocalDate: confirmedLocalDate,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CompanionOutcomesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({runId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (runId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.runId,
+                        referencedTable: $$CompanionOutcomesTableReferences
+                            ._runIdTable(db),
+                        referencedColumn: $$CompanionOutcomesTableReferences
+                            ._runIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CompanionOutcomesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$DopaDatabase,
+      $CompanionOutcomesTable,
+      CompanionOutcomeRow,
+      $$CompanionOutcomesTableFilterComposer,
+      $$CompanionOutcomesTableOrderingComposer,
+      $$CompanionOutcomesTableAnnotationComposer,
+      $$CompanionOutcomesTableCreateCompanionBuilder,
+      $$CompanionOutcomesTableUpdateCompanionBuilder,
+      (CompanionOutcomeRow, $$CompanionOutcomesTableReferences),
+      CompanionOutcomeRow,
+      PrefetchHooks Function({bool runId})
+    >;
 
 class $DopaDatabaseManager {
   final _$DopaDatabase _db;
@@ -3581,4 +5311,8 @@ class $DopaDatabaseManager {
       $$SevenDayExperimentsTableTableManager(_db, _db.sevenDayExperiments);
   $$DailyCheckInsTableTableManager get dailyCheckIns =>
       $$DailyCheckInsTableTableManager(_db, _db.dailyCheckIns);
+  $$CompanionRunsTableTableManager get companionRuns =>
+      $$CompanionRunsTableTableManager(_db, _db.companionRuns);
+  $$CompanionOutcomesTableTableManager get companionOutcomes =>
+      $$CompanionOutcomesTableTableManager(_db, _db.companionOutcomes);
 }

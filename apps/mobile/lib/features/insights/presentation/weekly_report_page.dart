@@ -1,10 +1,12 @@
 import 'package:dopa/app/presentation/dopa_destination_scaffold.dart';
 import 'package:dopa/app/theme/dopa_tokens.dart';
+import 'package:dopa/features/companion/application/companion_controller.dart';
 import 'package:dopa/features/tree_companion/application/tree_companion_providers.dart';
 import 'package:dopa/features/tree_companion/application/tree_feature_flags.dart';
 import 'package:dopa/features/tree_companion/presentation/tree_summary_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class WeeklyReportPage extends ConsumerWidget {
   const WeeklyReportPage({super.key});
@@ -56,6 +58,17 @@ class WeeklyReportPage extends ConsumerWidget {
               ),
             ),
           ),
+          if (ref.watch(companionSampleEnabledProvider)) ...[
+            const SizedBox(height: DopaSpacing.md),
+            Card(
+              child: ListTile(
+                title: const Text('생활 행동 기록'),
+                subtitle: const Text('같이 시작하기에서 직접 남긴 결과'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => context.push('/companion/history'),
+              ),
+            ),
+          ],
         ],
       ),
     );

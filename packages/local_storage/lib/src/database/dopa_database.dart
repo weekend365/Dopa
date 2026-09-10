@@ -135,6 +135,49 @@ class DailyCheckIns extends Table {
   String get tableName => 'daily_check_ins';
 }
 
+@DataClassName('CompanionRunRow')
+class CompanionRuns extends Table {
+  TextColumn get id => text()();
+  TextColumn get contentId => text()();
+  IntColumn get contentVersion =>
+      integer().check(contentVersion.isBiggerThanValue(0))();
+  IntColumn get startedAtUtcMicros => integer()();
+  TextColumn get startedLocalDate => text()();
+  IntColumn get stepCount => integer().check(stepCount.isBiggerThanValue(0))();
+  IntColumn get stepIndex => integer()();
+  BoolColumn get guideCompleted => boolean()();
+  BoolColumn get awaitingOutcome => boolean()();
+  IntColumn get activeSlot => integer().nullable().unique()();
+
+  @override
+  List<String> get customConstraints => const [
+    'CHECK (step_index >= 0 AND step_index < step_count)',
+    'CHECK (active_slot IS NULL OR active_slot = 1)',
+    'CHECK (guide_completed = 0 OR '
+        '(awaiting_outcome = 1 AND step_index = step_count - 1))',
+  ];
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DataClassName('CompanionOutcomeRow')
+class CompanionOutcomes extends Table {
+  TextColumn get runId =>
+      text().references(CompanionRuns, #id, onDelete: KeyAction.cascade)();
+  TextColumn get outcome => text()();
+  IntColumn get confirmedAtUtcMicros => integer()();
+  TextColumn get confirmedLocalDate => text()();
+
+  @override
+  List<String> get customConstraints => const [
+    "CHECK (outcome IN ('asPlanned', 'started', 'difficult'))",
+  ];
+
+  @override
+  Set<Column<Object>> get primaryKey => {runId};
+}
+
 @DriftDatabase(
   tables: <Type>[
     FocusSessions,
@@ -142,13 +185,15 @@ class DailyCheckIns extends Table {
     TreeGrowthCredits,
     SevenDayExperiments,
     DailyCheckIns,
+    CompanionRuns,
+    CompanionOutcomes,
   ],
 )
 class DopaDatabase extends _$DopaDatabase {
   DopaDatabase(super.executor);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -160,6 +205,10 @@ class DopaDatabase extends _$DopaDatabase {
       if (from < 3) {
         await migrator.createTable(sevenDayExperiments);
         await migrator.createTable(dailyCheckIns);
+      }
+      if (from < 4) {
+        await migrator.createTable(companionRuns);
+        await migrator.createTable(companionOutcomes);
       }
     },
     beforeOpen: (OpeningDetails details) async {
@@ -173,6 +222,8 @@ class DopaDatabase extends _$DopaDatabase {
   /// sessions are removed afterwards so the ledger's source-session reference
   /// can remain restrictive during ordinary operation.
   Future<void> deleteAllLocalData() => transaction(() async {
+    await delete(companionOutcomes).go();
+    await delete(companionRuns).go();
     await delete(dailyCheckIns).go();
     await delete(sevenDayExperiments).go();
     await delete(treeCompanions).go();

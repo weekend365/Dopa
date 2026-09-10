@@ -5,7 +5,7 @@ import 'package:dopa_local_storage/dopa_local_storage.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// The sole device-local database used by focus sessions and tree growth.
+/// The sole device-local database for focus, tree growth and life-action records.
 ///
 /// It is lazy: screens that do not use persistence do not open the database.
 final dopaDatabaseProvider = Provider<DopaDatabase>((ref) {

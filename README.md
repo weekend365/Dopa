@@ -8,7 +8,16 @@ Dopa는 자극적인 디지털 행동을 알아차리고 스스로 조절하도�
 - `packages/domain`: 집중 세션, 하루 1회 성장 지급, 느티나무 성장 단계의 순수 Dart 규칙
 - `packages/local_storage`: 세션 완료와 성장 원장을 원자적으로 기록하는 Drift 저장소
 - `apps/mobile/assets/tree`: Light/Dark 정적 느티나무 스프라이트 fallback
-- `docs`: MVP Scope Freeze v1.2, ADR, Apple 출시 및 개인정보 계약
+- `docs`: MVP Scope Freeze v1.3, ADR, Apple 출시 및 개인정보 계약
+
+개발 flavor에는 **같이 시작하기**의 무료 책상 정리 텍스트 샘플 한 개가 있습니다.
+홈 카드에서 시작하고 중단·이어하기 뒤 직접 결과를 선택하면 ‘생활 행동 기록’에
+기기 로컬로 저장됩니다. 인사이트에서 기록을 다시 보고 삭제할 수 있습니다.
+영상·음성 콘텐츠와 결제·나무 성장 연결은 아직 제공하지 않으며 운영 flavor에서는
+샘플 진입/직접 경로가 비활성입니다.
+범위와 후속 작업은 [단계별 계획](docs/product/COMPANION_IMPLEMENTATION_PLAN_KO.md),
+[콘텐츠 제작안](docs/product/COMPANION_CONTENT_KO.md),
+[검증 보고](docs/product/COMPANION_VALIDATION_KO.md)를 참조하세요.
 
 Rive 원본 에셋은 전문 원화/리깅 납품 후 연결합니다. 그 전까지 `tree_rive_enabled`는 기본 OFF이며 정적 스프라이트가 제품 fallback입니다. 나무와 세션 연결 정보는 MVP에서 기기 로컬에만 저장합니다.
 
@@ -84,7 +93,7 @@ Drift 스키마를 변경한 경우 `codegen` 결과인 `packages/local_storage/
 
 ## 주요 문서
 
-- [MVP Scope Freeze v1.2](docs/product/MVP_SCOPE_FREEZE_V1_KO.md)
+- [MVP Scope Freeze v1.3](docs/product/MVP_SCOPE_FREEZE_V1_KO.md)
 - [통합 제품·사업 구상안](docs/DOPA_INTEGRATED_PRODUCT_PLAN_KO.md)
 - [로컬 나무 동반자 ADR](docs/adr/0002-local-tree-companion.md)
 - [프로젝트 개발 규칙](docs/PROJECT_RULES_KO.md)

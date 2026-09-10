@@ -1,4 +1,7 @@
 import 'package:dopa/features/auth/presentation/account_page.dart';
+import 'package:dopa/features/companion/application/companion_controller.dart';
+import 'package:dopa/features/companion/presentation/companion_page.dart';
+import 'package:dopa/features/companion/presentation/companion_history_page.dart';
 import 'package:dopa/features/focus/presentation/focus_completion_page.dart';
 import 'package:dopa/features/focus/presentation/focus_progress_page.dart';
 import 'package:dopa/features/focus/presentation/focus_setup_page.dart';
@@ -13,6 +16,18 @@ final dopaRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/today',
     routes: [
       GoRoute(path: '/today', builder: (context, state) => const TodayPage()),
+      GoRoute(
+        path: '/companion',
+        redirect: (context, state) =>
+            ref.read(companionSampleEnabledProvider) ? null : '/today',
+        builder: (context, state) => const CompanionPage(),
+        routes: [
+          GoRoute(
+            path: 'history',
+            builder: (context, state) => const CompanionHistoryPage(),
+          ),
+        ],
+      ),
       GoRoute(
         path: '/account',
         builder: (context, state) => const AccountPage(),

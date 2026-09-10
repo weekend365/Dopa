@@ -1,5 +1,7 @@
 import 'package:dopa/app/presentation/dopa_destination_scaffold.dart';
 import 'package:dopa/app/theme/dopa_tokens.dart';
+import 'package:dopa/features/companion/application/companion_controller.dart';
+import 'package:dopa/features/companion/presentation/companion_entry_card.dart';
 import 'package:dopa/features/experiment/application/daily_check_in_controller.dart';
 import 'package:dopa/features/tree_companion/application/tree_companion_providers.dart';
 import 'package:dopa/features/tree_companion/application/tree_feature_flags.dart';
@@ -55,6 +57,10 @@ class TodayPage extends ConsumerWidget {
           hero,
           const SizedBox(height: DopaSpacing.md),
           _TodayCheckInCard(checkIn: todaysCheckIn),
+          if (ref.watch(companionSampleEnabledProvider)) ...[
+            const SizedBox(height: DopaSpacing.md),
+            const CompanionEntryCard(),
+          ],
           const SizedBox(height: DopaSpacing.md),
           Card(
             child: ListTile(

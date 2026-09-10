@@ -31,6 +31,24 @@ void main() {
         hasLength(1),
       );
 
+      final companion = DriftCompanionRepository(database: database);
+      await companion.startOrResume(
+        CompanionRun(
+          id: 'life-action',
+          contentId: deskCompanionContent.id,
+          contentVersion: 1,
+          startedAtUtc: DateTime.utc(2026, 9, 10),
+          startedLocalDate: LocalDate(2026, 9, 10),
+          stepCount: 4,
+        ),
+      );
+      await companion.requestOutcome('life-action');
+      await companion.submitOutcome(
+        runId: 'life-action',
+        outcome: CompanionOutcome.started,
+        confirmedAtUtc: DateTime.utc(2026, 9, 10, 0, 2),
+        confirmedLocalDate: LocalDate(2026, 9, 10),
+      );
       await lifecycle.deleteForLogoutOrAccountDeletion();
 
       expect(await database.select(database.treeCompanions).get(), isEmpty);
@@ -41,6 +59,8 @@ void main() {
         isEmpty,
       );
       expect(await database.select(database.dailyCheckIns).get(), isEmpty);
+      expect(await database.select(database.companionRuns).get(), isEmpty);
+      expect(await database.select(database.companionOutcomes).get(), isEmpty);
     },
   );
 
