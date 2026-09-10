@@ -32,6 +32,8 @@ const deskCompanionContent = CompanionContent(
 
 enum CompanionOutcome { asPlanned, started, difficult }
 
+enum CompanionGuidanceMode { textSample, humanMedia, textFallback }
+
 /// Device-local run state. Playback itself is transient and restores paused.
 final class CompanionRun {
   CompanionRun({
@@ -44,8 +46,13 @@ final class CompanionRun {
     this.stepIndex = 0,
     this.guideCompleted = false,
     this.awaitingOutcome = false,
+    this.positionMs = 0,
+    this.playbackRevision = 0,
+    this.guidanceMode = CompanionGuidanceMode.textSample,
   }) {
-    if (id.isEmpty ||
+    if (positionMs < 0 ||
+        playbackRevision < 0 ||
+        id.isEmpty ||
         contentId.isEmpty ||
         contentVersion < 1 ||
         !startedAtUtc.isUtc ||
@@ -66,6 +73,9 @@ final class CompanionRun {
   final int stepIndex;
   final bool guideCompleted;
   final bool awaitingOutcome;
+  final int positionMs;
+  final int playbackRevision;
+  final CompanionGuidanceMode guidanceMode;
 
   CompanionRun advanceGuide() {
     if (awaitingOutcome) return this;
@@ -79,6 +89,27 @@ final class CompanionRun {
 
   CompanionRun requestOutcome() => _copy(awaitingOutcome: true);
 
+  CompanionRun withPlayback({
+    required int positionMs,
+    required int revision,
+    required int stepIndex,
+    required CompanionGuidanceMode mode,
+    bool completed = false,
+  }) => CompanionRun(
+    id: id,
+    contentId: contentId,
+    contentVersion: contentVersion,
+    startedAtUtc: startedAtUtc,
+    startedLocalDate: startedLocalDate,
+    stepCount: stepCount,
+    stepIndex: stepIndex,
+    positionMs: positionMs,
+    playbackRevision: revision,
+    guidanceMode: mode,
+    guideCompleted: completed,
+    awaitingOutcome: completed,
+  );
+
   CompanionRun _copy({
     int? stepIndex,
     bool? guideCompleted,
@@ -90,6 +121,9 @@ final class CompanionRun {
     startedAtUtc: startedAtUtc,
     startedLocalDate: startedLocalDate,
     stepCount: stepCount,
+    positionMs: positionMs,
+    playbackRevision: playbackRevision,
+    guidanceMode: guidanceMode,
     stepIndex: stepIndex ?? this.stepIndex,
     guideCompleted: guideCompleted ?? this.guideCompleted,
     awaitingOutcome: awaitingOutcome ?? this.awaitingOutcome,

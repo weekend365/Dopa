@@ -137,6 +137,17 @@ class DailyCheckIns extends Table {
 
 @DataClassName('CompanionRunRow')
 class CompanionRuns extends Table {
+  IntColumn get positionMs => integer()
+      .withDefault(const Constant(0))
+      .check(positionMs.isBiggerOrEqualValue(0))();
+  IntColumn get playbackRevision => integer()
+      .withDefault(const Constant(0))
+      .check(playbackRevision.isBiggerOrEqualValue(0))();
+  TextColumn get guidanceMode => text()
+      .withDefault(const Constant('textSample'))
+      .check(
+        guidanceMode.isIn(const ['textSample', 'humanMedia', 'textFallback']),
+      )();
   TextColumn get id => text()();
   TextColumn get contentId => text()();
   IntColumn get contentVersion =>
@@ -193,7 +204,7 @@ class DopaDatabase extends _$DopaDatabase {
   DopaDatabase(super.executor);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -209,6 +220,10 @@ class DopaDatabase extends _$DopaDatabase {
       if (from < 4) {
         await migrator.createTable(companionRuns);
         await migrator.createTable(companionOutcomes);
+      } else if (from < 5) {
+        await migrator.addColumn(companionRuns, companionRuns.positionMs);
+        await migrator.addColumn(companionRuns, companionRuns.playbackRevision);
+        await migrator.addColumn(companionRuns, companionRuns.guidanceMode);
       }
     },
     beforeOpen: (OpeningDetails details) async {

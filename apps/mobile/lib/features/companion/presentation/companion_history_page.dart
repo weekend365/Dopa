@@ -70,7 +70,7 @@ class _CompanionHistoryPageState extends ConsumerState<CompanionHistoryPage> {
         child: ListView(
           padding: const EdgeInsets.all(DopaSpacing.lg),
           children: [
-            const Text('내가 직접 남긴 결과예요.\n개발용 텍스트 샘플 · 최근 50개'),
+            const Text('내가 직접 남긴 결과예요.\n최근 50개'),
             const SizedBox(height: DopaSpacing.md),
             if (_deleteFailed)
               Semantics(
@@ -114,6 +114,19 @@ class _CompanionHistoryPageState extends ConsumerState<CompanionHistoryPage> {
                                     const SizedBox(height: DopaSpacing.sm),
                                     Text(
                                       companionOutcomeLabel(record.outcome),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge,
+                                    ),
+                                    Text(
+                                      switch (record.run.guidanceMode) {
+                                        CompanionGuidanceMode.textSample =>
+                                          '텍스트 샘플',
+                                        CompanionGuidanceMode.humanMedia =>
+                                          '영상·음성 안내',
+                                        CompanionGuidanceMode.textFallback =>
+                                          '텍스트로 전환한 안내',
+                                      },
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyLarge,

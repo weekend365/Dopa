@@ -3,7 +3,8 @@ import 'package:drift/drift.dart';
 
 import '../database/dopa_database.dart';
 
-final class DriftCompanionRepository implements CompanionRepository {
+final class DriftCompanionRepository
+    implements CompanionRepository, CompanionMediaRepository {
   const DriftCompanionRepository({required DopaDatabase database})
     : _db = database;
 
@@ -39,6 +40,7 @@ final class DriftCompanionRepository implements CompanionRepository {
               guideCompleted: false,
               awaitingOutcome: false,
               activeSlot: const Value(1),
+              guidanceMode: Value(proposed.guidanceMode.name),
             ),
           );
       return proposed;
@@ -48,6 +50,50 @@ final class DriftCompanionRepository implements CompanionRepository {
   @override
   Future<CompanionRun> advanceGuide(String runId) =>
       _updateRun(runId, (run) => run.advanceGuide());
+
+  @override
+  Future<CompanionRun> savePlayback({
+    required String runId,
+    required int positionMs,
+    required int revision,
+    required int stepIndex,
+    required CompanionGuidanceMode mode,
+    bool completed = false,
+  }) => _db.transaction(() async {
+    final row = await _findRun(runId);
+    final run = _run(row);
+    if (row.activeSlot == null ||
+        run.awaitingOutcome ||
+        revision <= run.playbackRevision) {
+      return run;
+    }
+    if (run.contentVersion != 2 ||
+        mode == CompanionGuidanceMode.textSample ||
+        (run.guidanceMode == CompanionGuidanceMode.textFallback &&
+            mode == CompanionGuidanceMode.humanMedia)) {
+      throw StateError('Invalid media mode transition.');
+    }
+    final next = run.withPlayback(
+      positionMs: positionMs,
+      revision: revision,
+      stepIndex: stepIndex,
+      mode: mode,
+      completed: completed,
+    );
+    await (_db.update(
+      _db.companionRuns,
+    )..where((t) => t.id.equals(runId))).write(
+      CompanionRunsCompanion(
+        positionMs: Value(next.positionMs),
+        playbackRevision: Value(next.playbackRevision),
+        guidanceMode: Value(next.guidanceMode.name),
+        stepIndex: Value(next.stepIndex),
+        guideCompleted: Value(next.guideCompleted),
+        awaitingOutcome: Value(next.awaitingOutcome),
+      ),
+    );
+    return next;
+  });
 
   @override
   Future<CompanionRun> requestOutcome(String runId) =>
@@ -156,6 +202,9 @@ final class DriftCompanionRepository implements CompanionRepository {
     stepIndex: row.stepIndex,
     guideCompleted: row.guideCompleted,
     awaitingOutcome: row.awaitingOutcome,
+    positionMs: row.positionMs,
+    playbackRevision: row.playbackRevision,
+    guidanceMode: CompanionGuidanceMode.values.byName(row.guidanceMode),
   );
 
   CompanionOutcomeRecord _record(

@@ -28,7 +28,7 @@ class CompanionEntryCard extends StatelessWidget {
             child: const Text('2분만 시작하기'),
           ),
           const SizedBox(height: DopaSpacing.xs),
-          const Text('개발용 텍스트 안내 샘플', textAlign: TextAlign.center),
+          const Text('개발용 안내 · 운영 미공개', textAlign: TextAlign.center),
         ],
       ),
     ),

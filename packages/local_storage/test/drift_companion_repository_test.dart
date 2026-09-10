@@ -124,7 +124,9 @@ void main() {
       expect(await db.select(db.companionRuns).get(), hasLength(1));
       await expectLater(
         db.customStatement('''
-      INSERT INTO companion_runs SELECT 'other', content_id, content_version,
+      INSERT INTO companion_runs (id, content_id, content_version,
+      started_at_utc_micros, started_local_date, step_count, step_index,
+      guide_completed, awaiting_outcome, active_slot) SELECT 'other', content_id, content_version,
       started_at_utc_micros, started_local_date, step_count, step_index,
       guide_completed, awaiting_outcome, active_slot FROM companion_runs
     '''),

@@ -2024,6 +2024,46 @@ class $CompanionRunsTable extends CompanionRuns
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $CompanionRunsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _positionMsMeta = const VerificationMeta(
+    'positionMs',
+  );
+  @override
+  late final GeneratedColumn<int> positionMs = GeneratedColumn<int>(
+    'position_ms',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(positionMs).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _playbackRevisionMeta = const VerificationMeta(
+    'playbackRevision',
+  );
+  @override
+  late final GeneratedColumn<int> playbackRevision = GeneratedColumn<int>(
+    'playback_revision',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(playbackRevision).isBiggerOrEqualValue(0),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _guidanceModeMeta = const VerificationMeta(
+    'guidanceMode',
+  );
+  @override
+  late final GeneratedColumn<String> guidanceMode = GeneratedColumn<String>(
+    'guidance_mode',
+    aliasedName,
+    false,
+    check: () =>
+        guidanceMode.isIn(const ['textSample', 'humanMedia', 'textFallback']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('textSample'),
+  );
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -2142,6 +2182,9 @@ class $CompanionRunsTable extends CompanionRuns
   );
   @override
   List<GeneratedColumn> get $columns => [
+    positionMs,
+    playbackRevision,
+    guidanceMode,
     id,
     contentId,
     contentVersion,
@@ -2165,6 +2208,30 @@ class $CompanionRunsTable extends CompanionRuns
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('position_ms')) {
+      context.handle(
+        _positionMsMeta,
+        positionMs.isAcceptableOrUnknown(data['position_ms']!, _positionMsMeta),
+      );
+    }
+    if (data.containsKey('playback_revision')) {
+      context.handle(
+        _playbackRevisionMeta,
+        playbackRevision.isAcceptableOrUnknown(
+          data['playback_revision']!,
+          _playbackRevisionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('guidance_mode')) {
+      context.handle(
+        _guidanceModeMeta,
+        guidanceMode.isAcceptableOrUnknown(
+          data['guidance_mode']!,
+          _guidanceModeMeta,
+        ),
+      );
+    }
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
@@ -2264,6 +2331,18 @@ class $CompanionRunsTable extends CompanionRuns
   CompanionRunRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return CompanionRunRow(
+      positionMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position_ms'],
+      )!,
+      playbackRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}playback_revision'],
+      )!,
+      guidanceMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}guidance_mode'],
+      )!,
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -2314,6 +2393,9 @@ class $CompanionRunsTable extends CompanionRuns
 }
 
 class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
+  final int positionMs;
+  final int playbackRevision;
+  final String guidanceMode;
   final String id;
   final String contentId;
   final int contentVersion;
@@ -2325,6 +2407,9 @@ class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
   final bool awaitingOutcome;
   final int? activeSlot;
   const CompanionRunRow({
+    required this.positionMs,
+    required this.playbackRevision,
+    required this.guidanceMode,
     required this.id,
     required this.contentId,
     required this.contentVersion,
@@ -2339,6 +2424,9 @@ class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    map['position_ms'] = Variable<int>(positionMs);
+    map['playback_revision'] = Variable<int>(playbackRevision);
+    map['guidance_mode'] = Variable<String>(guidanceMode);
     map['id'] = Variable<String>(id);
     map['content_id'] = Variable<String>(contentId);
     map['content_version'] = Variable<int>(contentVersion);
@@ -2356,6 +2444,9 @@ class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
 
   CompanionRunsCompanion toCompanion(bool nullToAbsent) {
     return CompanionRunsCompanion(
+      positionMs: Value(positionMs),
+      playbackRevision: Value(playbackRevision),
+      guidanceMode: Value(guidanceMode),
       id: Value(id),
       contentId: Value(contentId),
       contentVersion: Value(contentVersion),
@@ -2377,6 +2468,9 @@ class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return CompanionRunRow(
+      positionMs: serializer.fromJson<int>(json['positionMs']),
+      playbackRevision: serializer.fromJson<int>(json['playbackRevision']),
+      guidanceMode: serializer.fromJson<String>(json['guidanceMode']),
       id: serializer.fromJson<String>(json['id']),
       contentId: serializer.fromJson<String>(json['contentId']),
       contentVersion: serializer.fromJson<int>(json['contentVersion']),
@@ -2393,6 +2487,9 @@ class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'positionMs': serializer.toJson<int>(positionMs),
+      'playbackRevision': serializer.toJson<int>(playbackRevision),
+      'guidanceMode': serializer.toJson<String>(guidanceMode),
       'id': serializer.toJson<String>(id),
       'contentId': serializer.toJson<String>(contentId),
       'contentVersion': serializer.toJson<int>(contentVersion),
@@ -2407,6 +2504,9 @@ class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
   }
 
   CompanionRunRow copyWith({
+    int? positionMs,
+    int? playbackRevision,
+    String? guidanceMode,
     String? id,
     String? contentId,
     int? contentVersion,
@@ -2418,6 +2518,9 @@ class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
     bool? awaitingOutcome,
     Value<int?> activeSlot = const Value.absent(),
   }) => CompanionRunRow(
+    positionMs: positionMs ?? this.positionMs,
+    playbackRevision: playbackRevision ?? this.playbackRevision,
+    guidanceMode: guidanceMode ?? this.guidanceMode,
     id: id ?? this.id,
     contentId: contentId ?? this.contentId,
     contentVersion: contentVersion ?? this.contentVersion,
@@ -2431,6 +2534,15 @@ class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
   );
   CompanionRunRow copyWithCompanion(CompanionRunsCompanion data) {
     return CompanionRunRow(
+      positionMs: data.positionMs.present
+          ? data.positionMs.value
+          : this.positionMs,
+      playbackRevision: data.playbackRevision.present
+          ? data.playbackRevision.value
+          : this.playbackRevision,
+      guidanceMode: data.guidanceMode.present
+          ? data.guidanceMode.value
+          : this.guidanceMode,
       id: data.id.present ? data.id.value : this.id,
       contentId: data.contentId.present ? data.contentId.value : this.contentId,
       contentVersion: data.contentVersion.present
@@ -2459,6 +2571,9 @@ class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
   @override
   String toString() {
     return (StringBuffer('CompanionRunRow(')
+          ..write('positionMs: $positionMs, ')
+          ..write('playbackRevision: $playbackRevision, ')
+          ..write('guidanceMode: $guidanceMode, ')
           ..write('id: $id, ')
           ..write('contentId: $contentId, ')
           ..write('contentVersion: $contentVersion, ')
@@ -2475,6 +2590,9 @@ class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
 
   @override
   int get hashCode => Object.hash(
+    positionMs,
+    playbackRevision,
+    guidanceMode,
     id,
     contentId,
     contentVersion,
@@ -2490,6 +2608,9 @@ class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is CompanionRunRow &&
+          other.positionMs == this.positionMs &&
+          other.playbackRevision == this.playbackRevision &&
+          other.guidanceMode == this.guidanceMode &&
           other.id == this.id &&
           other.contentId == this.contentId &&
           other.contentVersion == this.contentVersion &&
@@ -2503,6 +2624,9 @@ class CompanionRunRow extends DataClass implements Insertable<CompanionRunRow> {
 }
 
 class CompanionRunsCompanion extends UpdateCompanion<CompanionRunRow> {
+  final Value<int> positionMs;
+  final Value<int> playbackRevision;
+  final Value<String> guidanceMode;
   final Value<String> id;
   final Value<String> contentId;
   final Value<int> contentVersion;
@@ -2515,6 +2639,9 @@ class CompanionRunsCompanion extends UpdateCompanion<CompanionRunRow> {
   final Value<int?> activeSlot;
   final Value<int> rowid;
   const CompanionRunsCompanion({
+    this.positionMs = const Value.absent(),
+    this.playbackRevision = const Value.absent(),
+    this.guidanceMode = const Value.absent(),
     this.id = const Value.absent(),
     this.contentId = const Value.absent(),
     this.contentVersion = const Value.absent(),
@@ -2528,6 +2655,9 @@ class CompanionRunsCompanion extends UpdateCompanion<CompanionRunRow> {
     this.rowid = const Value.absent(),
   });
   CompanionRunsCompanion.insert({
+    this.positionMs = const Value.absent(),
+    this.playbackRevision = const Value.absent(),
+    this.guidanceMode = const Value.absent(),
     required String id,
     required String contentId,
     required int contentVersion,
@@ -2549,6 +2679,9 @@ class CompanionRunsCompanion extends UpdateCompanion<CompanionRunRow> {
        guideCompleted = Value(guideCompleted),
        awaitingOutcome = Value(awaitingOutcome);
   static Insertable<CompanionRunRow> custom({
+    Expression<int>? positionMs,
+    Expression<int>? playbackRevision,
+    Expression<String>? guidanceMode,
     Expression<String>? id,
     Expression<String>? contentId,
     Expression<int>? contentVersion,
@@ -2562,6 +2695,9 @@ class CompanionRunsCompanion extends UpdateCompanion<CompanionRunRow> {
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (positionMs != null) 'position_ms': positionMs,
+      if (playbackRevision != null) 'playback_revision': playbackRevision,
+      if (guidanceMode != null) 'guidance_mode': guidanceMode,
       if (id != null) 'id': id,
       if (contentId != null) 'content_id': contentId,
       if (contentVersion != null) 'content_version': contentVersion,
@@ -2578,6 +2714,9 @@ class CompanionRunsCompanion extends UpdateCompanion<CompanionRunRow> {
   }
 
   CompanionRunsCompanion copyWith({
+    Value<int>? positionMs,
+    Value<int>? playbackRevision,
+    Value<String>? guidanceMode,
     Value<String>? id,
     Value<String>? contentId,
     Value<int>? contentVersion,
@@ -2591,6 +2730,9 @@ class CompanionRunsCompanion extends UpdateCompanion<CompanionRunRow> {
     Value<int>? rowid,
   }) {
     return CompanionRunsCompanion(
+      positionMs: positionMs ?? this.positionMs,
+      playbackRevision: playbackRevision ?? this.playbackRevision,
+      guidanceMode: guidanceMode ?? this.guidanceMode,
       id: id ?? this.id,
       contentId: contentId ?? this.contentId,
       contentVersion: contentVersion ?? this.contentVersion,
@@ -2608,6 +2750,15 @@ class CompanionRunsCompanion extends UpdateCompanion<CompanionRunRow> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (positionMs.present) {
+      map['position_ms'] = Variable<int>(positionMs.value);
+    }
+    if (playbackRevision.present) {
+      map['playback_revision'] = Variable<int>(playbackRevision.value);
+    }
+    if (guidanceMode.present) {
+      map['guidance_mode'] = Variable<String>(guidanceMode.value);
+    }
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
@@ -2647,6 +2798,9 @@ class CompanionRunsCompanion extends UpdateCompanion<CompanionRunRow> {
   @override
   String toString() {
     return (StringBuffer('CompanionRunsCompanion(')
+          ..write('positionMs: $positionMs, ')
+          ..write('playbackRevision: $playbackRevision, ')
+          ..write('guidanceMode: $guidanceMode, ')
           ..write('id: $id, ')
           ..write('contentId: $contentId, ')
           ..write('contentVersion: $contentVersion, ')
@@ -4566,6 +4720,9 @@ typedef $$DailyCheckInsTableProcessedTableManager =
     >;
 typedef $$CompanionRunsTableCreateCompanionBuilder =
     CompanionRunsCompanion Function({
+      Value<int> positionMs,
+      Value<int> playbackRevision,
+      Value<String> guidanceMode,
       required String id,
       required String contentId,
       required int contentVersion,
@@ -4580,6 +4737,9 @@ typedef $$CompanionRunsTableCreateCompanionBuilder =
     });
 typedef $$CompanionRunsTableUpdateCompanionBuilder =
     CompanionRunsCompanion Function({
+      Value<int> positionMs,
+      Value<int> playbackRevision,
+      Value<String> guidanceMode,
       Value<String> id,
       Value<String> contentId,
       Value<int> contentVersion,
@@ -4633,6 +4793,21 @@ class $$CompanionRunsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<int> get positionMs => $composableBuilder(
+    column: $table.positionMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get playbackRevision => $composableBuilder(
+    column: $table.playbackRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get guidanceMode => $composableBuilder(
+    column: $table.guidanceMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
@@ -4718,6 +4893,21 @@ class $$CompanionRunsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<int> get positionMs => $composableBuilder(
+    column: $table.positionMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get playbackRevision => $composableBuilder(
+    column: $table.playbackRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get guidanceMode => $composableBuilder(
+    column: $table.guidanceMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -4778,6 +4968,21 @@ class $$CompanionRunsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<int> get positionMs => $composableBuilder(
+    column: $table.positionMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get playbackRevision => $composableBuilder(
+    column: $table.playbackRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get guidanceMode => $composableBuilder(
+    column: $table.guidanceMode,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
@@ -4875,6 +5080,9 @@ class $$CompanionRunsTableTableManager
               $$CompanionRunsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
+                Value<int> positionMs = const Value.absent(),
+                Value<int> playbackRevision = const Value.absent(),
+                Value<String> guidanceMode = const Value.absent(),
                 Value<String> id = const Value.absent(),
                 Value<String> contentId = const Value.absent(),
                 Value<int> contentVersion = const Value.absent(),
@@ -4887,6 +5095,9 @@ class $$CompanionRunsTableTableManager
                 Value<int?> activeSlot = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CompanionRunsCompanion(
+                positionMs: positionMs,
+                playbackRevision: playbackRevision,
+                guidanceMode: guidanceMode,
                 id: id,
                 contentId: contentId,
                 contentVersion: contentVersion,
@@ -4901,6 +5112,9 @@ class $$CompanionRunsTableTableManager
               ),
           createCompanionCallback:
               ({
+                Value<int> positionMs = const Value.absent(),
+                Value<int> playbackRevision = const Value.absent(),
+                Value<String> guidanceMode = const Value.absent(),
                 required String id,
                 required String contentId,
                 required int contentVersion,
@@ -4913,6 +5127,9 @@ class $$CompanionRunsTableTableManager
                 Value<int?> activeSlot = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CompanionRunsCompanion.insert(
+                positionMs: positionMs,
+                playbackRevision: playbackRevision,
+                guidanceMode: guidanceMode,
                 id: id,
                 contentId: contentId,
                 contentVersion: contentVersion,

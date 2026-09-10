@@ -1,4 +1,5 @@
 import 'package:dopa/core/persistence/dopa_database_providers.dart';
+import 'package:dopa/features/companion/application/companion_media_controller.dart';
 import 'package:dopa/features/auth/application/auth_session_store.dart';
 import 'package:dopa/features/auth/application/sign_in_port.dart';
 import 'package:dopa/features/experiment/application/daily_check_in_controller.dart';
@@ -174,6 +175,10 @@ class AuthController extends StateNotifier<AuthState> {
   }
 
   Future<void> _wipeWellbeingAndInvalidate() async {
+    if (_ref.exists(companionMediaControllerProvider)) {
+      await _ref.read(companionMediaControllerProvider.notifier).shutdown();
+      _ref.invalidate(companionMediaControllerProvider);
+    }
     await _ref
         .read(localAccountDataLifecycleProvider)
         .deleteForLogoutOrAccountDeletion();

@@ -3,11 +3,15 @@ import 'package:dopa/features/auth/application/auth_controller.dart';
 import 'package:dopa/features/auth/application/auth_providers.dart';
 import 'package:dopa/features/auth/application/auth_session_store.dart';
 import 'package:dopa/features/auth/application/sign_in_port.dart';
+import 'package:dopa/features/companion/application/companion_media_controller.dart';
 import 'package:dopa_domain/dopa_domain.dart';
 import 'package:dopa_local_storage/dopa_local_storage.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../companion/companion_media_controller_test.dart'
+    show FakePlayback, media;
 
 class _ScriptedSignInPort implements SignInPort {
   Future<SignInProvider> Function() result = () async => SignInProvider.apple;
@@ -24,13 +28,16 @@ void main() {
   late InMemoryAuthSessionStore store;
   late _ScriptedSignInPort signInPort;
   late ProviderContainer container;
+  late FakePlayback playback;
 
   setUp(() {
     database = DopaDatabase(NativeDatabase.memory());
     store = InMemoryAuthSessionStore();
     signInPort = _ScriptedSignInPort();
+    playback = FakePlayback();
     container = ProviderContainer(
       overrides: [
+        companionPlaybackFactoryProvider.overrideWithValue(() => playback),
         authSessionStoreProvider.overrideWithValue(store),
         signInPortProvider.overrideWithValue(signInPort),
         dopaDatabaseProvider.overrideWithValue(database),
@@ -42,6 +49,8 @@ void main() {
   tearDown(() async {
     container.dispose();
     await database.close();
+    await playback.events.close();
+    await playback.control.close();
   });
 
   Future<AuthController> controller() async {
@@ -49,6 +58,27 @@ void main() {
     await auth.initialized;
     return auth;
   }
+
+  test('account deletion stops media before deleting persisted runs', () async {
+    final auth = await controller();
+    await auth.attestAge(LocalDate(2000, 1, 1));
+    await auth.signIn(SignInProvider.apple);
+    await auth.acceptConsent();
+    final companion = container.read(companionMediaControllerProvider.notifier);
+    await companion.open(media, start: true);
+    await companion.play();
+    playback.tick(8172);
+    await companion.pause();
+    await companion.play();
+    expect(playback.current.playing, true);
+    await auth.deleteAccount();
+    expect(playback.disposed, true);
+    expect(playback.current.playing, false);
+    expect(await database.select(database.companionRuns).get(), isEmpty);
+    expect(await database.select(database.companionOutcomes).get(), isEmpty);
+    await companion.play();
+    expect(playback.current.playing, false);
+  });
 
   test('login cancel and failure never create a wellbeing tree', () async {
     final auth = await controller();

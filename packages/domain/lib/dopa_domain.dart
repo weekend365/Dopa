@@ -1,5 +1,6 @@
 export 'src/account/account_session.dart';
 export 'src/account/age_band.dart';
+export 'src/companion/companion_media_repository.dart';
 export 'src/companion/companion_repository.dart';
 export 'src/companion/companion_session.dart';
 export 'src/experiment/daily_check_in.dart';

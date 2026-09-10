@@ -1,6 +1,7 @@
 import 'package:dopa/app/dopa_app.dart';
 import 'package:dopa/app/router/dopa_router.dart';
 import 'package:dopa/features/companion/application/companion_controller.dart';
+import 'package:dopa/features/companion/application/companion_media.dart';
 import 'package:dopa/features/companion/presentation/companion_copy.dart';
 import 'package:dopa/features/experiment/application/daily_check_in_controller.dart';
 import 'package:dopa/features/focus/application/focus_session_controller.dart';
@@ -20,6 +21,7 @@ void main() {
     repo = FakeCompanionRepository();
     container = ProviderContainer(
       overrides: [
+        companionMediaProvider.overrideWith((ref) async => null),
         companionRepositoryProvider.overrideWithValue(repo),
         companionSampleEnabledProvider.overrideWithValue(true),
         treeProgressProvider.overrideWithValue(
@@ -247,6 +249,7 @@ void main() {
     tester,
   ) async {
     container.updateOverrides([
+      companionMediaProvider.overrideWith((ref) async => null),
       companionRepositoryProvider.overrideWithValue(repo),
       companionSampleEnabledProvider.overrideWithValue(false),
       treeProgressProvider.overrideWithValue(
