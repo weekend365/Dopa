@@ -205,7 +205,7 @@ class _DiaryPageState extends ConsumerState<DiaryPage>
     await controller.delete(entry!.id);
     if (mounted) {
       setState(() => dirty = false);
-      context.go('/diary');
+      context.go('/insights/weekly');
     }
   }
 
@@ -262,7 +262,7 @@ class _DiaryPageState extends ConsumerState<DiaryPage>
                     Text(day, style: Theme.of(context).textTheme.labelLarge),
                     const SizedBox(height: 8),
                     Text(
-                      '평범한 순간도\n남겨두면 나의 이야기가 돼요.',
+                      '오늘 기억하고 싶은\n순간이 있었나요?',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 24),
@@ -356,7 +356,7 @@ class _DiaryPageState extends ConsumerState<DiaryPage>
                       onChanged: (_) => setState(() => dirty = true),
                       decoration: const InputDecoration(
                         labelText: '이 순간에 남기고 싶은 말 (선택)',
-                        hintText: '창가에서 마신 차가 따뜻했어요.',
+                        hintText: '책을 한 쪽 읽고, 창가에서 잠깐 쉬었어요.',
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -374,6 +374,14 @@ class _DiaryPageState extends ConsumerState<DiaryPage>
                       ),
                     ),
                     const SizedBox(height: 16),
+                    if (entry != null && !dirty)
+                      TextButton(
+                        key: const ValueKey('diary-back-to-records'),
+                        onPressed: busy
+                            ? null
+                            : () => context.go('/insights/weekly'),
+                        child: const Text('하루 기록으로 돌아가기'),
+                      ),
                     if (entry != null && art == null) ...[
                       Text(switch (status) {
                         'submitting' =>
@@ -384,7 +392,7 @@ class _DiaryPageState extends ConsumerState<DiaryPage>
                           '변환 완료 여부를 확인하지 못했어요. 중복 요청을 막기 위해 오늘은 원본으로 남겨요.',
                         'failed' => '이번에는 그림을 만들지 못했어요. 원본 일기는 안전하게 남아 있어요.',
                         'expired' => '그림을 받아올 수 있는 시간이 지났어요. 원본 일기는 남아 있어요.',
-                        _ => 'Dopa의 따뜻한 과슈 그림체로 남겨봐요. 하루 한 장, 원하는 날에만.',
+                        _ => '사진 그대로도 충분해요. 원한다면 Dopa의 그림체로 바꿔 간직할 수 있어요.',
                       }),
                       const SizedBox(height: 12),
                       if (pending)
@@ -409,7 +417,7 @@ class _DiaryPageState extends ConsumerState<DiaryPage>
                           label: const Text('Dopa 그림으로 남기기'),
                         ),
                     ],
-                    if (available == false && art == null) ...[
+                    if (entry != null && available == false && art == null) ...[
                       const SizedBox(height: 12),
                       const Text('지금은 그림 변환에 연결할 수 없어요. 사진 일기는 그대로 사용할 수 있어요.'),
                       TextButton(

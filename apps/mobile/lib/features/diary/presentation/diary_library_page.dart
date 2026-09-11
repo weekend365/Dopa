@@ -9,7 +9,7 @@ class DiaryLibraryPage extends ConsumerWidget {
   const DiaryLibraryPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) => Scaffold(
-    appBar: AppBar(title: const Text('나의 그림일기')),
+    appBar: AppBar(title: const Text('남겨둔 순간들')),
     body: SafeArea(
       child: ref
           .watch(diariesProvider)
@@ -30,7 +30,7 @@ class DiaryLibraryPage extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        '내 일상으로 채우는\n작은 그림책',
+                        '사진과 한 줄로\n돌아보는 내 하루',
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 12),

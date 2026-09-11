@@ -99,6 +99,31 @@ void main() {
     expect(repo.records, isEmpty);
     await t.pumpWidget(const SizedBox());
   });
+  for (final content in [readingCompanionContent, firstMoveCompanionContent]) {
+    testWidgets('select and resume ${content.id} at 200 percent', (t) async {
+      t.view.physicalSize = const Size(320, 800);
+      t.view.devicePixelRatio = 1;
+      t.platformDispatcher.textScaleFactorTestValue = 2;
+      addTearDown(t.view.resetPhysicalSize);
+      addTearDown(t.view.resetDevicePixelRatio);
+      addTearDown(t.platformDispatcher.clearTextScaleFactorTestValue);
+      await open(t);
+      await tap(t, find.byKey(ValueKey('guide-${content.id}')));
+      await tap(t, find.byKey(const ValueKey('companion-start')));
+      expect(repo.active!.contentId, content.id);
+      expect(find.text(content.steps.first), findsOneWidget);
+      await tap(t, find.byKey(const ValueKey('companion-next')));
+      await tap(t, find.text('나중에 이어하기'));
+      await open(t);
+      expect(find.text(content.steps[1]), findsOneWidget);
+      await tap(t, find.text('여기서 마치고 결과 선택'));
+      await tap(t, find.text('하려던 만큼 했어요'));
+      expect(repo.records.single.run.contentId, content.id);
+      expect(find.text('책상 한 칸을 비웠어요.'), findsNothing);
+      expect(t.takeException(), isNull);
+      await t.pumpWidget(const SizedBox());
+    });
+  }
   testWidgets('save failure keeps outcome choices for idempotent retry', (
     t,
   ) async {

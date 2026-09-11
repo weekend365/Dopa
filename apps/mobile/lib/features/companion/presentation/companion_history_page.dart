@@ -99,10 +99,10 @@ class _CompanionHistoryPageState extends ConsumerState<CompanionHistoryPage> {
                                       CrossAxisAlignment.stretch,
                                   children: [
                                     Text(
-                                      record.run.contentId ==
-                                              deskCompanionContent.id
-                                          ? deskCompanionContent.title
-                                          : '생활 안내',
+                                      companionContentTitle(
+                                        record.run.contentId,
+                                        record.run.contentVersion,
+                                      ),
                                       style: Theme.of(context)
                                           .textTheme
                                           .titleMedium,

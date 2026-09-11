@@ -40,6 +40,27 @@ void main() {
     expect(saved, 0);
   });
 
+  for (final content in [readingCompanionContent, firstMoveCompanionContent]) {
+    test(
+      '${content.id} restores selected guide and saves its own outcome',
+      () async {
+        await controller.start(content: content);
+        await controller.next();
+        await controller.load();
+        expect(controller.state.run!.contentId, content.id);
+        expect(controller.state.run!.stepIndex, 1);
+        expect(controller.state.failure, isNull);
+        // A later selection cannot replace an existing unfinished run.
+        await controller.start();
+        expect(controller.state.run!.contentId, content.id);
+        await controller.finishGuide();
+        await controller.submit(CompanionOutcome.started);
+        expect(repo.records.single.run.contentId, content.id);
+        expect(saved, 1);
+      },
+    );
+  }
+
   test('read and start failures show no success and allow retry', () async {
     repo.failRead = true;
     expect(await controller.load(), isFalse);

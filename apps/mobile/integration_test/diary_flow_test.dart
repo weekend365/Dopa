@@ -168,7 +168,7 @@ void main() {
         );
         container.read(dopaRouterProvider).go('/diary');
         await t.pumpAndSettle();
-        expect(find.text('나의 그림일기'), findsOneWidget);
+        expect(find.text('남겨둔 순간들'), findsOneWidget);
         await t.scrollUntilVisible(
           find.text('테스트: 수정한 기억'),
           160,

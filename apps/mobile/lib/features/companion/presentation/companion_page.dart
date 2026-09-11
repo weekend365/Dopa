@@ -19,6 +19,7 @@ class CompanionPage extends ConsumerStatefulWidget {
 class _CompanionPageState extends ConsumerState<CompanionPage>
     with WidgetsBindingObserver {
   final scroll = ScrollController();
+  CompanionContent selected = deskCompanionContent;
   @override
   void initState() {
     super.initState();
@@ -50,6 +51,9 @@ class _CompanionPageState extends ConsumerState<CompanionPage>
     final controller = ref.read(companionControllerProvider.notifier);
     final run = state.run;
     final record = state.record;
+    final content = run == null
+        ? selected
+        : companionContentFor(run.contentId, run.contentVersion);
     final busy = state.busy || state.loading;
     ref.listen(companionControllerProvider, (before, after) {
       if (before?.run?.stepIndex != after.run?.stepIndex ||
@@ -104,12 +108,18 @@ class _CompanionPageState extends ConsumerState<CompanionPage>
                     record.outcome == CompanionOutcome.difficult
                         ? '오늘은 여기까지 해도 괜찮아요.'
                         : record.outcome == CompanionOutcome.asPlanned
-                        ? '책상 한 칸을 비웠어요.'
-                        : '책상 정리를 시작했어요.',
+                        ? switch (run!.contentId) {
+                            'desk_space' => '책상 한 칸을 비웠어요.',
+                            'open_book' => '책을 펼치고 읽어봤어요.',
+                            _ => '미룬 일에 손을 대봤어요.',
+                          }
+                        : '작은 시작을 남겼어요.',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 16),
-                  Text(companionOutcomeLabel(record.outcome)),
+                  Text(
+                    '${companionContentTitle(record.run.contentId, record.run.contentVersion)} · ${companionOutcomeLabel(record.outcome)}',
+                  ),
                   const SizedBox(height: 8),
                   Text(companionClosingCopy(record.outcome)),
                   const SizedBox(height: 32),
@@ -124,25 +134,49 @@ class _CompanionPageState extends ConsumerState<CompanionPage>
                   ),
                   const SizedBox(height: 12),
                   TextButton(onPressed: home, child: const Text('여기서 마치기')),
+                  TextButton(
+                    onPressed: () => context.go('/insights/weekly'),
+                    child: const Text('오늘의 기록 돌아보기'),
+                  ),
                 ] else if (run == null) ...[
-                  const SizedBox(height: 180, child: GardenArtwork()),
-                  const SizedBox(height: 24),
                   Text(
-                    '책상 한 칸 비우기',
+                    '어디서부터 시작할까요?',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
-                  const Text('약 2분 · 글로 함께하는 안내'),
-                  const SizedBox(height: 24),
-                  Text(deskCompanionContent.preparation),
+                  const Text('지금 필요한 작은 일 하나를 골라요.'),
                   const SizedBox(height: 16),
-                  const Text('한 번에 한 가지씩. 준비되면 다음으로 넘어가요.'),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final option in companionContents)
+                        ChoiceChip(
+                          key: ValueKey('guide-${option.id}'),
+                          label: Text(
+                            companionContentTitle(option.id, option.version),
+                          ),
+                          selected: selected.id == option.id,
+                          onSelected: busy
+                              ? null
+                              : (_) => setState(() => selected = option),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Text(content!.preparation),
+                  const SizedBox(height: 16),
+                  const Text(
+                    '4단계 · 약 2분 분량의 글 안내\n시간제한 없이, 한 동작을 해본 뒤 다음을 눌러요.',
+                  ),
                   const SizedBox(height: 32),
                   DopaActionButton(
                     key: const ValueKey('companion-start'),
                     label: '같이 시작하기',
                     busy: busy,
-                    onPressed: state.failure == null ? controller.start : null,
+                    onPressed: state.failure == null
+                        ? () => controller.start(content: selected)
+                        : null,
                   ),
                 ] else if (run.awaitingOutcome) ...[
                   Text(
@@ -166,7 +200,7 @@ class _CompanionPageState extends ConsumerState<CompanionPage>
                   ),
                 ] else ...[
                   Text(
-                    '책상 한 칸 비우기',
+                    companionContentTitle(run.contentId, run.contentVersion),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 24),
@@ -174,7 +208,7 @@ class _CompanionPageState extends ConsumerState<CompanionPage>
                     key: const ValueKey('companion-step-text'),
                     index: run.stepIndex,
                     total: run.stepCount,
-                    text: deskCompanionContent.steps[run.stepIndex],
+                    text: content!.steps[run.stepIndex],
                   ),
                   const SizedBox(height: 24),
                   const Text('서두르지 않아도 괜찮아요. 준비되면 다음으로 넘어가요.'),

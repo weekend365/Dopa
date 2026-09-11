@@ -108,25 +108,26 @@ class CompanionController extends StateNotifier<CompanionState> {
     return CompanionState(run: run);
   });
 
-  Future<bool> start() => _perform(() async {
-    final localNow = _now();
-    final run = await _repository.startOrResume(
-      CompanionRun(
-        id: _newId(),
-        contentId: deskCompanionContent.id,
-        contentVersion: deskCompanionContent.version,
-        startedAtUtc: localNow.toUtc(),
-        startedLocalDate: LocalDate.fromLocal(localNow),
-        stepCount: deskCompanionContent.steps.length,
-      ),
-    );
-    _checkContent(run);
-    return CompanionState(
-      run: run,
-      playing: !run.awaitingOutcome,
-      automatic: state.automatic,
-    );
-  });
+  Future<bool> start({CompanionContent content = deskCompanionContent}) =>
+      _perform(() async {
+        final localNow = _now();
+        final run = await _repository.startOrResume(
+          CompanionRun(
+            id: _newId(),
+            contentId: content.id,
+            contentVersion: content.version,
+            startedAtUtc: localNow.toUtc(),
+            startedLocalDate: LocalDate.fromLocal(localNow),
+            stepCount: content.steps.length,
+          ),
+        );
+        _checkContent(run);
+        return CompanionState(
+          run: run,
+          playing: !run.awaitingOutcome,
+          automatic: state.automatic,
+        );
+      });
 
   void play() {
     if (state.busy ||
@@ -222,10 +223,9 @@ class CompanionController extends StateNotifier<CompanionState> {
   }
 
   void _checkContent(CompanionRun? run) {
-    if (run != null &&
-        (run.contentId != deskCompanionContent.id ||
-            ![deskCompanionContent.version, 2].contains(run.contentVersion) ||
-            run.stepCount != deskCompanionContent.steps.length)) {
+    if (run == null) return;
+    final content = companionContentFor(run.contentId, run.contentVersion);
+    if (content == null || run.stepCount != content.steps.length) {
       throw const _ContentUnavailable();
     }
   }
