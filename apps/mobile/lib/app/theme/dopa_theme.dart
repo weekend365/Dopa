@@ -1,112 +1,171 @@
 import 'package:dopa/app/theme/dopa_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 abstract final class DopaTheme {
-  static ThemeData get light => _build(
-    brightness: Brightness.light,
-    surface: DopaColors.cream,
-    surfaceRaised: DopaColors.creamRaised,
-    foreground: DopaColors.ink,
-    muted: DopaColors.inkMuted,
-    primary: DopaColors.sageDeep,
-    secondary: DopaColors.newLeaf,
-  );
-
-  static ThemeData get dark => _build(
-    brightness: Brightness.dark,
-    surface: DopaColors.night,
-    surfaceRaised: DopaColors.nightRaised,
-    foreground: DopaColors.moonInk,
-    muted: DopaColors.moonMuted,
-    primary: DopaColors.nightSage,
-    secondary: DopaColors.newLeaf,
-  );
-
-  static ThemeData _build({
-    required Brightness brightness,
-    required Color surface,
-    required Color surfaceRaised,
-    required Color foreground,
-    required Color muted,
-    required Color primary,
-    required Color secondary,
-  }) {
+  static ThemeData get light => _build(false);
+  static ThemeData get dark => _build(true);
+  static ThemeData _build(bool dark) {
+    final ink = dark ? DopaColors.moonInk : DopaColors.ink;
+    final muted = dark ? DopaColors.moonMuted : DopaColors.inkMuted;
+    final background = dark ? DopaColors.night : DopaColors.cream;
+    final raised = dark ? DopaColors.nightRaised : DopaColors.creamRaised;
+    final primary = dark ? DopaColors.nightSage : DopaColors.sageDeep;
+    final soft = dark ? DopaColors.nightSageSoft : DopaColors.sageSoft;
     final scheme =
         ColorScheme.fromSeed(
           seedColor: primary,
-          brightness: brightness,
-          surface: surface,
+          brightness: dark ? Brightness.dark : Brightness.light,
         ).copyWith(
+          surface: background,
+          onSurface: ink,
+          onSurfaceVariant: muted,
+          surfaceContainerLow: raised,
+          surfaceContainer: raised,
+          surfaceContainerHighest: soft,
           primary: primary,
-          secondary: secondary,
-          onSurface: foreground,
-          surfaceContainerLow: surfaceRaised,
-          surfaceContainerHighest: surfaceRaised,
-          outline: muted,
+          onPrimary: dark ? background : Colors.white,
+          primaryContainer: soft,
+          onPrimaryContainer: ink,
+          secondary: primary,
+          secondaryContainer: soft,
+          onSecondaryContainer: ink,
+          outline: Color(dark ? 0xFF829482 : 0xFF849287),
+          outlineVariant: Color(dark ? 0xFF394A3E : 0xFFE3E8DF),
+          error: Color(dark ? 0xFFF2AAA2 : 0xFFA23F3F),
         );
-
-    final base = ThemeData(
-      useMaterial3: true,
-      brightness: brightness,
-      colorScheme: scheme,
-      scaffoldBackgroundColor: surface,
+    TextStyle type(double size, double line, FontWeight weight) => TextStyle(
+      fontFamily: 'Pretendard',
+      fontSize: size,
+      height: line / size,
+      fontWeight: weight,
+      color: ink,
     );
-
-    return base.copyWith(
-      textTheme: base.textTheme.copyWith(
-        displaySmall: base.textTheme.displaySmall?.copyWith(
-          color: foreground,
-          fontWeight: FontWeight.w700,
-          height: 1.1,
-          letterSpacing: -0.8,
+    final common = ButtonStyle(
+      minimumSize: const WidgetStatePropertyAll(Size(48, 56)),
+      padding: const WidgetStatePropertyAll(
+        EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      ),
+      shape: WidgetStatePropertyAll(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      textStyle: WidgetStatePropertyAll(type(16, 22, FontWeight.w600)),
+      animationDuration: DopaMotion.quick,
+    );
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: scheme,
+      fontFamily: 'Pretendard',
+      scaffoldBackgroundColor: background,
+      visualDensity: VisualDensity.standard,
+      materialTapTargetSize: MaterialTapTargetSize.padded,
+      extensions: [
+        DopaSurfaces(
+          soft: soft,
+          sunlight: Color(dark ? 0xFF4B422B : 0xFFF6E6B5),
+          apricot: Color(dark ? 0xFF49362E : 0xFFF7E1D3),
+          muted: muted,
         ),
-        headlineSmall: base.textTheme.headlineSmall?.copyWith(
-          color: foreground,
-          fontWeight: FontWeight.w700,
-          height: 1.2,
-          letterSpacing: -0.3,
+      ],
+      textTheme: TextTheme(
+        displaySmall: type(30, 40, FontWeight.w600),
+        displayMedium: type(
+          48,
+          56,
+          FontWeight.w500,
+        ).copyWith(fontFeatures: [const FontFeature.tabularFigures()]),
+        headlineSmall: type(24, 34, FontWeight.w600),
+        headlineMedium: type(30, 40, FontWeight.w600),
+        titleLarge: type(20, 28, FontWeight.w600),
+        titleMedium: type(16, 26, FontWeight.w600),
+        titleSmall: type(14, 22, FontWeight.w600),
+        bodyLarge: type(16, 26, FontWeight.w400),
+        bodyMedium: type(16, 26, FontWeight.w400),
+        bodySmall: type(14, 22, FontWeight.w400),
+        labelLarge: type(16, 22, FontWeight.w600),
+        labelMedium: type(14, 22, FontWeight.w500),
+        labelSmall: type(12, 18, FontWeight.w500),
+      ),
+      appBarTheme: AppBarTheme(
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: dark ? Brightness.light : Brightness.dark,
+          statusBarBrightness: dark ? Brightness.dark : Brightness.light,
+          systemNavigationBarColor: background,
+          systemNavigationBarIconBrightness: dark
+              ? Brightness.light
+              : Brightness.dark,
         ),
-        titleLarge: base.textTheme.titleLarge?.copyWith(
-          color: foreground,
-          fontWeight: FontWeight.w700,
-        ),
-        bodyLarge: base.textTheme.bodyLarge?.copyWith(
-          color: foreground,
-          height: 1.5,
-        ),
-        bodyMedium: base.textTheme.bodyMedium?.copyWith(
-          color: muted,
-          height: 1.45,
-        ),
+        backgroundColor: background,
+        foregroundColor: ink,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
+        titleTextStyle: type(20, 28, FontWeight.w600),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        color: surfaceRaised,
+        color: raised,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(DopaRadii.lg),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      ),
+      filledButtonTheme: FilledButtonThemeData(style: common),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: common.copyWith(
+          side: WidgetStateProperty.resolveWith(
+            (s) => BorderSide(
+              color: s.contains(WidgetState.disabled)
+                  ? scheme.outlineVariant
+                  : scheme.outline,
+            ),
+          ),
         ),
       ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          minimumSize: const Size(48, 52),
-          padding: const EdgeInsets.symmetric(
-            horizontal: DopaSpacing.lg,
-            vertical: DopaSpacing.md,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DopaRadii.md),
-          ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700),
+      textButtonTheme: TextButtonThemeData(
+        style: common.copyWith(
+          minimumSize: const WidgetStatePropertyAll(Size(48, 48)),
         ),
+      ),
+      iconButtonTheme: const IconButtonThemeData(
+        style: ButtonStyle(minimumSize: WidgetStatePropertyAll(Size(48, 48))),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: raised,
+        contentPadding: const EdgeInsets.all(16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: scheme.outline),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: scheme.outline),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: primary, width: 2),
+        ),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: raised,
+        selectedColor: soft,
+        side: BorderSide(color: scheme.outline),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       ),
       navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: background,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        backgroundColor: surfaceRaised,
-        indicatorColor: scheme.primaryContainer,
         height: 72,
+        indicatorColor: soft,
+        labelTextStyle: WidgetStatePropertyAll(type(12, 18, FontWeight.w500)),
       ),
-      dividerTheme: DividerThemeData(color: scheme.outlineVariant),
+      dividerTheme: DividerThemeData(
+        color: scheme.outlineVariant,
+        thickness: 1,
+      ),
     );
   }
 }

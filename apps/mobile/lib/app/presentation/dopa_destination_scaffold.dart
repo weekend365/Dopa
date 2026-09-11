@@ -9,55 +9,30 @@ class DopaDestinationScaffold extends StatelessWidget {
     this.actions,
     super.key,
   });
-
   final int selectedIndex;
   final String title;
   final Widget body;
   final List<Widget>? actions;
-
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: actions,
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-      ),
-      body: SafeArea(top: false, child: body),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
-        onDestinationSelected: (index) {
-          switch (index) {
-            case 0:
-              context.go('/today');
-              return;
-            case 1:
-              context.go('/focus');
-              return;
-            case 2:
-              context.go('/insights/weekly');
-              return;
-          }
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.wb_sunny_outlined),
-            selectedIcon: Icon(Icons.wb_sunny),
-            label: '오늘',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.timer_outlined),
-            selectedIcon: Icon(Icons.timer),
-            label: '집중',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.insights_outlined),
-            selectedIcon: Icon(Icons.insights),
-            label: '인사이트',
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text(title), actions: actions),
+    body: SafeArea(top: false, child: body),
+    bottomNavigationBar: NavigationBar(
+      selectedIndex: selectedIndex == 2 ? 1 : 0,
+      onDestinationSelected: (index) =>
+          context.go(index == 0 ? '/today' : '/insights/weekly'),
+      destinations: const [
+        NavigationDestination(
+          icon: Icon(Icons.wb_sunny_outlined),
+          selectedIcon: Icon(Icons.wb_sunny),
+          label: '오늘',
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.book_outlined),
+          selectedIcon: Icon(Icons.book),
+          label: '기록',
+        ),
+      ],
+    ),
+  );
 }

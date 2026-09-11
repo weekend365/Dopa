@@ -3,7 +3,7 @@ import 'package:dopa_local_storage/dopa_local_storage.dart';
 
 /// Explicit boundary between account/consent flows and device-local data.
 ///
-/// [AuthController] calls [initializeAfterLoginAndConsent] only after login
+/// [AuthController] calls [initializeAfterConsent] only after valid age confirmation
 /// and consent succeed. Logout and account deletion must call
 /// [deleteForLogoutOrAccountDeletion] before disposing the account scope.
 final class LocalAccountDataLifecycle {
@@ -13,7 +13,7 @@ final class LocalAccountDataLifecycle {
 
   final DriftFocusTreeRepository _repository;
 
-  Future<TreeProgress> initializeAfterLoginAndConsent({
+  Future<TreeProgress> initializeAfterConsent({
     required DateTime createdAtUtc,
   }) async {
     await EnsureTreeCompanion(repository: _repository)(
@@ -28,7 +28,7 @@ final class LocalAccountDataLifecycle {
   /// Creates the 7-day window for a tree that predates schema v3.
   ///
   /// No-ops when the account has not consented yet, so the check-in store is
-  /// not opened before login.
+  /// not opened before consent.
   Future<void> ensureExperimentForExistingTree() async {
     await EnsureSevenDayExperiment(repository: _repository).fromExistingTree();
   }

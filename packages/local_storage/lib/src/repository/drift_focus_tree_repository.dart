@@ -276,6 +276,7 @@ final class _DriftFocusTreeTransaction implements domain.FocusTreeTransaction {
             TreeGrowthCreditsCompanion.insert(
               treeId: credit.treeId,
               sourceSessionId: credit.sourceSessionId,
+              sourceKind: Value(credit.sourceKind.name),
               creditedLocalDate: credit.creditedLocalDate.toIso8601String(),
               creditedAtUtcMicros: credit.creditedAtUtc.microsecondsSinceEpoch,
               ruleVersion: credit.ruleVersion,
@@ -469,6 +470,11 @@ domain.TreeGrowthCredit _creditFromRow(TreeGrowthCreditRow row) {
     return domain.TreeGrowthCredit(
       treeId: row.treeId,
       sourceSessionId: row.sourceSessionId,
+      sourceKind: _enumByName(
+        values: domain.GrowthSourceKind.values,
+        name: row.sourceKind,
+        field: 'sourceKind',
+      ),
       creditedLocalDate: domain.LocalDate.parse(row.creditedLocalDate),
       creditedAtUtc: _utcFromMicros(row.creditedAtUtcMicros),
       ruleVersion: row.ruleVersion,

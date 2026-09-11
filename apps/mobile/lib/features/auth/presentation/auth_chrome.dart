@@ -1,3 +1,4 @@
+import 'package:dopa/app/theme/dopa_tokens.dart';
 import 'package:dopa/app/theme/dopa_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -42,7 +43,7 @@ class AuthScaffold extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(DopaSpacing.page(context)),
           child: body,
         ),
       ),

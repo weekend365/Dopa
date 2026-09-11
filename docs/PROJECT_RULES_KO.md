@@ -5,24 +5,24 @@
 
 ## MVP Scope Freeze 게이트
 
-[MVP Scope Freeze v1.2](product/MVP_SCOPE_FREEZE_V1_KO.md)은 제품 구현의 최우선 기준이다.
+[정원 제품 범위](product/GARDEN_SCOPE_KO.md)와 [디자인 규칙](DESIGN_SYSTEM_KO.md)이 현재 구현의 최우선 기준이다. 이전 MVP 계획·과금·보호·인증 규칙은 이번 로컬 개편의 범위가 아니다.
 
 Apple 계정·식별자 결정은 [ADR-0001](adr/0001-apple-account-and-identifiers.md)을 따르며, 전체 iOS 식별자는 [`config/apple-identifiers.json`](../config/apple-identifiers.json)을 단일 진실 원천으로 사용한다.
 
-‘평생 한 그루’의 성장 원장·렌더러·롤아웃 결정은 [ADR-0002](adr/0002-local-tree-companion.md)를 따른다.
+‘평생 한 그루’의 성장 원장·렌더러·롤아웃 결정은 [ADR-0005](adr/0005-local-garden-experience.md)를 따른다.
 
 ### 반드시
 
 - 만 14세 미만은 인증·분석·Crashlytics·Remote Config 네트워크 초기화 전에 차단한다.
-- Apple·Google 로그인 성공 전 계획·사용 기록·체크인 로컬 저장소를 만들지 않는다.
+- 유효한 연령 확인과 현재 기기 저장 동의 전에는 활동 DB를 열지 않는다. 로그인은 로컬 사용의 조건이 아니다.
 - 무료 한도는 활성 계획 1개·계획당 대상 앱 3개, Plus는 계획 5개·계획당 대상 앱 3개다.
 - 세션 시간은 `5, 10, 25, 50`분만 허용하고 직접 입력을 구현하지 않는다.
 - 우회는 이유 입력 없이 `allowFiveMinutes`, `endSession`, `cancel`만 사용한다.
 - 앱 선택·사용 기록·체크인·원본 우회 이벤트는 기기 전용이며 서버 serializer를 만들지 않는다. 별도 선택적 `focus_bypassed` 분석은 allowlist 속성만 사용한다.
 - 나무·성장 원장은 기기 전용이고 무료다. 코인·가속·스킨·물주기·시듦·죽음·스트릭·리더보드·별도 정원 탭을 구현하지 않는다.
-- 정상 완료한 세션은 보호 모드와 5분 우회 여부에 관계없이 `startedLocalDate` 기준 하루 한 번만 성장한다. 조기 종료·취소·유효하지 않은 복구 종료는 성장시키지 않는다.
-- 세션 완료와 성장 지급은 하나의 Drift 트랜잭션으로 처리하고 `(treeId, creditedLocalDate)`와 `sourceSessionId` unique constraint를 유지한다.
-- `tree_ui_enabled`가 OFF여도 성장 원장은 기록하며 `tree_rive_enabled`가 OFF이거나 Rive가 실패하면 현재 테마의 정적 PNG 스프라이트 프레임으로 전환한다.
+- 정상 완료한 집중 또는 생활 행동 started/asPlanned 결과는 `startedLocalDate` 기준 하루 한 번만 성장한다. 조기 종료·취소·유효하지 않은 복구 종료는 성장시키지 않는다.
+- 집중 완료 또는 생활 결과 확정과 성장 지급은 하나의 Drift 트랜잭션으로 처리하고 `(treeId, creditedLocalDate)`와 `sourceSessionId (생활은 companion:runId)` unique constraint를 유지한다.
+- 정원은 낮/밤 8단계씩 개별 WebP 1152×768을 사용한다. Rive·PNG 스프라이트는 사용하지 않는다. 이미지 실패 시 단색과 식물 아이콘으로 대체한다.
 - 나무 행동 분석을 새로 만들지 않는다. `tree_render_failed`만 `renderer`, `platform`, `error_code` allowlist로 허용한다.
 - Android는 `timerOnly`를 기본으로 하고 Accessibility는 승인과 Remote Config 활성 상태를 모두 만족할 때만 사용한다.
 - 첫 페이월은 두 번째 계획 또는 반복 일정을 직접 선택한 경우에만 표시한다.
@@ -95,7 +95,7 @@ presentation → application → domain ← data
 - Data는 Drift, Firebase, RevenueCat, native bridge 구현을 담당한다.
 - 플랫폼 기능은 `PlatformCapabilities` 결과에 따라 실행하고 OS 이름을 조건문으로 흩뿌리지 않는다.
 - 모든 네이티브 보호 기능에는 `timerOnly` 폴백과 Remote Config kill switch가 있어야 한다.
-- 나무 UI는 `TreeRenderer` 경계 뒤에 두고 Rive와 정적 PNG 스프라이트 구현을 교체할 수 있어야 한다. 렌더 오류가 세션 완료나 성장 원장 트랜잭션을 실패시키면 안 된다.
+- 정원 UI는 GardenArtwork를 사용하고 기존 성장 모델은 GardenProgress로 매핑한다. 이미지 오류가 기록 저장을 막지 않아야 한다.
 - 시간 기반 기능은 주입 가능한 `Clock`을 사용한다. 테스트에서 실제 시간을 기다리지 않는다.
 
 ### 권장
@@ -226,7 +226,7 @@ presentation → application → domain ← data
 - `AgeBand`, `PlanLimits`, `SessionDurationPreset`, `BypassAction`, `IntentionAlignment`, `TreeSpecies`, `TreeGrowthStage`, `FocusSessionStatus` 값은 Scope Freeze 계약과 일치해야 한다.
 - `FocusSession.id`는 안정적이어야 하고 `startedLocalDate`는 세션 시작 시 확정한다. 자정·시간대 변경·복구 시 다시 계산하지 않는다.
 - `CompleteFocusSession`에서 세션의 `completed` 확정과 성장 지급을 단일 Drift 트랜잭션으로 처리한다. 성장 단계는 원장 개수에서 파생하고 저장하지 않는다.
-- `(treeId, creditedLocalDate)`와 `sourceSessionId` unique constraint는 migration과 schema 검증 테스트로 보호한다.
+- `(treeId, creditedLocalDate)`와 `sourceSessionId (생활은 companion:runId)` unique constraint는 migration과 schema 검증 테스트로 보호한다.
 - 삭제는 DB row뿐 아니라 암호화 키, outbox, 캐시, notification schedule까지 포함한다.
 - 데이터 보관기간과 TTL은 코드·인프라·처리방침에서 일치해야 한다.
 
@@ -243,7 +243,7 @@ presentation → application → domain ← data
 - `packages/domain`과 application 계층 85% 이상
 - 금액·결제·계정 삭제·연령 계산·시간대·세션 state machine은 branch test 필수
 - 만 14세 생일 전날·당일 경계와 14~17세 연례 재확인을 테스트한다.
-- 로그인 취소·실패·오프라인에서 로컬 웰빙 기록이 생성되지 않는지 테스트한다.
+- 동의 전 활동 DB 미초기화, 연령 차단, 로그인 없는 동의·재실행·전체 삭제를 테스트한다.
 - 무료·Plus 계획 한도, 앱 3개 한도, 두 번째 계획·반복 일정 페이월을 테스트한다.
 - 5·10·25·50분 외 세션 값이 거부되는지 테스트한다.
 - 이유 없는 2동작 우회와 `yes/no/skipped` 체크인 enum을 테스트한다.
@@ -259,7 +259,7 @@ presentation → application → domain ← data
 
 ### 권장
 
-- 나무 8단계 Light/Dark, 1536×1024·4×2·불투명 PNG 스프라이트 순서, Rive 실패 폴백을 포함한 핵심 화면 golden test, copy snapshot, Remote Config variant contract test를 둔다.
+- 정원 8단계 Light/Dark의 16개 WebP 1152×768, 총 6MiB 이하, 실제 렌더링 골든과 이미지 실패 폴백을 검사한다.
 - OEM·OS 조합을 위험 기반 device matrix로 관리한다.
 
 ## 11. 접근성 테스트
@@ -332,7 +332,7 @@ presentation → application → domain ← data
 - 권한 거부·철회·오프라인·부분 데이터·kill switch를 검증했다.
 - 로그·분석·network payload 개인정보 검토가 완료됐다.
 - VoiceOver·TalkBack·200% 글자·다크 모드가 확인됐다.
-- 나무 8단계 Light/Dark·PNG 스프라이트 계약·Reduce Motion·Rive 실패 폴백이 확인되고, 두 정적 시트 합계 6MiB 이하를 충족했다. Rive 활성화 시 기준 기기 느린 프레임 5% 미만·one-shot 종료 후 ticker 0개·전체 나무 앱 에셋 6MiB 이하를 추가로 충족했다.
+- 정원 16개 에셋·Reduce Motion·320/390/430 너비·글자 200% 검증 및 Android 전체 동선을 확인한다. iOS 실기기 검증은 별도 상태로 기록한다.
 - 사용자 문구와 비의료 표현이 검수됐다.
 - 새 데이터·SDK·권한이 문서와 스토어 선언에 반영됐다.
 - rollout·monitoring·rollback 담당자와 지표가 정해졌다.

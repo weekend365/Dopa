@@ -1138,9 +1138,19 @@ class $TreeGrowthCreditsTable extends TreeGrowthCredits
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES focus_sessions (id) ON DELETE RESTRICT',
-    ),
+  );
+  static const VerificationMeta _sourceKindMeta = const VerificationMeta(
+    'sourceKind',
+  );
+  @override
+  late final GeneratedColumn<String> sourceKind = GeneratedColumn<String>(
+    'source_kind',
+    aliasedName,
+    false,
+    check: () => sourceKind.isIn(const ['focus', 'companion']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('focus'),
   );
   static const VerificationMeta _creditedLocalDateMeta = const VerificationMeta(
     'creditedLocalDate',
@@ -1180,6 +1190,7 @@ class $TreeGrowthCreditsTable extends TreeGrowthCredits
   List<GeneratedColumn> get $columns => [
     treeId,
     sourceSessionId,
+    sourceKind,
     creditedLocalDate,
     creditedAtUtcMicros,
     ruleVersion,
@@ -1214,6 +1225,12 @@ class $TreeGrowthCreditsTable extends TreeGrowthCredits
       );
     } else if (isInserting) {
       context.missing(_sourceSessionIdMeta);
+    }
+    if (data.containsKey('source_kind')) {
+      context.handle(
+        _sourceKindMeta,
+        sourceKind.isAcceptableOrUnknown(data['source_kind']!, _sourceKindMeta),
+      );
     }
     if (data.containsKey('credited_local_date')) {
       context.handle(
@@ -1269,6 +1286,10 @@ class $TreeGrowthCreditsTable extends TreeGrowthCredits
         DriftSqlType.string,
         data['${effectivePrefix}source_session_id'],
       )!,
+      sourceKind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_kind'],
+      )!,
       creditedLocalDate: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}credited_local_date'],
@@ -1294,12 +1315,14 @@ class TreeGrowthCreditRow extends DataClass
     implements Insertable<TreeGrowthCreditRow> {
   final String treeId;
   final String sourceSessionId;
+  final String sourceKind;
   final String creditedLocalDate;
   final int creditedAtUtcMicros;
   final int ruleVersion;
   const TreeGrowthCreditRow({
     required this.treeId,
     required this.sourceSessionId,
+    required this.sourceKind,
     required this.creditedLocalDate,
     required this.creditedAtUtcMicros,
     required this.ruleVersion,
@@ -1309,6 +1332,7 @@ class TreeGrowthCreditRow extends DataClass
     final map = <String, Expression>{};
     map['tree_id'] = Variable<String>(treeId);
     map['source_session_id'] = Variable<String>(sourceSessionId);
+    map['source_kind'] = Variable<String>(sourceKind);
     map['credited_local_date'] = Variable<String>(creditedLocalDate);
     map['credited_at_utc_micros'] = Variable<int>(creditedAtUtcMicros);
     map['rule_version'] = Variable<int>(ruleVersion);
@@ -1319,6 +1343,7 @@ class TreeGrowthCreditRow extends DataClass
     return TreeGrowthCreditsCompanion(
       treeId: Value(treeId),
       sourceSessionId: Value(sourceSessionId),
+      sourceKind: Value(sourceKind),
       creditedLocalDate: Value(creditedLocalDate),
       creditedAtUtcMicros: Value(creditedAtUtcMicros),
       ruleVersion: Value(ruleVersion),
@@ -1333,6 +1358,7 @@ class TreeGrowthCreditRow extends DataClass
     return TreeGrowthCreditRow(
       treeId: serializer.fromJson<String>(json['treeId']),
       sourceSessionId: serializer.fromJson<String>(json['sourceSessionId']),
+      sourceKind: serializer.fromJson<String>(json['sourceKind']),
       creditedLocalDate: serializer.fromJson<String>(json['creditedLocalDate']),
       creditedAtUtcMicros: serializer.fromJson<int>(
         json['creditedAtUtcMicros'],
@@ -1346,6 +1372,7 @@ class TreeGrowthCreditRow extends DataClass
     return <String, dynamic>{
       'treeId': serializer.toJson<String>(treeId),
       'sourceSessionId': serializer.toJson<String>(sourceSessionId),
+      'sourceKind': serializer.toJson<String>(sourceKind),
       'creditedLocalDate': serializer.toJson<String>(creditedLocalDate),
       'creditedAtUtcMicros': serializer.toJson<int>(creditedAtUtcMicros),
       'ruleVersion': serializer.toJson<int>(ruleVersion),
@@ -1355,12 +1382,14 @@ class TreeGrowthCreditRow extends DataClass
   TreeGrowthCreditRow copyWith({
     String? treeId,
     String? sourceSessionId,
+    String? sourceKind,
     String? creditedLocalDate,
     int? creditedAtUtcMicros,
     int? ruleVersion,
   }) => TreeGrowthCreditRow(
     treeId: treeId ?? this.treeId,
     sourceSessionId: sourceSessionId ?? this.sourceSessionId,
+    sourceKind: sourceKind ?? this.sourceKind,
     creditedLocalDate: creditedLocalDate ?? this.creditedLocalDate,
     creditedAtUtcMicros: creditedAtUtcMicros ?? this.creditedAtUtcMicros,
     ruleVersion: ruleVersion ?? this.ruleVersion,
@@ -1371,6 +1400,9 @@ class TreeGrowthCreditRow extends DataClass
       sourceSessionId: data.sourceSessionId.present
           ? data.sourceSessionId.value
           : this.sourceSessionId,
+      sourceKind: data.sourceKind.present
+          ? data.sourceKind.value
+          : this.sourceKind,
       creditedLocalDate: data.creditedLocalDate.present
           ? data.creditedLocalDate.value
           : this.creditedLocalDate,
@@ -1388,6 +1420,7 @@ class TreeGrowthCreditRow extends DataClass
     return (StringBuffer('TreeGrowthCreditRow(')
           ..write('treeId: $treeId, ')
           ..write('sourceSessionId: $sourceSessionId, ')
+          ..write('sourceKind: $sourceKind, ')
           ..write('creditedLocalDate: $creditedLocalDate, ')
           ..write('creditedAtUtcMicros: $creditedAtUtcMicros, ')
           ..write('ruleVersion: $ruleVersion')
@@ -1399,6 +1432,7 @@ class TreeGrowthCreditRow extends DataClass
   int get hashCode => Object.hash(
     treeId,
     sourceSessionId,
+    sourceKind,
     creditedLocalDate,
     creditedAtUtcMicros,
     ruleVersion,
@@ -1409,6 +1443,7 @@ class TreeGrowthCreditRow extends DataClass
       (other is TreeGrowthCreditRow &&
           other.treeId == this.treeId &&
           other.sourceSessionId == this.sourceSessionId &&
+          other.sourceKind == this.sourceKind &&
           other.creditedLocalDate == this.creditedLocalDate &&
           other.creditedAtUtcMicros == this.creditedAtUtcMicros &&
           other.ruleVersion == this.ruleVersion);
@@ -1417,6 +1452,7 @@ class TreeGrowthCreditRow extends DataClass
 class TreeGrowthCreditsCompanion extends UpdateCompanion<TreeGrowthCreditRow> {
   final Value<String> treeId;
   final Value<String> sourceSessionId;
+  final Value<String> sourceKind;
   final Value<String> creditedLocalDate;
   final Value<int> creditedAtUtcMicros;
   final Value<int> ruleVersion;
@@ -1424,6 +1460,7 @@ class TreeGrowthCreditsCompanion extends UpdateCompanion<TreeGrowthCreditRow> {
   const TreeGrowthCreditsCompanion({
     this.treeId = const Value.absent(),
     this.sourceSessionId = const Value.absent(),
+    this.sourceKind = const Value.absent(),
     this.creditedLocalDate = const Value.absent(),
     this.creditedAtUtcMicros = const Value.absent(),
     this.ruleVersion = const Value.absent(),
@@ -1432,6 +1469,7 @@ class TreeGrowthCreditsCompanion extends UpdateCompanion<TreeGrowthCreditRow> {
   TreeGrowthCreditsCompanion.insert({
     required String treeId,
     required String sourceSessionId,
+    this.sourceKind = const Value.absent(),
     required String creditedLocalDate,
     required int creditedAtUtcMicros,
     required int ruleVersion,
@@ -1444,6 +1482,7 @@ class TreeGrowthCreditsCompanion extends UpdateCompanion<TreeGrowthCreditRow> {
   static Insertable<TreeGrowthCreditRow> custom({
     Expression<String>? treeId,
     Expression<String>? sourceSessionId,
+    Expression<String>? sourceKind,
     Expression<String>? creditedLocalDate,
     Expression<int>? creditedAtUtcMicros,
     Expression<int>? ruleVersion,
@@ -1452,6 +1491,7 @@ class TreeGrowthCreditsCompanion extends UpdateCompanion<TreeGrowthCreditRow> {
     return RawValuesInsertable({
       if (treeId != null) 'tree_id': treeId,
       if (sourceSessionId != null) 'source_session_id': sourceSessionId,
+      if (sourceKind != null) 'source_kind': sourceKind,
       if (creditedLocalDate != null) 'credited_local_date': creditedLocalDate,
       if (creditedAtUtcMicros != null)
         'credited_at_utc_micros': creditedAtUtcMicros,
@@ -1463,6 +1503,7 @@ class TreeGrowthCreditsCompanion extends UpdateCompanion<TreeGrowthCreditRow> {
   TreeGrowthCreditsCompanion copyWith({
     Value<String>? treeId,
     Value<String>? sourceSessionId,
+    Value<String>? sourceKind,
     Value<String>? creditedLocalDate,
     Value<int>? creditedAtUtcMicros,
     Value<int>? ruleVersion,
@@ -1471,6 +1512,7 @@ class TreeGrowthCreditsCompanion extends UpdateCompanion<TreeGrowthCreditRow> {
     return TreeGrowthCreditsCompanion(
       treeId: treeId ?? this.treeId,
       sourceSessionId: sourceSessionId ?? this.sourceSessionId,
+      sourceKind: sourceKind ?? this.sourceKind,
       creditedLocalDate: creditedLocalDate ?? this.creditedLocalDate,
       creditedAtUtcMicros: creditedAtUtcMicros ?? this.creditedAtUtcMicros,
       ruleVersion: ruleVersion ?? this.ruleVersion,
@@ -1486,6 +1528,9 @@ class TreeGrowthCreditsCompanion extends UpdateCompanion<TreeGrowthCreditRow> {
     }
     if (sourceSessionId.present) {
       map['source_session_id'] = Variable<String>(sourceSessionId.value);
+    }
+    if (sourceKind.present) {
+      map['source_kind'] = Variable<String>(sourceKind.value);
     }
     if (creditedLocalDate.present) {
       map['credited_local_date'] = Variable<String>(creditedLocalDate.value);
@@ -1507,6 +1552,7 @@ class TreeGrowthCreditsCompanion extends UpdateCompanion<TreeGrowthCreditRow> {
     return (StringBuffer('TreeGrowthCreditsCompanion(')
           ..write('treeId: $treeId, ')
           ..write('sourceSessionId: $sourceSessionId, ')
+          ..write('sourceKind: $sourceKind, ')
           ..write('creditedLocalDate: $creditedLocalDate, ')
           ..write('creditedAtUtcMicros: $creditedAtUtcMicros, ')
           ..write('ruleVersion: $ruleVersion, ')
@@ -3233,40 +3279,6 @@ typedef $$FocusSessionsTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-final class $$FocusSessionsTableReferences
-    extends
-        BaseReferences<_$DopaDatabase, $FocusSessionsTable, FocusSessionRow> {
-  $$FocusSessionsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static MultiTypedResultKey<$TreeGrowthCreditsTable, List<TreeGrowthCreditRow>>
-  _treeGrowthCreditsRefsTable(_$DopaDatabase db) =>
-      MultiTypedResultKey.fromTable(
-        db.treeGrowthCredits,
-        aliasName: 'focus_sessions__id__tree_growth_credits__source_session_id',
-      );
-
-  $$TreeGrowthCreditsTableProcessedTableManager get treeGrowthCreditsRefs {
-    final manager =
-        $$TreeGrowthCreditsTableTableManager(
-          $_db,
-          $_db.treeGrowthCredits,
-        ).filter(
-          (f) => f.sourceSessionId.id.sqlEquals($_itemColumn<String>('id')!),
-        );
-
-    final cache = $_typedResult.readTableOrNull(
-      _treeGrowthCreditsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-}
-
 class $$FocusSessionsTableFilterComposer
     extends Composer<_$DopaDatabase, $FocusSessionsTable> {
   $$FocusSessionsTableFilterComposer({
@@ -3330,31 +3342,6 @@ class $$FocusSessionsTableFilterComposer
     column: $table.intention,
     builder: (column) => ColumnFilters(column),
   );
-
-  Expression<bool> treeGrowthCreditsRefs(
-    Expression<bool> Function($$TreeGrowthCreditsTableFilterComposer f) f,
-  ) {
-    final $$TreeGrowthCreditsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.treeGrowthCredits,
-      getReferencedColumn: (t) => t.sourceSessionId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$TreeGrowthCreditsTableFilterComposer(
-            $db: $db,
-            $table: $db.treeGrowthCredits,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $$FocusSessionsTableOrderingComposer
@@ -3479,32 +3466,6 @@ class $$FocusSessionsTableAnnotationComposer
 
   GeneratedColumn<String> get intention =>
       $composableBuilder(column: $table.intention, builder: (column) => column);
-
-  Expression<T> treeGrowthCreditsRefs<T extends Object>(
-    Expression<T> Function($$TreeGrowthCreditsTableAnnotationComposer a) f,
-  ) {
-    final $$TreeGrowthCreditsTableAnnotationComposer composer =
-        $composerBuilder(
-          composer: this,
-          getCurrentColumn: (t) => t.id,
-          referencedTable: $db.treeGrowthCredits,
-          getReferencedColumn: (t) => t.sourceSessionId,
-          builder:
-              (
-                joinBuilder, {
-                $addJoinBuilderToRootComposer,
-                $removeJoinBuilderFromRootComposer,
-              }) => $$TreeGrowthCreditsTableAnnotationComposer(
-                $db: $db,
-                $table: $db.treeGrowthCredits,
-                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-                joinBuilder: joinBuilder,
-                $removeJoinBuilderFromRootComposer:
-                    $removeJoinBuilderFromRootComposer,
-              ),
-        );
-    return f(composer);
-  }
 }
 
 class $$FocusSessionsTableTableManager
@@ -3518,9 +3479,16 @@ class $$FocusSessionsTableTableManager
           $$FocusSessionsTableAnnotationComposer,
           $$FocusSessionsTableCreateCompanionBuilder,
           $$FocusSessionsTableUpdateCompanionBuilder,
-          (FocusSessionRow, $$FocusSessionsTableReferences),
+          (
+            FocusSessionRow,
+            BaseReferences<
+              _$DopaDatabase,
+              $FocusSessionsTable,
+              FocusSessionRow
+            >,
+          ),
           FocusSessionRow,
-          PrefetchHooks Function({bool treeGrowthCreditsRefs})
+          PrefetchHooks Function()
         > {
   $$FocusSessionsTableTableManager(_$DopaDatabase db, $FocusSessionsTable table)
     : super(
@@ -3590,47 +3558,9 @@ class $$FocusSessionsTableTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$FocusSessionsTableReferences(db, table, e),
-                ),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({treeGrowthCreditsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [
-                if (treeGrowthCreditsRefs) db.treeGrowthCredits,
-              ],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (treeGrowthCreditsRefs)
-                    await $_getPrefetchedData<
-                      FocusSessionRow,
-                      $FocusSessionsTable,
-                      TreeGrowthCreditRow
-                    >(
-                      currentTable: table,
-                      referencedTable: $$FocusSessionsTableReferences
-                          ._treeGrowthCreditsRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$FocusSessionsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).treeGrowthCreditsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where(
-                            (e) => e.sourceSessionId == item.id,
-                          ),
-                      typedResults: items,
-                    ),
-                ];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -3645,9 +3575,12 @@ typedef $$FocusSessionsTableProcessedTableManager =
       $$FocusSessionsTableAnnotationComposer,
       $$FocusSessionsTableCreateCompanionBuilder,
       $$FocusSessionsTableUpdateCompanionBuilder,
-      (FocusSessionRow, $$FocusSessionsTableReferences),
+      (
+        FocusSessionRow,
+        BaseReferences<_$DopaDatabase, $FocusSessionsTable, FocusSessionRow>,
+      ),
       FocusSessionRow,
-      PrefetchHooks Function({bool treeGrowthCreditsRefs})
+      PrefetchHooks Function()
     >;
 typedef $$TreeCompanionsTableCreateCompanionBuilder =
     TreeCompanionsCompanion Function({
@@ -3973,6 +3906,7 @@ typedef $$TreeGrowthCreditsTableCreateCompanionBuilder =
     TreeGrowthCreditsCompanion Function({
       required String treeId,
       required String sourceSessionId,
+      Value<String> sourceKind,
       required String creditedLocalDate,
       required int creditedAtUtcMicros,
       required int ruleVersion,
@@ -3982,6 +3916,7 @@ typedef $$TreeGrowthCreditsTableUpdateCompanionBuilder =
     TreeGrowthCreditsCompanion Function({
       Value<String> treeId,
       Value<String> sourceSessionId,
+      Value<String> sourceKind,
       Value<String> creditedLocalDate,
       Value<int> creditedAtUtcMicros,
       Value<int> ruleVersion,
@@ -4018,25 +3953,6 @@ final class $$TreeGrowthCreditsTableReferences
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
-
-  static $FocusSessionsTable _sourceSessionIdTable(_$DopaDatabase db) =>
-      db.focusSessions.createAlias(
-        'tree_growth_credits__source_session_id__focus_sessions__id',
-      );
-
-  $$FocusSessionsTableProcessedTableManager get sourceSessionId {
-    final $_column = $_itemColumn<String>('source_session_id')!;
-
-    final manager = $$FocusSessionsTableTableManager(
-      $_db,
-      $_db.focusSessions,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_sourceSessionIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
 }
 
 class $$TreeGrowthCreditsTableFilterComposer
@@ -4048,6 +3964,16 @@ class $$TreeGrowthCreditsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<String> get sourceSessionId => $composableBuilder(
+    column: $table.sourceSessionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceKind => $composableBuilder(
+    column: $table.sourceKind,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get creditedLocalDate => $composableBuilder(
     column: $table.creditedLocalDate,
     builder: (column) => ColumnFilters(column),
@@ -4085,29 +4011,6 @@ class $$TreeGrowthCreditsTableFilterComposer
     );
     return composer;
   }
-
-  $$FocusSessionsTableFilterComposer get sourceSessionId {
-    final $$FocusSessionsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.sourceSessionId,
-      referencedTable: $db.focusSessions,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$FocusSessionsTableFilterComposer(
-            $db: $db,
-            $table: $db.focusSessions,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$TreeGrowthCreditsTableOrderingComposer
@@ -4119,6 +4022,16 @@ class $$TreeGrowthCreditsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<String> get sourceSessionId => $composableBuilder(
+    column: $table.sourceSessionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceKind => $composableBuilder(
+    column: $table.sourceKind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get creditedLocalDate => $composableBuilder(
     column: $table.creditedLocalDate,
     builder: (column) => ColumnOrderings(column),
@@ -4156,29 +4069,6 @@ class $$TreeGrowthCreditsTableOrderingComposer
     );
     return composer;
   }
-
-  $$FocusSessionsTableOrderingComposer get sourceSessionId {
-    final $$FocusSessionsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.sourceSessionId,
-      referencedTable: $db.focusSessions,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$FocusSessionsTableOrderingComposer(
-            $db: $db,
-            $table: $db.focusSessions,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$TreeGrowthCreditsTableAnnotationComposer
@@ -4190,6 +4080,16 @@ class $$TreeGrowthCreditsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<String> get sourceSessionId => $composableBuilder(
+    column: $table.sourceSessionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceKind => $composableBuilder(
+    column: $table.sourceKind,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get creditedLocalDate => $composableBuilder(
     column: $table.creditedLocalDate,
     builder: (column) => column,
@@ -4227,29 +4127,6 @@ class $$TreeGrowthCreditsTableAnnotationComposer
     );
     return composer;
   }
-
-  $$FocusSessionsTableAnnotationComposer get sourceSessionId {
-    final $$FocusSessionsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.sourceSessionId,
-      referencedTable: $db.focusSessions,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$FocusSessionsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.focusSessions,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$TreeGrowthCreditsTableTableManager
@@ -4265,7 +4142,7 @@ class $$TreeGrowthCreditsTableTableManager
           $$TreeGrowthCreditsTableUpdateCompanionBuilder,
           (TreeGrowthCreditRow, $$TreeGrowthCreditsTableReferences),
           TreeGrowthCreditRow,
-          PrefetchHooks Function({bool treeId, bool sourceSessionId})
+          PrefetchHooks Function({bool treeId})
         > {
   $$TreeGrowthCreditsTableTableManager(
     _$DopaDatabase db,
@@ -4287,6 +4164,7 @@ class $$TreeGrowthCreditsTableTableManager
               ({
                 Value<String> treeId = const Value.absent(),
                 Value<String> sourceSessionId = const Value.absent(),
+                Value<String> sourceKind = const Value.absent(),
                 Value<String> creditedLocalDate = const Value.absent(),
                 Value<int> creditedAtUtcMicros = const Value.absent(),
                 Value<int> ruleVersion = const Value.absent(),
@@ -4294,6 +4172,7 @@ class $$TreeGrowthCreditsTableTableManager
               }) => TreeGrowthCreditsCompanion(
                 treeId: treeId,
                 sourceSessionId: sourceSessionId,
+                sourceKind: sourceKind,
                 creditedLocalDate: creditedLocalDate,
                 creditedAtUtcMicros: creditedAtUtcMicros,
                 ruleVersion: ruleVersion,
@@ -4303,6 +4182,7 @@ class $$TreeGrowthCreditsTableTableManager
               ({
                 required String treeId,
                 required String sourceSessionId,
+                Value<String> sourceKind = const Value.absent(),
                 required String creditedLocalDate,
                 required int creditedAtUtcMicros,
                 required int ruleVersion,
@@ -4310,6 +4190,7 @@ class $$TreeGrowthCreditsTableTableManager
               }) => TreeGrowthCreditsCompanion.insert(
                 treeId: treeId,
                 sourceSessionId: sourceSessionId,
+                sourceKind: sourceKind,
                 creditedLocalDate: creditedLocalDate,
                 creditedAtUtcMicros: creditedAtUtcMicros,
                 ruleVersion: ruleVersion,
@@ -4323,7 +4204,7 @@ class $$TreeGrowthCreditsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({treeId = false, sourceSessionId = false}) {
+          prefetchHooksCallback: ({treeId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -4354,17 +4235,6 @@ class $$TreeGrowthCreditsTableTableManager
                             .id,
                       ) as T;
                     }
-                    if (sourceSessionId) {
-                      state = state.withJoin(
-                        currentTable: table,
-                        currentColumn: table.sourceSessionId,
-                        referencedTable: $$TreeGrowthCreditsTableReferences
-                            ._sourceSessionIdTable(db),
-                        referencedColumn: $$TreeGrowthCreditsTableReferences
-                            ._sourceSessionIdTable(db)
-                            .id,
-                      ) as T;
-                    }
 
                     return state;
                   },
@@ -4389,7 +4259,7 @@ typedef $$TreeGrowthCreditsTableProcessedTableManager =
       $$TreeGrowthCreditsTableUpdateCompanionBuilder,
       (TreeGrowthCreditRow, $$TreeGrowthCreditsTableReferences),
       TreeGrowthCreditRow,
-      PrefetchHooks Function({bool treeId, bool sourceSessionId})
+      PrefetchHooks Function({bool treeId})
     >;
 typedef $$SevenDayExperimentsTableCreateCompanionBuilder =
     SevenDayExperimentsCompanion Function({

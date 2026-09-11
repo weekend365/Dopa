@@ -8,7 +8,7 @@ enum SignInProvider { apple, google }
 /// Date of birth is never stored. [ageBand] is [AgeBand.age14To17] or
 /// [AgeBand.adult18Plus] only.
 final class AccountSession {
-  static const currentConsentVersion = 'local-wellbeing-v1';
+  static const currentConsentVersion = 'local-wellbeing-v2';
 
   AccountSession({
     required this.ageBand,
@@ -39,5 +39,5 @@ final class AccountSession {
   bool get hasConsent =>
       consentVersion != null && consentVersion == currentConsentVersion;
 
-  bool get canCreateLocalWellbeingData => isSignedIn && hasConsent;
+  bool get canCreateLocalWellbeingData => hasConsent;
 }

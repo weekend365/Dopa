@@ -1,66 +1,62 @@
 import 'package:dopa/app/theme/dopa_tokens.dart';
+import 'package:dopa/core/app_environment.dart';
 import 'package:dopa/features/auth/application/auth_providers.dart';
-import 'package:dopa_domain/dopa_domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class AccountPage extends ConsumerWidget {
+class AccountPage extends ConsumerStatefulWidget {
   const AccountPage({super.key});
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final session = ref.watch(authControllerProvider).session;
-    final providerLabel = switch (session?.provider) {
-      SignInProvider.apple => 'Apple',
-      SignInProvider.google => 'Google',
-      null => '없음',
-    };
+  ConsumerState<AccountPage> createState() => _AccountPageState();
+}
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('계정'),
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(DopaSpacing.lg),
-          children: [
+class _AccountPageState extends ConsumerState<AccountPage> {
+  bool busy = false;
+  String? error;
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: const Text('설정')),
+    body: SafeArea(
+      child: ListView(
+        padding: EdgeInsets.all(DopaSpacing.page(context)),
+        children: [
+          Text('나의 작은 공간', style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 16),
+          const Text('가입 없이 사용 중이에요.\n활동과 정원 기록은 이 기기에만 저장돼요.'),
+          const SizedBox(height: 24),
+          const Divider(),
+          const SizedBox(height: 16),
+          const Text(
+            '휴식에는 점수도, 따라잡아야 할 목표도 없어요.\n집중하거나 생활 행동을 시작한 날에는 하루 한 번 정원이 자라요.',
+          ),
+          const SizedBox(height: 24),
+          if (AppEnvironment.current == DopaEnvironment.dev)
             ListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('로그인'),
-              subtitle: Text(providerLabel),
+              title: const Text('디자인 시스템'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/design'),
             ),
-            const SizedBox(height: DopaSpacing.md),
-            OutlinedButton(
-              key: const ValueKey('account-logout'),
-              onPressed: () =>
-                  ref.read(authControllerProvider.notifier).logOut(),
-              child: const Text('로그아웃'),
-            ),
-            const SizedBox(height: DopaSpacing.sm),
-            TextButton(
-              key: const ValueKey('account-delete'),
-              onPressed: () => _confirmDelete(context, ref),
-              child: const Text('계정 삭제'),
-            ),
-            const SizedBox(height: DopaSpacing.sm),
-            Text(
-              '로그아웃과 계정 삭제는 이 기기의 나무, 집중 세션, 성장 원장을 지웁니다.',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
-        ),
+          TextButton(
+            key: const ValueKey('account-delete'),
+            onPressed: busy ? null : confirm,
+            child: Text(busy ? '삭제 중…' : '이 기기의 기록 모두 삭제'),
+          ),
+          if (error != null) Semantics(liveRegion: true, child: Text(error!)),
+          const Text('앱 삭제·기기 변경 후에는 기록을 복원할 수 없어요.'),
+        ],
       ),
-    );
-  }
-
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showDialog<bool>(
+    ),
+  );
+  Future<void> confirm() async {
+    final yes = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('계정을 삭제할까요?'),
-        content: const Text('이 기기의 나무와 집중 기록이 삭제되고 처음 나이 확인부터 다시 시작됩니다.'),
+        title: const Text('모든 기록을 삭제할까요?'),
+        content: const Text(
+          '집중, 생활 행동, 체크인과 정원 성장 기록이 모두 삭제돼요. 이 작업은 되돌릴 수 없어요.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -69,13 +65,19 @@ class AccountPage extends ConsumerWidget {
           FilledButton(
             key: const ValueKey('account-delete-confirm'),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('삭제'),
+            child: const Text('모두 삭제'),
           ),
         ],
       ),
     );
-    if (confirmed == true) {
+    if (yes != true || !mounted) return;
+    setState(() => busy = true);
+    try {
       await ref.read(authControllerProvider.notifier).deleteAccount();
+    } on Object {
+      if (mounted) setState(() => error = '삭제하지 못했어요. 다시 시도해 주세요.');
+    } finally {
+      if (mounted) setState(() => busy = false);
     }
   }
 }

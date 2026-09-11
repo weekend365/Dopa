@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:dopa/core/app_environment.dart';
 import 'package:dopa/core/persistence/dopa_database_providers.dart';
 import 'package:dopa/features/focus/application/focus_session_controller.dart';
+import 'package:dopa/features/tree_companion/application/tree_companion_providers.dart';
 import 'package:dopa_domain/dopa_domain.dart';
 import 'package:dopa_local_storage/dopa_local_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// No runtime flag can expose unproduced sample media in a production flavor.
-bool companionSampleAvailable(DopaEnvironment environment) =>
-    environment == DopaEnvironment.dev;
+/// The complete text guide is local and available in every flavor.
+bool companionSampleAvailable(DopaEnvironment environment) => true;
 
 final companionSampleEnabledProvider = Provider<bool>(
   (ref) => companionSampleAvailable(AppEnvironment.current),
@@ -30,7 +30,17 @@ final companionControllerProvider =
         repository: ref.watch(companionRepositoryProvider),
         now: ref.watch(localNowProvider),
         newId: ref.watch(sessionIdFactoryProvider),
-        onSaved: () => ref.invalidate(companionHistoryProvider),
+        onSaved: () {
+          if (ref.exists(companionHistoryProvider)) {
+            ref.invalidate(companionHistoryProvider);
+          }
+          if (ref.exists(treeProgressControllerProvider)) {
+            ref.invalidate(treeProgressControllerProvider);
+          }
+          if (ref.exists(weeklyGrowthDaysControllerProvider)) {
+            ref.invalidate(weeklyGrowthDaysControllerProvider);
+          }
+        },
       ),
     );
 
@@ -214,7 +224,7 @@ class CompanionController extends StateNotifier<CompanionState> {
   void _checkContent(CompanionRun? run) {
     if (run != null &&
         (run.contentId != deskCompanionContent.id ||
-            run.contentVersion != deskCompanionContent.version ||
+            ![deskCompanionContent.version, 2].contains(run.contentVersion) ||
             run.stepCount != deskCompanionContent.steps.length)) {
       throw const _ContentUnavailable();
     }

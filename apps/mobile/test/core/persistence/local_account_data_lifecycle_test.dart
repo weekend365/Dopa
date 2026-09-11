@@ -17,7 +17,7 @@ void main() {
         ),
       );
 
-      final progress = await lifecycle.initializeAfterLoginAndConsent(
+      final progress = await lifecycle.initializeAfterConsent(
         createdAtUtc: DateTime.utc(2026, 8, 27),
       );
 

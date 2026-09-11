@@ -1,4 +1,5 @@
 import 'package:dopa/features/insights/presentation/weekly_report_page.dart';
+import 'package:dopa/features/experiment/application/daily_check_in_controller.dart';
 import 'package:dopa/features/tree_companion/application/tree_companion_providers.dart';
 import 'package:dopa_domain/dopa_domain.dart';
 import 'package:flutter/material.dart';
@@ -8,46 +9,66 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../test_app.dart';
 
 void main() {
-  testWidgets('weekly report summarizes tree growth without streak language', (
-    tester,
-  ) async {
-    const policy = TreeGrowthPolicy();
-    await tester.pumpWidget(
+  for (final scale in [1.0, 2.0]) {
+    testWidgets('combined history and checkin at $scale text', (t) async {
+      t.view.physicalSize = const Size(320, 800);
+      t.view.devicePixelRatio = 1;
+      addTearDown(t.view.resetPhysicalSize);
+      addTearDown(t.view.resetDevicePixelRatio);
+      await t.pumpWidget(
+        ProviderScope(
+          overrides: [
+            treeProgressProvider.overrideWithValue(
+              const TreeGrowthPolicy().progressFor(3),
+            ),
+            weeklyGrowthDaysProvider.overrideWithValue(1),
+            todaysCheckInProvider.overrideWithValue(null),
+            activityRecordsProvider.overrideWith(
+              (ref) => Stream.value(const [
+                ActivityRecord(
+                  'c',
+                  'companion',
+                  '2026-09-11',
+                  '책상 한 칸 비우기',
+                  '조금 시작했어요',
+                ),
+                ActivityRecord('f', 'focus', '2026-09-11', '책 읽기', '5분 집중했어요'),
+                ActivityRecord(
+                  'e',
+                  'focus',
+                  '2026-09-10',
+                  '나를 위한 집중',
+                  '중간에 마쳤어요',
+                ),
+              ]),
+            ),
+          ],
+          child: TestApp(textScale: scale, home: const WeeklyReportPage()),
+        ),
+      );
+      await t.pumpAndSettle();
+      expect(find.text('2026-09-11'), findsOneWidget);
+      expect(find.text('조금 시작했어요'), findsOneWidget);
+      await t.scrollUntilVisible(find.text('중간에 마쳤어요'), 150);
+      await t.scrollUntilVisible(find.text('오늘 사용은 내 의도와 맞았나요?'), 150);
+      expect(t.takeException(), isNull);
+    });
+  }
+  testWidgets('empty history invites first action', (t) async {
+    await t.pumpWidget(
       ProviderScope(
         overrides: [
-          treeProgressProvider.overrideWithValue(policy.progressFor(30)),
-          weeklyGrowthDaysProvider.overrideWithValue(3),
-          experimentAttemptDaysProvider.overrideWithValue(4),
+          treeProgressProvider.overrideWithValue(
+            const TreeGrowthPolicy().progressFor(0),
+          ),
+          weeklyGrowthDaysProvider.overrideWithValue(0),
+          todaysCheckInProvider.overrideWithValue(null),
+          activityRecordsProvider.overrideWith((ref) => Stream.value([])),
         ],
         child: const TestApp(home: WeeklyReportPage()),
       ),
     );
-
-    expect(find.text('함께 자란 30일 · 가지를 펴는 나무'), findsOneWidget);
-    expect(find.text('이번 주 3일'), findsOneWidget);
-    expect(find.text('4/7일'), findsOneWidget);
-    expect(find.textContaining('스트릭'), findsNothing);
-    expect(find.byKey(const ValueKey('weekly-tree-summary')), findsOneWidget);
-  });
-
-  testWidgets('weekly report remains operable at 200 percent text scale', (
-    tester,
-  ) async {
-    const policy = TreeGrowthPolicy();
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          treeProgressProvider.overrideWithValue(policy.progressFor(30)),
-          weeklyGrowthDaysProvider.overrideWithValue(3),
-          experimentAttemptDaysProvider.overrideWithValue(4),
-        ],
-        child: const TestApp(textScale: 2, home: WeeklyReportPage()),
-      ),
-    );
-
-    await tester.drag(find.byType(ListView).first, const Offset(0, -500));
-    await tester.pump();
-    expect(tester.takeException(), isNull);
-    expect(find.text('시도한 날'), findsOneWidget);
+    await t.pumpAndSettle();
+    expect(find.text('같이 시작하기'), findsOneWidget);
   });
 }

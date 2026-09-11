@@ -17,7 +17,13 @@ enum AuthPhase {
 }
 
 final class AuthState {
-  const AuthState({required this.phase, this.session, this.error});
+  const AuthState({
+    required this.phase,
+    this.session,
+    this.error,
+    this.showIntroduction = false,
+  });
+  final bool showIntroduction;
 
   final AuthPhase phase;
   final AccountSession? session;
@@ -52,16 +58,23 @@ class AuthController extends StateNotifier<AuthState> {
         try {
           await _ref
               .read(localAccountDataLifecycleProvider)
-              .ensureExperimentForExistingTree();
+              .initializeAfterConsent(createdAtUtc: _clock().toUtc());
         } on Object {
           // The authenticated shell can still open. Experiment days stay at
           // zero until a later successful refresh.
         }
       }
-      state = AuthState(phase: phase, session: session);
+      state = AuthState(
+        phase: phase,
+        session: session,
+        showIntroduction: session == null,
+      );
     } on Object {
       await _store.clear();
-      state = const AuthState(phase: AuthPhase.needsAge);
+      state = const AuthState(
+        phase: AuthPhase.needsAge,
+        showIntroduction: true,
+      );
     }
   }
 
@@ -125,7 +138,7 @@ class AuthController extends StateNotifier<AuthState> {
 
   Future<void> acceptConsent() async {
     final current = state.session;
-    if (current == null || !current.isSignedIn) {
+    if (current == null) {
       state = AuthState(phase: _phaseFor(current, _clock()), session: current);
       return;
     }
@@ -133,7 +146,7 @@ class AuthController extends StateNotifier<AuthState> {
     try {
       await _ref
           .read(localAccountDataLifecycleProvider)
-          .initializeAfterLoginAndConsent(createdAtUtc: _clock().toUtc());
+          .initializeAfterConsent(createdAtUtc: _clock().toUtc());
     } on Object {
       state = AuthState(
         phase: AuthPhase.needsConsent,
@@ -171,7 +184,7 @@ class AuthController extends StateNotifier<AuthState> {
   Future<void> deleteAccount() async {
     await _wipeWellbeingAndInvalidate();
     await _store.clear();
-    state = const AuthState(phase: AuthPhase.needsAge);
+    state = const AuthState(phase: AuthPhase.needsAge, showIntroduction: true);
   }
 
   Future<void> _wipeWellbeingAndInvalidate() async {
@@ -203,9 +216,6 @@ class AuthController extends StateNotifier<AuthState> {
       today: today,
     )) {
       return AuthPhase.needsAge;
-    }
-    if (!session.isSignedIn) {
-      return AuthPhase.needsSignIn;
     }
     if (!session.hasConsent) {
       return AuthPhase.needsConsent;

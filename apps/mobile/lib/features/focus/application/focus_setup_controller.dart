@@ -5,7 +5,7 @@ class FocusSetupState {
   const FocusSetupState({
     this.durationMinutes = 10,
     this.protectionMode = ProtectionMode.timerOnly,
-    this.intention = '읽던 문서 한 단락 마치기',
+    this.intention = '',
   });
 
   final int durationMinutes;

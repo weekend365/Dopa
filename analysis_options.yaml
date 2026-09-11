@@ -1,5 +1,6 @@
 analyzer:
   exclude:
+    - ".tooling/**"
     - "**/.dart_tool/**"
     - "**/build/**"
     - build/**

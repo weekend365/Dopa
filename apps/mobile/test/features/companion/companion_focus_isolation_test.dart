@@ -14,6 +14,9 @@ void main() {
   test('a life guide preserves a running focus session, its settings and bypass state', () async {
     final db = DopaDatabase(NativeDatabase.memory());
     var id = 0;
+    await EnsureTreeCompanion(
+      repository: DriftFocusTreeRepository(database: db),
+    )(createdAtUtc: DateTime.utc(2026, 9, 1));
     final container = ProviderContainer(
       overrides: [
         dopaDatabaseProvider.overrideWithValue(db),
@@ -59,7 +62,7 @@ void main() {
       expect(persisted.durationPresetMinutes, 25);
       expect(persisted.usedFiveMinuteBypass, isTrue);
       expect(persisted.protectedDurationSeconds, 0);
-      expect(await db.select(db.treeGrowthCredits).get(), isEmpty);
+      expect(await db.select(db.treeGrowthCredits).get(), hasLength(1));
       expect(
         await container.read(companionHistoryProvider.future),
         hasLength(1),

@@ -1,3 +1,5 @@
+> 2026-09-11 개편: 아래는 역사적 결정 기록입니다. 현재 로그인·성장·에셋·화면 계약은 [정원 제품 범위](../product/GARDEN_SCOPE_KO.md), [디자인 규칙](../DESIGN_SYSTEM_KO.md), [ADR-0005](../adr/0005-local-garden-experience.md)가 대체합니다.
+
 # Dopa MVP Scope Freeze v1.3
 
 > 2026-09-10 작업 범위 추가: 사용자의 goal-objective.md 지시에 따라 개발 환경에서

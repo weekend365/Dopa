@@ -1,3 +1,5 @@
+> 2026-09-11 개편: 아래는 역사적 결정 기록입니다. 현재 로그인·성장·에셋·화면 계약은 [정원 제품 범위](../product/GARDEN_SCOPE_KO.md), [디자인 규칙](../DESIGN_SYSTEM_KO.md), [ADR-0005](../adr/0005-local-garden-experience.md)가 대체합니다.
+
 # ADR-0003: 개발용 생활 안내와 별도 로컬 자기보고 기록
 
 - 날짜: 2026-09-10

@@ -45,7 +45,7 @@ void main() {
         }
         final oldSchema = sqlite
             .select(
-              "SELECT sql FROM sqlite_master WHERE type = 'table' ORDER BY name",
+              "SELECT sql FROM sqlite_master WHERE type = 'table' AND name <> 'tree_growth_credits' ORDER BY name",
             )
             .map((row) => row['sql'])
             .toList();
@@ -92,11 +92,11 @@ void main() {
         // Existing growth constraints survive the additive migration.
         expect(
           () => sqlite.execute(
-            "INSERT INTO tree_growth_credits VALUES ('tree', 'legacy', '2026-09-09', 301000001, 1)",
+            "INSERT INTO tree_growth_credits VALUES ('tree', 'legacy', '2026-09-09', 301000001, 1, 'focus')",
           ),
           throwsA(isA<SqliteException>()),
         );
-        expect(sqlite.select('PRAGMA user_version').single.values.single, 5);
+        expect(sqlite.select('PRAGMA user_version').single.values.single, 6);
       },
     );
   }

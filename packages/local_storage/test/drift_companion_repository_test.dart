@@ -28,13 +28,68 @@ void main() {
   late DopaDatabase db;
   var dbOpen = false;
   late DriftCompanionRepository repo;
-  setUp(() {
+  setUp(() async {
     db = DopaDatabase(NativeDatabase.memory());
     dbOpen = true;
     repo = DriftCompanionRepository(database: db);
+    await EnsureTreeCompanion(
+      repository: DriftFocusTreeRepository(database: db),
+    )(createdAtUtc: DateTime.utc(2026, 9, 1));
   });
   tearDown(() async {
     if (dbOpen) await db.close();
+  });
+
+  test(
+    'focus and companion completing concurrently share one start-date credit',
+    () async {
+      final focus = DriftFocusTreeRepository(database: db);
+      await focus.writeTransaction(
+        (tx) => tx.saveSession(
+          FocusSession(
+            id: 'same-day-focus',
+            startedAtUtc: DateTime.utc(2026, 9, 10, 14, 55),
+            startedLocalDate: LocalDate(2026, 9, 10),
+            protectionMode: ProtectionMode.timerOnly,
+            preset: SessionDurationPreset.fiveMinutes,
+          ),
+        ),
+      );
+      await repo.startOrResume(proposed());
+      await repo.requestOutcome('run');
+      await Future.wait<Object>([
+        submit(repo),
+        CompleteFocusSession(repository: focus)(
+          sessionId: 'same-day-focus',
+          terminalStatus: FocusSessionStatus.completed,
+          endedAtUtc: DateTime.utc(2026, 9, 10, 15, 2),
+          protectedDuration: const Duration(minutes: 5),
+        ),
+      ]);
+      final credits = await db.select(db.treeGrowthCredits).get();
+      expect(credits, hasLength(1));
+      expect(credits.single.creditedLocalDate, '2026-09-10');
+      expect(await repo.readHistory(), hasLength(1));
+      expect(
+        (await db.select(db.focusSessions).getSingle()).status,
+        'completed',
+      );
+    },
+  );
+
+  test('growth write failure rolls back outcome and allows retry', () async {
+    await repo.startOrResume(proposed());
+    await repo.requestOutcome('run');
+    await db.customStatement(
+      "CREATE TRIGGER fail_growth BEFORE INSERT ON tree_growth_credits BEGIN SELECT RAISE(ABORT, 'growth_failure'); END",
+    );
+    await expectLater(submit(repo), throwsA(isA<Exception>()));
+    expect(await repo.readHistory(), isEmpty);
+    expect((await repo.readActive())!.awaitingOutcome, isTrue);
+    expect(await db.select(db.treeGrowthCredits).get(), isEmpty);
+    await db.customStatement('DROP TRIGGER fail_growth');
+    await submit(repo);
+    expect(await db.select(db.treeGrowthCredits).get(), hasLength(1));
   });
 
   test(
@@ -87,12 +142,12 @@ void main() {
     await submit(repo);
     expect(await db.select(db.focusSessions).getSingle(), beforeSession);
     expect(await db.select(db.treeCompanions).getSingle(), beforeTree);
-    expect(await db.select(db.treeGrowthCredits).getSingle(), beforeCredit);
+    expect(await db.select(db.treeGrowthCredits).get(), contains(beforeCredit));
     expect(
       (await db.select(db.dailyCheckIns).getSingle()).intentionAlignment,
       'no',
     );
-    expect((await focus.readTreeProgress()).totalGrowthDays, 1);
+    expect((await focus.readTreeProgress()).totalGrowthDays, 2);
   });
 
   for (final outcome in CompanionOutcome.values) {
@@ -108,7 +163,15 @@ void main() {
         expect(result.confirmedLocalDate, LocalDate(2026, 9, 11));
         expect(await repo.readActive(), isNull);
         expect((await repo.readHistory()).single.outcome, outcome);
-        expect(await db.select(db.treeGrowthCredits).get(), isEmpty);
+        final credits = await db.select(db.treeGrowthCredits).get();
+        expect(
+          credits,
+          hasLength(outcome == CompanionOutcome.difficult ? 0 : 1),
+        );
+        if (credits.isNotEmpty) {
+          expect(credits.single.creditedLocalDate, '2026-09-10');
+          expect(credits.single.sourceKind, 'companion');
+        }
       },
     );
   }
@@ -150,7 +213,7 @@ void main() {
       (await submit(repo, CompanionOutcome.difficult)).outcome,
       first.outcome,
     );
-    expect(await db.select(db.treeGrowthCredits).get(), isEmpty);
+    expect(await db.select(db.treeGrowthCredits).get(), hasLength(1));
     expect((await repo.startOrResume(proposed('second'))).id, 'second');
   });
 
@@ -184,6 +247,15 @@ void main() {
       await repo.deleteRecord('run');
       expect(await repo.readHistory(), isEmpty);
       expect((await db.select(db.companionRuns).get()).single.id, 'pending');
+      expect(await db.select(db.treeGrowthCredits).get(), hasLength(1));
+      await repo.requestOutcome('pending');
+      await repo.submitOutcome(
+        runId: 'pending',
+        outcome: CompanionOutcome.asPlanned,
+        confirmedAtUtc: DateTime.utc(2026, 9, 11),
+        confirmedLocalDate: LocalDate(2026, 9, 11),
+      );
+      expect(await db.select(db.treeGrowthCredits).get(), hasLength(1));
       await db.deleteAllLocalData();
       expect(await db.select(db.companionRuns).get(), isEmpty);
       expect(await db.select(db.companionOutcomes).get(), isEmpty);
@@ -198,6 +270,9 @@ void main() {
     var disk = DopaDatabase(NativeDatabase(file));
     try {
       var repository = DriftCompanionRepository(database: disk);
+      await EnsureTreeCompanion(
+        repository: DriftFocusTreeRepository(database: disk),
+      )(createdAtUtc: DateTime.utc(2026, 9, 1));
       await repository.startOrResume(proposed());
       await repository.advanceGuide('run');
       await disk.close();

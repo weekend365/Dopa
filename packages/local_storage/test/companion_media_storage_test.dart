@@ -70,6 +70,9 @@ void main() {
       sqlite.execute(
         "INSERT INTO companion_outcomes VALUES ('past','started',2000000,'2026-09-09')",
       );
+      sqlite.execute(
+        'CREATE TABLE tree_growth_credits (tree_id TEXT, source_session_id TEXT, credited_local_date TEXT, credited_at_utc_micros INTEGER, rule_version INTEGER)',
+      );
       sqlite.execute('PRAGMA user_version = 4');
       final db = DopaDatabase(NativeDatabase.opened(sqlite));
       addTearDown(db.close);
@@ -83,13 +86,16 @@ void main() {
       expect(record.outcome, CompanionOutcome.started);
       expect(record.run.contentVersion, 1);
       expect(record.run.guidanceMode, CompanionGuidanceMode.textSample);
-      expect(sqlite.select('PRAGMA user_version').single.values.single, 5);
+      expect(sqlite.select('PRAGMA user_version').single.values.single, 6);
     },
   );
   test('backward saves reject stale revisions and cannot revert a confirmed result', () async {
     final db = DopaDatabase(NativeDatabase.memory());
     addTearDown(db.close);
     final repo = DriftCompanionRepository(database: db);
+    await EnsureTreeCompanion(
+      repository: DriftFocusTreeRepository(database: db),
+    )(createdAtUtc: DateTime.utc(2026, 9, 1));
     await repo.startOrResume(
       CompanionRun(
         id: 'media',
@@ -132,7 +138,7 @@ void main() {
     expect(record.run.awaitingOutcome, true);
     expect(record.run.guidanceMode, CompanionGuidanceMode.humanMedia);
     expect(await db.select(db.focusSessions).get(), isEmpty);
-    expect(await db.select(db.treeGrowthCredits).get(), isEmpty);
+    expect(await db.select(db.treeGrowthCredits).get(), hasLength(1));
     await repo.deleteRecord('media');
     await expectLater(save(1000, 100), throwsStateError);
     expect(await repo.readHistory(), isEmpty);

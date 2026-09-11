@@ -25,9 +25,9 @@ void main() {
   });
   tearDown(() => controller.dispose());
 
-  test('sample availability cannot be enabled for prod', () {
+  test('completed text guide is available in every flavor', () {
     expect(companionSampleAvailable(DopaEnvironment.dev), isTrue);
-    expect(companionSampleAvailable(DopaEnvironment.prod), isFalse);
+    expect(companionSampleAvailable(DopaEnvironment.prod), isTrue);
   });
 
   test('restore is paused and preserves the saved stage', () async {

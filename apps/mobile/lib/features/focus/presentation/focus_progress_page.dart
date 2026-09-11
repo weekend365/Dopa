@@ -65,16 +65,17 @@ class _FocusProgressPageState extends ConsumerState<FocusProgressPage> {
       ),
       body: SafeArea(
         top: false,
-        child: Padding(
-          padding: const EdgeInsets.all(DopaSpacing.lg),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(DopaSpacing.page(context)),
           child: Column(
             children: [
-              const Spacer(),
+              const SizedBox(height: 32),
               Semantics(
+                excludeSemantics: true,
                 label: '$announcedMinutes분 중 남은 시간',
                 value: _timerLabel(remaining),
                 child: SizedBox.square(
-                  dimension: 220,
+                  dimension: 260,
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
@@ -85,9 +86,15 @@ class _FocusProgressPageState extends ConsumerState<FocusProgressPage> {
                           strokeCap: StrokeCap.round,
                         ),
                       ),
-                      Text(
-                        _timerLabel(remaining),
-                        style: Theme.of(context).textTheme.displaySmall,
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            _timerLabel(remaining),
+                            style: Theme.of(context).textTheme.displayMedium,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -101,15 +108,8 @@ class _FocusProgressPageState extends ConsumerState<FocusProgressPage> {
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              const Spacer(),
-              OutlinedButton.icon(
-                onPressed: sessionFlow.isBusy || session == null
-                    ? null
-                    : () => _allowBypass(context),
-                icon: const Icon(Icons.lock_open_outlined),
-                label: const Text('5분만 허용'),
-              ),
-              const SizedBox(height: DopaSpacing.sm),
+              const SizedBox(height: 32),
+
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
@@ -157,21 +157,6 @@ class _FocusProgressPageState extends ConsumerState<FocusProgressPage> {
         '${seconds.toString().padLeft(2, '0')}';
   }
 
-  Future<void> _allowBypass(BuildContext context) async {
-    try {
-      await ref
-          .read(focusSessionControllerProvider.notifier)
-          .allowFiveMinuteBypass();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('5분 우회를 허용했어요. 세션을 완료하면 시도는 남아요.')),
-        );
-      }
-    } on Object {
-      if (context.mounted) _showSaveError(context);
-    }
-  }
-
   Future<void> _complete(BuildContext context) async {
     try {
       final data = await ref
@@ -196,7 +181,7 @@ class _FocusProgressPageState extends ConsumerState<FocusProgressPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('집중을 끝낼까요?'),
-        content: const Text('일찍 끝낸 세션은 나무의 성장일로 기록되지 않아요.'),
+        content: const Text('지금까지의 시도는 기록으로 남아요. 준비되면 다시 시작할 수 있어요.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),

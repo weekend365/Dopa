@@ -76,8 +76,13 @@ class TreeGrowthCredits extends Table {
   TextColumn get treeId =>
       text().references(TreeCompanions, #id, onDelete: KeyAction.cascade)();
 
-  TextColumn get sourceSessionId =>
-      text().references(FocusSessions, #id, onDelete: KeyAction.restrict)();
+  // Legacy column name retained. Companion keys use the "companion:" prefix.
+  // No activity FK: deleting a detailed record must not erase earned growth.
+  TextColumn get sourceSessionId => text()();
+
+  TextColumn get sourceKind => text()
+      .withDefault(const Constant('focus'))
+      .check(sourceKind.isIn(const ['focus', 'companion']))();
 
   TextColumn get creditedLocalDate => text()();
 
@@ -204,12 +209,24 @@ class DopaDatabase extends _$DopaDatabase {
   DopaDatabase(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (Migrator migrator) => migrator.createAll(),
     onUpgrade: (Migrator migrator, int from, int to) async {
+      if (from < 6) {
+        await customStatement(
+          'ALTER TABLE tree_growth_credits RENAME TO growth_v5',
+        );
+        await migrator.createTable(treeGrowthCredits);
+        await customStatement(
+          'INSERT INTO tree_growth_credits '
+          '(tree_id, source_session_id, credited_local_date, credited_at_utc_micros, rule_version, source_kind) '
+          "SELECT tree_id, source_session_id, credited_local_date, credited_at_utc_micros, rule_version, 'focus' FROM growth_v5",
+        );
+        await customStatement('DROP TABLE growth_v5');
+      }
       if (from < 2) {
         await migrator.addColumn(focusSessions, focusSessions.intention);
       }

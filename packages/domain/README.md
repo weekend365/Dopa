@@ -14,7 +14,7 @@ unique constraints for growth credits:
 session began. Completion time, midnight crossings, and later timezone changes
 therefore cannot move a growth day.
 
-Call `EnsureTreeCompanion` after login and local-data consent to create the seed
+Call `EnsureTreeCompanion` after valid age confirmation and local-data consent to create the seed
 idempotently. `CompleteFocusSession` also uses the same get-or-create operation
 inside its transaction so a missing initialization callback cannot lose an
 otherwise valid focus completion.

@@ -52,17 +52,21 @@ final class TreeCompanion {
   int get hashCode => Object.hash(id, species, createdAtUtc, ruleVersion);
 }
 
-/// One immutable row in the device-local tree growth ledger.
+enum GrowthSourceKind { focus, companion }
+
+/// One immutable row in the device-local garden growth ledger.
 final class TreeGrowthCredit {
   factory TreeGrowthCredit({
     required String treeId,
     required String sourceSessionId,
+    GrowthSourceKind sourceKind = GrowthSourceKind.focus,
     required LocalDate creditedLocalDate,
     required DateTime creditedAtUtc,
     required int ruleVersion,
   }) => TreeGrowthCredit._(
     treeId: requireNonBlank(treeId, 'treeId'),
     sourceSessionId: requireNonBlank(sourceSessionId, 'sourceSessionId'),
+    sourceKind: sourceKind,
     creditedLocalDate: creditedLocalDate,
     creditedAtUtc: requireUtc(creditedAtUtc, 'creditedAtUtc'),
     ruleVersion: requirePositive(ruleVersion, 'ruleVersion'),
@@ -71,6 +75,7 @@ final class TreeGrowthCredit {
   const TreeGrowthCredit._({
     required this.treeId,
     required this.sourceSessionId,
+    required this.sourceKind,
     required this.creditedLocalDate,
     required this.creditedAtUtc,
     required this.ruleVersion,
@@ -78,6 +83,7 @@ final class TreeGrowthCredit {
 
   final String treeId;
   final String sourceSessionId;
+  final GrowthSourceKind sourceKind;
   final LocalDate creditedLocalDate;
   final DateTime creditedAtUtc;
   final int ruleVersion;
@@ -88,6 +94,7 @@ final class TreeGrowthCredit {
       other is TreeGrowthCredit &&
           treeId == other.treeId &&
           sourceSessionId == other.sourceSessionId &&
+          sourceKind == other.sourceKind &&
           creditedLocalDate == other.creditedLocalDate &&
           creditedAtUtc == other.creditedAtUtc &&
           ruleVersion == other.ruleVersion;
@@ -96,6 +103,7 @@ final class TreeGrowthCredit {
   int get hashCode => Object.hash(
     treeId,
     sourceSessionId,
+    sourceKind,
     creditedLocalDate,
     creditedAtUtc,
     ruleVersion,

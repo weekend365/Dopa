@@ -2,6 +2,7 @@ import 'package:dopa/app/dopa_app.dart';
 import 'package:dopa/features/auth/application/auth_controller.dart';
 import 'package:dopa/features/auth/application/auth_providers.dart';
 import 'package:dopa/features/auth/presentation/age_gate_page.dart';
+import 'package:dopa/features/auth/presentation/welcome_page.dart';
 import 'package:dopa/features/auth/presentation/auth_chrome.dart';
 import 'package:dopa/features/auth/presentation/consent_page.dart';
 import 'package:dopa/features/auth/presentation/sign_in_page.dart';
@@ -20,7 +21,9 @@ class DopaRoot extends ConsumerWidget {
       AuthPhase.loading => const AuthMaterialApp(
         home: Scaffold(body: Center(child: CircularProgressIndicator())),
       ),
-      AuthPhase.needsAge => const AuthMaterialApp(home: AgeGatePage()),
+      AuthPhase.needsAge => AuthMaterialApp(
+        home: auth.showIntroduction ? const WelcomePage() : const AgeGatePage(),
+      ),
       AuthPhase.blockedUnder14 => const AuthMaterialApp(
         home: Under14BlockedPage(),
       ),

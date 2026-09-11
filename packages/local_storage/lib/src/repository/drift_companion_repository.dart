@@ -2,6 +2,7 @@ import 'package:dopa_domain/dopa_domain.dart';
 import 'package:drift/drift.dart';
 
 import '../database/dopa_database.dart';
+import 'drift_focus_tree_repository.dart';
 
 final class DriftCompanionRepository
     implements CompanionRepository, CompanionMediaRepository {
@@ -148,6 +149,31 @@ final class DriftCompanionRepository
     await (_db.update(_db.companionRuns)
           ..where((table) => table.id.equals(runId)))
         .write(const CompanionRunsCompanion(activeSlot: Value(null)));
+    if (outcome == CompanionOutcome.started ||
+        outcome == CompanionOutcome.asPlanned) {
+      final focusRepository = DriftFocusTreeRepository(database: _db);
+      final tree = await focusRepository.writeTransaction(
+        (tx) => tx.findTree(),
+      );
+      if (tree == null) {
+        throw StateError(
+          'Local consent must initialize the garden before an outcome.',
+        );
+      }
+      await _db
+          .into(_db.treeGrowthCredits)
+          .insert(
+            TreeGrowthCreditsCompanion.insert(
+              treeId: tree.id,
+              sourceSessionId: 'companion:$runId',
+              sourceKind: const Value('companion'),
+              creditedLocalDate: row.startedLocalDate,
+              creditedAtUtcMicros: confirmedAtUtc.microsecondsSinceEpoch,
+              ruleVersion: tree.ruleVersion,
+            ),
+            mode: InsertMode.insertOrIgnore,
+          );
+    }
     return _record(row, inserted);
   });
 
