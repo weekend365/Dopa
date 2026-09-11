@@ -52,7 +52,7 @@ class _AgeGatePageState extends ConsumerState<AgeGatePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Dopa는 만 14세 이상만 사용할 수 있어요. 생년월일은 나이 확인 직후 기기에서 삭제되며 서버로 보내지 않습니다.',
+            '틔움는 만 14세 이상만 사용할 수 있어요. 생년월일은 나이 확인 직후 기기에서 삭제되며 서버로 보내지 않습니다.',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 24),

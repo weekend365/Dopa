@@ -9,11 +9,11 @@ void main() {
     if (appFlavor == 'prod') {
       expect(AppEnvironment.current, DopaEnvironment.prod);
       expect(AppEnvironment.isProduction, isTrue);
-      expect(AppEnvironment.displayName, 'Dopa');
+      expect(AppEnvironment.displayName, '틔움');
     } else {
       expect(AppEnvironment.current, DopaEnvironment.dev);
       expect(AppEnvironment.isProduction, isFalse);
-      expect(AppEnvironment.displayName, 'Dopa Dev');
+      expect(AppEnvironment.displayName, '틔움 Dev');
     }
   });
 }

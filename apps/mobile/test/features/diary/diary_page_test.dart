@@ -150,6 +150,8 @@ void main() {
       await tap('diary-pick');
       await tap('diary-save');
       await tap('diary-convert');
+      expect(find.text('틔움 그림으로 남기기'), findsOneWidget);
+      expect(find.textContaining('선택한 사진을 틔움 서버와 OpenAI에'), findsOneWidget);
       expect(api.requests, 0);
       expect(api.consents, 0);
       await tap('diary-consent');

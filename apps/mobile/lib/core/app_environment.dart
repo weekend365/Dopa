@@ -12,5 +12,5 @@ abstract final class AppEnvironment {
 
   static const isProduction = current == DopaEnvironment.prod;
 
-  static String get displayName => isProduction ? 'Dopa' : 'Dopa Dev';
+  static String get displayName => isProduction ? '틔움' : '틔움 Dev';
 }

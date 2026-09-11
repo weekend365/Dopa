@@ -80,7 +80,7 @@ class DiaryLibraryPage extends ConsumerWidget {
                                             fit: BoxFit.cover,
                                             cacheWidth: 640,
                                             semanticLabel:
-                                                '${entry.localDate}의 ${entry.hasArtwork ? 'Dopa 그림' : '사진'}',
+                                                '${entry.localDate}의 ${entry.hasArtwork ? '틔움 그림' : '사진'}',
                                             errorBuilder: (_, e, s) =>
                                                 const Center(
                                                   child: Icon(

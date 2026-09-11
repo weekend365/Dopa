@@ -19,7 +19,7 @@ class DopaApp extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
-      title: 'Dopa',
+      title: '틔움',
       debugShowCheckedModeBanner: false,
       theme: DopaTheme.light,
       darkTheme: DopaTheme.dark,

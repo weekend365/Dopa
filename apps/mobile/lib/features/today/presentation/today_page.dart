@@ -28,7 +28,7 @@ class TodayPage extends ConsumerWidget {
     final destination = active.valueOrNull;
     return DopaDestinationScaffold(
       selectedIndex: 0,
-      title: 'Dopa',
+      title: '틔움',
       actions: [
         IconButton(
           key: const ValueKey('today-account'),

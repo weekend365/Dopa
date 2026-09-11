@@ -11,7 +11,7 @@ class AuthMaterialApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Dopa',
+      title: '틔움',
       debugShowCheckedModeBanner: false,
       theme: DopaTheme.light,
       darkTheme: DopaTheme.dark,

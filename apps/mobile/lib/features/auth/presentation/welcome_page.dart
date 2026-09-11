@@ -15,7 +15,7 @@ class _WelcomePageState extends State<WelcomePage> {
   Widget build(BuildContext context) {
     if (started) return const AgeGatePage();
     return AuthScaffold(
-      title: 'Dopa',
+      title: '틔움',
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -152,8 +152,8 @@ class _DiaryPageState extends ConsumerState<DiaryPage>
         title: const Text('이 사진을 그림으로 남길까요?'),
         content: const SingleChildScrollView(
           child: Text(
-            '선택한 사진을 Dopa 서버와 OpenAI에 보내 그림으로 바꿔요. 위치 정보는 제거하고, 일기 글은 보내지 않아요.\n\n'
-            'Dopa 서버의 사진은 다운로드 확인 후 삭제하며, 미수신 사진도 24시간 후 정리해요. OpenAI는 기본적으로 API 데이터를 학습에 사용하지 않지만 보안 모니터링을 위해 최대 30일 보관할 수 있어요(예외 있음).\n\n'
+            '선택한 사진을 틔움 서버와 OpenAI에 보내 그림으로 바꿔요. 위치 정보는 제거하고, 일기 글은 보내지 않아요.\n\n'
+            '틔움 서버의 사진은 다운로드 확인 후 삭제하며, 미수신 사진도 24시간 후 정리해요. OpenAI는 기본적으로 API 데이터를 학습에 사용하지 않지만 보안 모니터링을 위해 최대 30일 보관할 수 있어요(예외 있음).\n\n'
             '그림은 원본과 다를 수 있어요. 원본은 기기에 남아요. 변환은 처음 이용한 시간대 기준 하루 한 장이며, 삭제해도 오늘 사용량은 유지돼요.',
           ),
         ),
@@ -310,7 +310,7 @@ class _DiaryPageState extends ConsumerState<DiaryPage>
                             !original && art != null ? art : photo!,
                             fit: BoxFit.contain,
                             semanticLabel: !original && art != null
-                                ? '$day 일상의 장면을 그린 Dopa 그림'
+                                ? '$day 일상의 장면을 그린 틔움 그림'
                                 : '$day 내가 남긴 사진',
                             errorBuilder: (_, e, s) => const Center(
                               child: Text('사진을 표시하지 못했어요. 글은 보관되어 있어요.'),
@@ -325,7 +325,7 @@ class _DiaryPageState extends ConsumerState<DiaryPage>
                             onPressed: () =>
                                 setState(() => original = !original),
                             icon: const Icon(Icons.compare_outlined),
-                            label: Text(original ? 'Dopa 그림 보기' : '원본 사진 보기'),
+                            label: Text(original ? '틔움 그림 보기' : '원본 사진 보기'),
                           ),
                         ),
                       if (entry == null)
@@ -392,7 +392,7 @@ class _DiaryPageState extends ConsumerState<DiaryPage>
                           '변환 완료 여부를 확인하지 못했어요. 중복 요청을 막기 위해 오늘은 원본으로 남겨요.',
                         'failed' => '이번에는 그림을 만들지 못했어요. 원본 일기는 안전하게 남아 있어요.',
                         'expired' => '그림을 받아올 수 있는 시간이 지났어요. 원본 일기는 남아 있어요.',
-                        _ => '사진 그대로도 충분해요. 원한다면 Dopa의 그림체로 바꿔 간직할 수 있어요.',
+                        _ => '사진 그대로도 충분해요. 원한다면 틔움의 그림체로 바꿔 간직할 수 있어요.',
                       }),
                       const SizedBox(height: 12),
                       if (pending)
@@ -414,7 +414,7 @@ class _DiaryPageState extends ConsumerState<DiaryPage>
                               ? null
                               : () => run(convert),
                           icon: const Icon(Icons.brush_outlined),
-                          label: const Text('Dopa 그림으로 남기기'),
+                          label: const Text('틔움 그림으로 남기기'),
                         ),
                     ],
                     if (entry != null && available == false && art == null) ...[

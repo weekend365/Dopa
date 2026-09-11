@@ -7,7 +7,7 @@
     "sellerUsesLegalName": true
   },
   "production": {
-    "displayName": "Dopa",
+    "displayName": "틔움",
     "mainApp": "com.devnamu.dopa",
     "appGroup": "group.com.devnamu.dopa",
     "extensions": {
@@ -18,7 +18,7 @@
     }
   },
   "development": {
-    "displayName": "Dopa Dev",
+    "displayName": "틔움 Dev",
     "mainApp": "com.devnamu.dopa.dev",
     "appGroup": "group.com.devnamu.dopa.dev",
     "extensions": {

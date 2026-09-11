@@ -120,7 +120,7 @@ void main() {
         expect(completed.body, initial.body);
         await t.pumpAndSettle();
         await tap(find.text('원본 사진 보기'));
-        expect(find.text('Dopa 그림 보기'), findsOneWidget);
+        expect(find.text('틔움 그림 보기'), findsOneWidget);
         await t.ensureVisible(find.byKey(const ValueKey('diary-body')));
         await t.pumpAndSettle();
         await t.enterText(
