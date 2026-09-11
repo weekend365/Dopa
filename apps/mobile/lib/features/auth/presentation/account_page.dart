@@ -23,7 +23,9 @@ class _AccountPageState extends ConsumerState<AccountPage> {
         children: [
           Text('나의 작은 공간', style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 16),
-          const Text('가입 없이 사용 중이에요.\n활동과 정원 기록은 이 기기에만 저장돼요.'),
+          const Text(
+            '가입 없이 사용 중이에요.\n활동·정원·일기는 이 기기에 저장돼요. 그림 변환에 동의한 사진만 외부 AI 서비스로 전송해요.',
+          ),
           const SizedBox(height: 24),
           const Divider(),
           const SizedBox(height: 16),
@@ -55,7 +57,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
       builder: (context) => AlertDialog(
         title: const Text('모든 기록을 삭제할까요?'),
         content: const Text(
-          '집중, 생활 행동, 체크인과 정원 성장 기록이 모두 삭제돼요. 이 작업은 되돌릴 수 없어요.',
+          '집중, 생활 행동, 체크인, 정원과 사진 일기를 모두 삭제해요. 그림 변환을 사용했다면 서버의 임시 사진도 삭제하며 연결이 필요해요. 이 작업은 되돌릴 수 없어요.',
         ),
         actions: [
           TextButton(

@@ -110,6 +110,15 @@ class WeeklyReportPage extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 32),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.auto_stories_outlined),
+            title: const Text('나의 그림일기'),
+            subtitle: const Text('사진과 짧은 글로 모아둔 일상'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/diary'),
+          ),
+          const SizedBox(height: 24),
           records.when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, s) => DopaNotice(

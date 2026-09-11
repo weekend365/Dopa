@@ -5,6 +5,8 @@
 
 ## MVP Scope Freeze 게이트
 
+2026-09-11 승인된 [그림일기 v1](product/PHOTO_DIARY_V1_KO.md)은 선택적 사진 전송과 익명 세션 개발 서버를 추가한다. 이 범위에는 기존 Firebase 인증 요구 대신 서버 발급 Bearer 토큰과 기기 보안 저장소를 사용한다. 활동·일기 본문은 계속 로컬 전용이다.
+
 [정원 제품 범위](product/GARDEN_SCOPE_KO.md)와 [디자인 규칙](DESIGN_SYSTEM_KO.md)이 현재 구현의 최우선 기준이다. 이전 MVP 계획·과금·보호·인증 규칙은 이번 로컬 개편의 범위가 아니다.
 
 Apple 계정·식별자 결정은 [ADR-0001](adr/0001-apple-account-and-identifiers.md)을 따르며, 전체 iOS 식별자는 [`config/apple-identifiers.json`](../config/apple-identifiers.json)을 단일 진실 원천으로 사용한다.

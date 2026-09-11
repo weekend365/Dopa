@@ -47,6 +47,7 @@ void main() {
         ),
       );
       await t.pumpAndSettle();
+      await t.scrollUntilVisible(find.text('2026-09-11'), 150);
       expect(find.text('2026-09-11'), findsOneWidget);
       expect(find.text('조금 시작했어요'), findsOneWidget);
       await t.scrollUntilVisible(find.text('중간에 마쳤어요'), 150);

@@ -1,4 +1,7 @@
 import 'package:dopa/app/dopa_app.dart';
+import 'package:dopa/core/persistence/dopa_database_providers.dart';
+import 'package:dopa_local_storage/dopa_local_storage.dart';
+import 'package:drift/native.dart';
 import 'package:dopa/app/router/dopa_router.dart';
 import 'package:dopa/features/companion/application/companion_controller.dart';
 import 'package:dopa/features/companion/application/companion_media.dart';
@@ -15,10 +18,13 @@ import 'fake_companion_repository.dart';
 void main() {
   late FakeCompanionRepository repo;
   late ProviderContainer container;
+  late DopaDatabase database;
   setUp(() {
     repo = FakeCompanionRepository();
+    database = DopaDatabase(NativeDatabase.memory());
     container = ProviderContainer(
       overrides: [
+        dopaDatabaseProvider.overrideWithValue(database),
         companionMediaProvider.overrideWith((ref) async => null),
         companionRepositoryProvider.overrideWithValue(repo),
         companionSampleEnabledProvider.overrideWithValue(true),
@@ -29,7 +35,10 @@ void main() {
       ],
     );
   });
-  tearDown(() => container.dispose());
+  tearDown(() async {
+    container.dispose();
+    await database.close();
+  });
   Future<void> tap(WidgetTester t, Finder f) async {
     if (f.evaluate().isEmpty) await t.scrollUntilVisible(f, 150);
     await t.ensureVisible(f);

@@ -194,6 +194,33 @@ class CompanionOutcomes extends Table {
   Set<Column<Object>> get primaryKey => {runId};
 }
 
+@DataClassName('PhotoDiaryRow')
+class PhotoDiaries extends Table {
+  TextColumn get id => text()();
+  TextColumn get localDate => text().unique()();
+  TextColumn get body => text().withDefault(const Constant(''))();
+  BlobColumn get original => blob()();
+  BlobColumn get artwork => blob().nullable()();
+  TextColumn get jobId => text().nullable()();
+  TextColumn get status => text().withDefault(const Constant('local'))();
+  TextColumn get styleVersion =>
+      text().withDefault(const Constant('dopa-gouache-v1'))();
+  IntColumn get createdAtUtcMicros => integer()();
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+  @override
+  List<String> get customConstraints => const [
+    "CHECK (status IN ('local', 'submitting', 'queued', 'processing', 'succeeded', 'failed', 'uncertain', 'expired'))",
+    'CHECK (length(body) <= 2000)',
+  ];
+}
+
+class PhotoDiaryRemoteStates extends Table {
+  IntColumn get singleton => integer().check(singleton.equals(1))();
+  @override
+  Set<Column<Object>> get primaryKey => {singleton};
+}
+
 @DriftDatabase(
   tables: <Type>[
     FocusSessions,
@@ -203,18 +230,24 @@ class CompanionOutcomes extends Table {
     DailyCheckIns,
     CompanionRuns,
     CompanionOutcomes,
+    PhotoDiaries,
+    PhotoDiaryRemoteStates,
   ],
 )
 class DopaDatabase extends _$DopaDatabase {
   DopaDatabase(super.executor);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (Migrator migrator) => migrator.createAll(),
     onUpgrade: (Migrator migrator, int from, int to) async {
+      if (from < 7) {
+        await migrator.createTable(photoDiaries);
+        await migrator.createTable(photoDiaryRemoteStates);
+      }
       if (from < 6) {
         await customStatement(
           'ALTER TABLE tree_growth_credits RENAME TO growth_v5',
@@ -245,6 +278,7 @@ class DopaDatabase extends _$DopaDatabase {
     },
     beforeOpen: (OpeningDetails details) async {
       await customStatement('PRAGMA foreign_keys = ON');
+      await customStatement('PRAGMA secure_delete = ON');
     },
   );
 
@@ -254,6 +288,8 @@ class DopaDatabase extends _$DopaDatabase {
   /// sessions are removed afterwards so the ledger's source-session reference
   /// can remain restrictive during ordinary operation.
   Future<void> deleteAllLocalData() => transaction(() async {
+    await delete(photoDiaries).go();
+    await delete(photoDiaryRemoteStates).go();
     await delete(companionOutcomes).go();
     await delete(companionRuns).go();
     await delete(dailyCheckIns).go();

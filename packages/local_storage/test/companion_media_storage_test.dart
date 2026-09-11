@@ -86,7 +86,7 @@ void main() {
       expect(record.outcome, CompanionOutcome.started);
       expect(record.run.contentVersion, 1);
       expect(record.run.guidanceMode, CompanionGuidanceMode.textSample);
-      expect(sqlite.select('PRAGMA user_version').single.values.single, 6);
+      expect(sqlite.select('PRAGMA user_version').single.values.single, 7);
     },
   );
   test('backward saves reject stale revisions and cannot revert a confirmed result', () async {

@@ -68,6 +68,8 @@ void main() {
       );
       await db.customStatement('DROP TABLE new_credits');
       await db.customStatement('PRAGMA user_version = 5');
+      await db.customStatement('DROP TABLE photo_diaries');
+      await db.customStatement('DROP TABLE photo_diary_remote_states');
       await db.close();
       db = DopaDatabase(NativeDatabase(file));
       final restored = DriftCompanionRepository(database: db);
@@ -98,7 +100,7 @@ void main() {
         (await db.customSelect('PRAGMA user_version').getSingle()).read<int>(
           'user_version',
         ),
-        6,
+        7,
       );
     } finally {
       await db.close();

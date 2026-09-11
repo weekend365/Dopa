@@ -25,6 +25,8 @@ dependencies:
   audio_service: ^0.18.19
   audio_session: ^0.2.4
   crypto: ^3.0.7
+  image_picker: ^1.2.3
+  flutter_secure_storage: ^11.1.0
 
 dev_dependencies:
   integration_test:

@@ -1,4 +1,5 @@
 import 'package:dopa/app/router/dopa_router.dart';
+import 'package:dopa/features/diary/application/diary_sync.dart';
 import 'package:dopa/app/theme/dopa_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -31,6 +32,7 @@ class DopaApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       routerConfig: router,
+      builder: (context, child) => DiarySync(child: child!),
     );
   }
 }

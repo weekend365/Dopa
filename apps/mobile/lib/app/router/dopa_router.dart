@@ -1,3 +1,7 @@
+import 'dart:typed_data';
+
+import 'package:dopa/features/diary/presentation/diary_page.dart';
+import 'package:dopa/features/diary/presentation/diary_library_page.dart';
 import 'package:dopa/features/auth/presentation/account_page.dart';
 import 'package:dopa/app/presentation/rest_page.dart';
 import 'package:dopa/app/presentation/design_gallery_page.dart';
@@ -18,6 +22,22 @@ final dopaRouterProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
     initialLocation: '/today',
     routes: [
+      _route(
+        path: '/diary',
+        builder: (context, state) => const DiaryLibraryPage(),
+      ),
+      _route(
+        path: '/diary/new',
+        builder: (context, state) => DiaryPage(
+          recoveredPhoto: state.extra is Uint8List
+              ? state.extra! as Uint8List
+              : null,
+        ),
+      ),
+      _route(
+        path: '/diary/entry/:id',
+        builder: (context, state) => DiaryPage(id: state.pathParameters['id']),
+      ),
       _route(path: '/rest', builder: (context, state) => const RestPage()),
       _route(
         path: '/design',

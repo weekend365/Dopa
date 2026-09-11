@@ -3203,6 +3203,722 @@ class CompanionOutcomesCompanion extends UpdateCompanion<CompanionOutcomeRow> {
   }
 }
 
+class $PhotoDiariesTable extends PhotoDiaries
+    with TableInfo<$PhotoDiariesTable, PhotoDiaryRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PhotoDiariesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localDateMeta = const VerificationMeta(
+    'localDate',
+  );
+  @override
+  late final GeneratedColumn<String> localDate = GeneratedColumn<String>(
+    'local_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _originalMeta = const VerificationMeta(
+    'original',
+  );
+  @override
+  late final GeneratedColumn<Uint8List> original = GeneratedColumn<Uint8List>(
+    'original',
+    aliasedName,
+    false,
+    type: DriftSqlType.blob,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _artworkMeta = const VerificationMeta(
+    'artwork',
+  );
+  @override
+  late final GeneratedColumn<Uint8List> artwork = GeneratedColumn<Uint8List>(
+    'artwork',
+    aliasedName,
+    true,
+    type: DriftSqlType.blob,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _jobIdMeta = const VerificationMeta('jobId');
+  @override
+  late final GeneratedColumn<String> jobId = GeneratedColumn<String>(
+    'job_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('local'),
+  );
+  static const VerificationMeta _styleVersionMeta = const VerificationMeta(
+    'styleVersion',
+  );
+  @override
+  late final GeneratedColumn<String> styleVersion = GeneratedColumn<String>(
+    'style_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('dopa-gouache-v1'),
+  );
+  static const VerificationMeta _createdAtUtcMicrosMeta =
+      const VerificationMeta('createdAtUtcMicros');
+  @override
+  late final GeneratedColumn<int> createdAtUtcMicros = GeneratedColumn<int>(
+    'created_at_utc_micros',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    localDate,
+    body,
+    original,
+    artwork,
+    jobId,
+    status,
+    styleVersion,
+    createdAtUtcMicros,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'photo_diaries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PhotoDiaryRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('local_date')) {
+      context.handle(
+        _localDateMeta,
+        localDate.isAcceptableOrUnknown(data['local_date']!, _localDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localDateMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    }
+    if (data.containsKey('original')) {
+      context.handle(
+        _originalMeta,
+        original.isAcceptableOrUnknown(data['original']!, _originalMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_originalMeta);
+    }
+    if (data.containsKey('artwork')) {
+      context.handle(
+        _artworkMeta,
+        artwork.isAcceptableOrUnknown(data['artwork']!, _artworkMeta),
+      );
+    }
+    if (data.containsKey('job_id')) {
+      context.handle(
+        _jobIdMeta,
+        jobId.isAcceptableOrUnknown(data['job_id']!, _jobIdMeta),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('style_version')) {
+      context.handle(
+        _styleVersionMeta,
+        styleVersion.isAcceptableOrUnknown(
+          data['style_version']!,
+          _styleVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at_utc_micros')) {
+      context.handle(
+        _createdAtUtcMicrosMeta,
+        createdAtUtcMicros.isAcceptableOrUnknown(
+          data['created_at_utc_micros']!,
+          _createdAtUtcMicrosMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMicrosMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PhotoDiaryRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PhotoDiaryRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      localDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_date'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      original: attachedDatabase.typeMapping.read(
+        DriftSqlType.blob,
+        data['${effectivePrefix}original'],
+      )!,
+      artwork: attachedDatabase.typeMapping.read(
+        DriftSqlType.blob,
+        data['${effectivePrefix}artwork'],
+      ),
+      jobId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}job_id'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      styleVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}style_version'],
+      )!,
+      createdAtUtcMicros: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at_utc_micros'],
+      )!,
+    );
+  }
+
+  @override
+  $PhotoDiariesTable createAlias(String alias) {
+    return $PhotoDiariesTable(attachedDatabase, alias);
+  }
+}
+
+class PhotoDiaryRow extends DataClass implements Insertable<PhotoDiaryRow> {
+  final String id;
+  final String localDate;
+  final String body;
+  final Uint8List original;
+  final Uint8List? artwork;
+  final String? jobId;
+  final String status;
+  final String styleVersion;
+  final int createdAtUtcMicros;
+  const PhotoDiaryRow({
+    required this.id,
+    required this.localDate,
+    required this.body,
+    required this.original,
+    this.artwork,
+    this.jobId,
+    required this.status,
+    required this.styleVersion,
+    required this.createdAtUtcMicros,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['local_date'] = Variable<String>(localDate);
+    map['body'] = Variable<String>(body);
+    map['original'] = Variable<Uint8List>(original);
+    if (!nullToAbsent || artwork != null) {
+      map['artwork'] = Variable<Uint8List>(artwork);
+    }
+    if (!nullToAbsent || jobId != null) {
+      map['job_id'] = Variable<String>(jobId);
+    }
+    map['status'] = Variable<String>(status);
+    map['style_version'] = Variable<String>(styleVersion);
+    map['created_at_utc_micros'] = Variable<int>(createdAtUtcMicros);
+    return map;
+  }
+
+  PhotoDiariesCompanion toCompanion(bool nullToAbsent) {
+    return PhotoDiariesCompanion(
+      id: Value(id),
+      localDate: Value(localDate),
+      body: Value(body),
+      original: Value(original),
+      artwork: artwork == null && nullToAbsent
+          ? const Value.absent()
+          : Value(artwork),
+      jobId: jobId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(jobId),
+      status: Value(status),
+      styleVersion: Value(styleVersion),
+      createdAtUtcMicros: Value(createdAtUtcMicros),
+    );
+  }
+
+  factory PhotoDiaryRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PhotoDiaryRow(
+      id: serializer.fromJson<String>(json['id']),
+      localDate: serializer.fromJson<String>(json['localDate']),
+      body: serializer.fromJson<String>(json['body']),
+      original: serializer.fromJson<Uint8List>(json['original']),
+      artwork: serializer.fromJson<Uint8List?>(json['artwork']),
+      jobId: serializer.fromJson<String?>(json['jobId']),
+      status: serializer.fromJson<String>(json['status']),
+      styleVersion: serializer.fromJson<String>(json['styleVersion']),
+      createdAtUtcMicros: serializer.fromJson<int>(json['createdAtUtcMicros']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'localDate': serializer.toJson<String>(localDate),
+      'body': serializer.toJson<String>(body),
+      'original': serializer.toJson<Uint8List>(original),
+      'artwork': serializer.toJson<Uint8List?>(artwork),
+      'jobId': serializer.toJson<String?>(jobId),
+      'status': serializer.toJson<String>(status),
+      'styleVersion': serializer.toJson<String>(styleVersion),
+      'createdAtUtcMicros': serializer.toJson<int>(createdAtUtcMicros),
+    };
+  }
+
+  PhotoDiaryRow copyWith({
+    String? id,
+    String? localDate,
+    String? body,
+    Uint8List? original,
+    Value<Uint8List?> artwork = const Value.absent(),
+    Value<String?> jobId = const Value.absent(),
+    String? status,
+    String? styleVersion,
+    int? createdAtUtcMicros,
+  }) => PhotoDiaryRow(
+    id: id ?? this.id,
+    localDate: localDate ?? this.localDate,
+    body: body ?? this.body,
+    original: original ?? this.original,
+    artwork: artwork.present ? artwork.value : this.artwork,
+    jobId: jobId.present ? jobId.value : this.jobId,
+    status: status ?? this.status,
+    styleVersion: styleVersion ?? this.styleVersion,
+    createdAtUtcMicros: createdAtUtcMicros ?? this.createdAtUtcMicros,
+  );
+  PhotoDiaryRow copyWithCompanion(PhotoDiariesCompanion data) {
+    return PhotoDiaryRow(
+      id: data.id.present ? data.id.value : this.id,
+      localDate: data.localDate.present ? data.localDate.value : this.localDate,
+      body: data.body.present ? data.body.value : this.body,
+      original: data.original.present ? data.original.value : this.original,
+      artwork: data.artwork.present ? data.artwork.value : this.artwork,
+      jobId: data.jobId.present ? data.jobId.value : this.jobId,
+      status: data.status.present ? data.status.value : this.status,
+      styleVersion: data.styleVersion.present
+          ? data.styleVersion.value
+          : this.styleVersion,
+      createdAtUtcMicros: data.createdAtUtcMicros.present
+          ? data.createdAtUtcMicros.value
+          : this.createdAtUtcMicros,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhotoDiaryRow(')
+          ..write('id: $id, ')
+          ..write('localDate: $localDate, ')
+          ..write('body: $body, ')
+          ..write('original: $original, ')
+          ..write('artwork: $artwork, ')
+          ..write('jobId: $jobId, ')
+          ..write('status: $status, ')
+          ..write('styleVersion: $styleVersion, ')
+          ..write('createdAtUtcMicros: $createdAtUtcMicros')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    localDate,
+    body,
+    $driftBlobEquality.hash(original),
+    $driftBlobEquality.hash(artwork),
+    jobId,
+    status,
+    styleVersion,
+    createdAtUtcMicros,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PhotoDiaryRow &&
+          other.id == this.id &&
+          other.localDate == this.localDate &&
+          other.body == this.body &&
+          $driftBlobEquality.equals(other.original, this.original) &&
+          $driftBlobEquality.equals(other.artwork, this.artwork) &&
+          other.jobId == this.jobId &&
+          other.status == this.status &&
+          other.styleVersion == this.styleVersion &&
+          other.createdAtUtcMicros == this.createdAtUtcMicros);
+}
+
+class PhotoDiariesCompanion extends UpdateCompanion<PhotoDiaryRow> {
+  final Value<String> id;
+  final Value<String> localDate;
+  final Value<String> body;
+  final Value<Uint8List> original;
+  final Value<Uint8List?> artwork;
+  final Value<String?> jobId;
+  final Value<String> status;
+  final Value<String> styleVersion;
+  final Value<int> createdAtUtcMicros;
+  final Value<int> rowid;
+  const PhotoDiariesCompanion({
+    this.id = const Value.absent(),
+    this.localDate = const Value.absent(),
+    this.body = const Value.absent(),
+    this.original = const Value.absent(),
+    this.artwork = const Value.absent(),
+    this.jobId = const Value.absent(),
+    this.status = const Value.absent(),
+    this.styleVersion = const Value.absent(),
+    this.createdAtUtcMicros = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PhotoDiariesCompanion.insert({
+    required String id,
+    required String localDate,
+    this.body = const Value.absent(),
+    required Uint8List original,
+    this.artwork = const Value.absent(),
+    this.jobId = const Value.absent(),
+    this.status = const Value.absent(),
+    this.styleVersion = const Value.absent(),
+    required int createdAtUtcMicros,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       localDate = Value(localDate),
+       original = Value(original),
+       createdAtUtcMicros = Value(createdAtUtcMicros);
+  static Insertable<PhotoDiaryRow> custom({
+    Expression<String>? id,
+    Expression<String>? localDate,
+    Expression<String>? body,
+    Expression<Uint8List>? original,
+    Expression<Uint8List>? artwork,
+    Expression<String>? jobId,
+    Expression<String>? status,
+    Expression<String>? styleVersion,
+    Expression<int>? createdAtUtcMicros,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (localDate != null) 'local_date': localDate,
+      if (body != null) 'body': body,
+      if (original != null) 'original': original,
+      if (artwork != null) 'artwork': artwork,
+      if (jobId != null) 'job_id': jobId,
+      if (status != null) 'status': status,
+      if (styleVersion != null) 'style_version': styleVersion,
+      if (createdAtUtcMicros != null)
+        'created_at_utc_micros': createdAtUtcMicros,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PhotoDiariesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? localDate,
+    Value<String>? body,
+    Value<Uint8List>? original,
+    Value<Uint8List?>? artwork,
+    Value<String?>? jobId,
+    Value<String>? status,
+    Value<String>? styleVersion,
+    Value<int>? createdAtUtcMicros,
+    Value<int>? rowid,
+  }) {
+    return PhotoDiariesCompanion(
+      id: id ?? this.id,
+      localDate: localDate ?? this.localDate,
+      body: body ?? this.body,
+      original: original ?? this.original,
+      artwork: artwork ?? this.artwork,
+      jobId: jobId ?? this.jobId,
+      status: status ?? this.status,
+      styleVersion: styleVersion ?? this.styleVersion,
+      createdAtUtcMicros: createdAtUtcMicros ?? this.createdAtUtcMicros,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (localDate.present) {
+      map['local_date'] = Variable<String>(localDate.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (original.present) {
+      map['original'] = Variable<Uint8List>(original.value);
+    }
+    if (artwork.present) {
+      map['artwork'] = Variable<Uint8List>(artwork.value);
+    }
+    if (jobId.present) {
+      map['job_id'] = Variable<String>(jobId.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (styleVersion.present) {
+      map['style_version'] = Variable<String>(styleVersion.value);
+    }
+    if (createdAtUtcMicros.present) {
+      map['created_at_utc_micros'] = Variable<int>(createdAtUtcMicros.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhotoDiariesCompanion(')
+          ..write('id: $id, ')
+          ..write('localDate: $localDate, ')
+          ..write('body: $body, ')
+          ..write('original: $original, ')
+          ..write('artwork: $artwork, ')
+          ..write('jobId: $jobId, ')
+          ..write('status: $status, ')
+          ..write('styleVersion: $styleVersion, ')
+          ..write('createdAtUtcMicros: $createdAtUtcMicros, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PhotoDiaryRemoteStatesTable extends PhotoDiaryRemoteStates
+    with TableInfo<$PhotoDiaryRemoteStatesTable, PhotoDiaryRemoteState> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PhotoDiaryRemoteStatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _singletonMeta = const VerificationMeta(
+    'singleton',
+  );
+  @override
+  late final GeneratedColumn<int> singleton = GeneratedColumn<int>(
+    'singleton',
+    aliasedName,
+    false,
+    check: () => singleton.equals(1),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [singleton];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'photo_diary_remote_states';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PhotoDiaryRemoteState> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('singleton')) {
+      context.handle(
+        _singletonMeta,
+        singleton.isAcceptableOrUnknown(data['singleton']!, _singletonMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {singleton};
+  @override
+  PhotoDiaryRemoteState map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PhotoDiaryRemoteState(
+      singleton: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}singleton'],
+      )!,
+    );
+  }
+
+  @override
+  $PhotoDiaryRemoteStatesTable createAlias(String alias) {
+    return $PhotoDiaryRemoteStatesTable(attachedDatabase, alias);
+  }
+}
+
+class PhotoDiaryRemoteState extends DataClass
+    implements Insertable<PhotoDiaryRemoteState> {
+  final int singleton;
+  const PhotoDiaryRemoteState({required this.singleton});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['singleton'] = Variable<int>(singleton);
+    return map;
+  }
+
+  PhotoDiaryRemoteStatesCompanion toCompanion(bool nullToAbsent) {
+    return PhotoDiaryRemoteStatesCompanion(singleton: Value(singleton));
+  }
+
+  factory PhotoDiaryRemoteState.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PhotoDiaryRemoteState(
+      singleton: serializer.fromJson<int>(json['singleton']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{'singleton': serializer.toJson<int>(singleton)};
+  }
+
+  PhotoDiaryRemoteState copyWith({int? singleton}) =>
+      PhotoDiaryRemoteState(singleton: singleton ?? this.singleton);
+  PhotoDiaryRemoteState copyWithCompanion(
+    PhotoDiaryRemoteStatesCompanion data,
+  ) {
+    return PhotoDiaryRemoteState(
+      singleton: data.singleton.present ? data.singleton.value : this.singleton,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhotoDiaryRemoteState(')
+          ..write('singleton: $singleton')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => singleton.hashCode;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PhotoDiaryRemoteState && other.singleton == this.singleton);
+}
+
+class PhotoDiaryRemoteStatesCompanion
+    extends UpdateCompanion<PhotoDiaryRemoteState> {
+  final Value<int> singleton;
+  const PhotoDiaryRemoteStatesCompanion({
+    this.singleton = const Value.absent(),
+  });
+  PhotoDiaryRemoteStatesCompanion.insert({
+    this.singleton = const Value.absent(),
+  });
+  static Insertable<PhotoDiaryRemoteState> custom({
+    Expression<int>? singleton,
+  }) {
+    return RawValuesInsertable({if (singleton != null) 'singleton': singleton});
+  }
+
+  PhotoDiaryRemoteStatesCompanion copyWith({Value<int>? singleton}) {
+    return PhotoDiaryRemoteStatesCompanion(
+      singleton: singleton ?? this.singleton,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (singleton.present) {
+      map['singleton'] = Variable<int>(singleton.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhotoDiaryRemoteStatesCompanion(')
+          ..write('singleton: $singleton')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$DopaDatabase extends GeneratedDatabase {
   _$DopaDatabase(QueryExecutor e) : super(e);
   $DopaDatabaseManager get managers => $DopaDatabaseManager(this);
@@ -3216,6 +3932,9 @@ abstract class _$DopaDatabase extends GeneratedDatabase {
   late final $CompanionRunsTable companionRuns = $CompanionRunsTable(this);
   late final $CompanionOutcomesTable companionOutcomes =
       $CompanionOutcomesTable(this);
+  late final $PhotoDiariesTable photoDiaries = $PhotoDiariesTable(this);
+  late final $PhotoDiaryRemoteStatesTable photoDiaryRemoteStates =
+      $PhotoDiaryRemoteStatesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3228,6 +3947,8 @@ abstract class _$DopaDatabase extends GeneratedDatabase {
     dailyCheckIns,
     companionRuns,
     companionOutcomes,
+    photoDiaries,
+    photoDiaryRemoteStates,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -5384,6 +6105,413 @@ typedef $$CompanionOutcomesTableProcessedTableManager =
       CompanionOutcomeRow,
       PrefetchHooks Function({bool runId})
     >;
+typedef $$PhotoDiariesTableCreateCompanionBuilder =
+    PhotoDiariesCompanion Function({
+      required String id,
+      required String localDate,
+      Value<String> body,
+      required Uint8List original,
+      Value<Uint8List?> artwork,
+      Value<String?> jobId,
+      Value<String> status,
+      Value<String> styleVersion,
+      required int createdAtUtcMicros,
+      Value<int> rowid,
+    });
+typedef $$PhotoDiariesTableUpdateCompanionBuilder =
+    PhotoDiariesCompanion Function({
+      Value<String> id,
+      Value<String> localDate,
+      Value<String> body,
+      Value<Uint8List> original,
+      Value<Uint8List?> artwork,
+      Value<String?> jobId,
+      Value<String> status,
+      Value<String> styleVersion,
+      Value<int> createdAtUtcMicros,
+      Value<int> rowid,
+    });
+
+class $$PhotoDiariesTableFilterComposer
+    extends Composer<_$DopaDatabase, $PhotoDiariesTable> {
+  $$PhotoDiariesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localDate => $composableBuilder(
+    column: $table.localDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<Uint8List> get original => $composableBuilder(
+    column: $table.original,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<Uint8List> get artwork => $composableBuilder(
+    column: $table.artwork,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get jobId => $composableBuilder(
+    column: $table.jobId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get styleVersion => $composableBuilder(
+    column: $table.styleVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAtUtcMicros => $composableBuilder(
+    column: $table.createdAtUtcMicros,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PhotoDiariesTableOrderingComposer
+    extends Composer<_$DopaDatabase, $PhotoDiariesTable> {
+  $$PhotoDiariesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localDate => $composableBuilder(
+    column: $table.localDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<Uint8List> get original => $composableBuilder(
+    column: $table.original,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<Uint8List> get artwork => $composableBuilder(
+    column: $table.artwork,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get jobId => $composableBuilder(
+    column: $table.jobId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get styleVersion => $composableBuilder(
+    column: $table.styleVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAtUtcMicros => $composableBuilder(
+    column: $table.createdAtUtcMicros,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PhotoDiariesTableAnnotationComposer
+    extends Composer<_$DopaDatabase, $PhotoDiariesTable> {
+  $$PhotoDiariesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get localDate =>
+      $composableBuilder(column: $table.localDate, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<Uint8List> get original =>
+      $composableBuilder(column: $table.original, builder: (column) => column);
+
+  GeneratedColumn<Uint8List> get artwork =>
+      $composableBuilder(column: $table.artwork, builder: (column) => column);
+
+  GeneratedColumn<String> get jobId =>
+      $composableBuilder(column: $table.jobId, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get styleVersion => $composableBuilder(
+    column: $table.styleVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get createdAtUtcMicros => $composableBuilder(
+    column: $table.createdAtUtcMicros,
+    builder: (column) => column,
+  );
+}
+
+class $$PhotoDiariesTableTableManager
+    extends
+        RootTableManager<
+          _$DopaDatabase,
+          $PhotoDiariesTable,
+          PhotoDiaryRow,
+          $$PhotoDiariesTableFilterComposer,
+          $$PhotoDiariesTableOrderingComposer,
+          $$PhotoDiariesTableAnnotationComposer,
+          $$PhotoDiariesTableCreateCompanionBuilder,
+          $$PhotoDiariesTableUpdateCompanionBuilder,
+          (
+            PhotoDiaryRow,
+            BaseReferences<_$DopaDatabase, $PhotoDiariesTable, PhotoDiaryRow>,
+          ),
+          PhotoDiaryRow,
+          PrefetchHooks Function()
+        > {
+  $$PhotoDiariesTableTableManager(_$DopaDatabase db, $PhotoDiariesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PhotoDiariesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PhotoDiariesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PhotoDiariesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> localDate = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<Uint8List> original = const Value.absent(),
+                Value<Uint8List?> artwork = const Value.absent(),
+                Value<String?> jobId = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> styleVersion = const Value.absent(),
+                Value<int> createdAtUtcMicros = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PhotoDiariesCompanion(
+                id: id,
+                localDate: localDate,
+                body: body,
+                original: original,
+                artwork: artwork,
+                jobId: jobId,
+                status: status,
+                styleVersion: styleVersion,
+                createdAtUtcMicros: createdAtUtcMicros,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String localDate,
+                Value<String> body = const Value.absent(),
+                required Uint8List original,
+                Value<Uint8List?> artwork = const Value.absent(),
+                Value<String?> jobId = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> styleVersion = const Value.absent(),
+                required int createdAtUtcMicros,
+                Value<int> rowid = const Value.absent(),
+              }) => PhotoDiariesCompanion.insert(
+                id: id,
+                localDate: localDate,
+                body: body,
+                original: original,
+                artwork: artwork,
+                jobId: jobId,
+                status: status,
+                styleVersion: styleVersion,
+                createdAtUtcMicros: createdAtUtcMicros,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PhotoDiariesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$DopaDatabase,
+      $PhotoDiariesTable,
+      PhotoDiaryRow,
+      $$PhotoDiariesTableFilterComposer,
+      $$PhotoDiariesTableOrderingComposer,
+      $$PhotoDiariesTableAnnotationComposer,
+      $$PhotoDiariesTableCreateCompanionBuilder,
+      $$PhotoDiariesTableUpdateCompanionBuilder,
+      (
+        PhotoDiaryRow,
+        BaseReferences<_$DopaDatabase, $PhotoDiariesTable, PhotoDiaryRow>,
+      ),
+      PhotoDiaryRow,
+      PrefetchHooks Function()
+    >;
+typedef $$PhotoDiaryRemoteStatesTableCreateCompanionBuilder =
+    PhotoDiaryRemoteStatesCompanion Function({Value<int> singleton});
+typedef $$PhotoDiaryRemoteStatesTableUpdateCompanionBuilder =
+    PhotoDiaryRemoteStatesCompanion Function({Value<int> singleton});
+
+class $$PhotoDiaryRemoteStatesTableFilterComposer
+    extends Composer<_$DopaDatabase, $PhotoDiaryRemoteStatesTable> {
+  $$PhotoDiaryRemoteStatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get singleton => $composableBuilder(
+    column: $table.singleton,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PhotoDiaryRemoteStatesTableOrderingComposer
+    extends Composer<_$DopaDatabase, $PhotoDiaryRemoteStatesTable> {
+  $$PhotoDiaryRemoteStatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get singleton => $composableBuilder(
+    column: $table.singleton,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PhotoDiaryRemoteStatesTableAnnotationComposer
+    extends Composer<_$DopaDatabase, $PhotoDiaryRemoteStatesTable> {
+  $$PhotoDiaryRemoteStatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get singleton =>
+      $composableBuilder(column: $table.singleton, builder: (column) => column);
+}
+
+class $$PhotoDiaryRemoteStatesTableTableManager
+    extends
+        RootTableManager<
+          _$DopaDatabase,
+          $PhotoDiaryRemoteStatesTable,
+          PhotoDiaryRemoteState,
+          $$PhotoDiaryRemoteStatesTableFilterComposer,
+          $$PhotoDiaryRemoteStatesTableOrderingComposer,
+          $$PhotoDiaryRemoteStatesTableAnnotationComposer,
+          $$PhotoDiaryRemoteStatesTableCreateCompanionBuilder,
+          $$PhotoDiaryRemoteStatesTableUpdateCompanionBuilder,
+          (
+            PhotoDiaryRemoteState,
+            BaseReferences<
+              _$DopaDatabase,
+              $PhotoDiaryRemoteStatesTable,
+              PhotoDiaryRemoteState
+            >,
+          ),
+          PhotoDiaryRemoteState,
+          PrefetchHooks Function()
+        > {
+  $$PhotoDiaryRemoteStatesTableTableManager(
+    _$DopaDatabase db,
+    $PhotoDiaryRemoteStatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PhotoDiaryRemoteStatesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$PhotoDiaryRemoteStatesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$PhotoDiaryRemoteStatesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback: ({
+            Value<int> singleton = const Value.absent(),
+          }) => PhotoDiaryRemoteStatesCompanion(singleton: singleton),
+          createCompanionCallback: ({
+            Value<int> singleton = const Value.absent(),
+          }) => PhotoDiaryRemoteStatesCompanion.insert(singleton: singleton),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PhotoDiaryRemoteStatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$DopaDatabase,
+      $PhotoDiaryRemoteStatesTable,
+      PhotoDiaryRemoteState,
+      $$PhotoDiaryRemoteStatesTableFilterComposer,
+      $$PhotoDiaryRemoteStatesTableOrderingComposer,
+      $$PhotoDiaryRemoteStatesTableAnnotationComposer,
+      $$PhotoDiaryRemoteStatesTableCreateCompanionBuilder,
+      $$PhotoDiaryRemoteStatesTableUpdateCompanionBuilder,
+      (
+        PhotoDiaryRemoteState,
+        BaseReferences<
+          _$DopaDatabase,
+          $PhotoDiaryRemoteStatesTable,
+          PhotoDiaryRemoteState
+        >,
+      ),
+      PhotoDiaryRemoteState,
+      PrefetchHooks Function()
+    >;
 
 class $DopaDatabaseManager {
   final _$DopaDatabase _db;
@@ -5402,4 +6530,11 @@ class $DopaDatabaseManager {
       $$CompanionRunsTableTableManager(_db, _db.companionRuns);
   $$CompanionOutcomesTableTableManager get companionOutcomes =>
       $$CompanionOutcomesTableTableManager(_db, _db.companionOutcomes);
+  $$PhotoDiariesTableTableManager get photoDiaries =>
+      $$PhotoDiariesTableTableManager(_db, _db.photoDiaries);
+  $$PhotoDiaryRemoteStatesTableTableManager get photoDiaryRemoteStates =>
+      $$PhotoDiaryRemoteStatesTableTableManager(
+        _db,
+        _db.photoDiaryRemoteStates,
+      );
 }

@@ -96,7 +96,7 @@ void main() {
           ),
           throwsA(isA<SqliteException>()),
         );
-        expect(sqlite.select('PRAGMA user_version').single.values.single, 6);
+        expect(sqlite.select('PRAGMA user_version').single.values.single, 7);
       },
     );
   }

@@ -39,3 +39,5 @@ Thumbs.db
 
 # FVM Version Cache
 .fvm/
+node_modules/
+backend/diary/data/

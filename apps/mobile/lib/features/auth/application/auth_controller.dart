@@ -1,4 +1,5 @@
 import 'package:dopa/core/persistence/dopa_database_providers.dart';
+import 'package:dopa/features/diary/application/diary_controller.dart';
 import 'package:dopa/features/companion/application/companion_media_controller.dart';
 import 'package:dopa/features/auth/application/auth_session_store.dart';
 import 'package:dopa/features/auth/application/sign_in_port.dart';
@@ -188,6 +189,11 @@ class AuthController extends StateNotifier<AuthState> {
   }
 
   Future<void> _wipeWellbeingAndInvalidate() async {
+    // Clear remote temporary photos before losing the only authorization token.
+    // This marker survives individual diary deletion and process restarts.
+    if (await _ref.read(diaryRepositoryProvider).hasRemoteUse()) {
+      await _ref.read(diaryApiProvider).deleteSession();
+    }
     if (_ref.exists(companionMediaControllerProvider)) {
       await _ref.read(companionMediaControllerProvider.notifier).shutdown();
       _ref.invalidate(companionMediaControllerProvider);
@@ -195,7 +201,13 @@ class AuthController extends StateNotifier<AuthState> {
     await _ref
         .read(localAccountDataLifecycleProvider)
         .deleteForLogoutOrAccountDeletion();
+    await _ref
+        .read(dopaDatabaseProvider)
+        .customStatement('PRAGMA wal_checkpoint(TRUNCATE)');
     _ref.invalidate(dopaDatabaseProvider);
+    _ref.invalidate(diaryControllerProvider);
+    _ref.invalidate(diaryRepositoryProvider);
+    _ref.invalidate(diariesProvider);
     _ref.invalidate(focusTreeRepositoryProvider);
     _ref.invalidate(localAccountDataLifecycleProvider);
     _ref.invalidate(treeProgressControllerProvider);

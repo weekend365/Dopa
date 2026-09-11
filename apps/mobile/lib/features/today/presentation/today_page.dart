@@ -88,6 +88,17 @@ class TodayPage extends ConsumerWidget {
               onPressed: () => ref.invalidate(activeDestinationProvider),
               child: const Text('이전 활동 다시 확인하기'),
             ),
+          const SizedBox(height: 24),
+          const Divider(),
+          ListTile(
+            key: const ValueKey('today-diary'),
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.photo_camera_outlined),
+            title: const Text('오늘의 한 장 남기기'),
+            subtitle: const Text('평범한 순간을 나만의 그림일기로'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.push('/diary/new'),
+          ),
         ],
       ),
     );
